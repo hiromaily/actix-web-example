@@ -1,5 +1,9 @@
 project_name = "api-server"
 
+[server]
+host = "127.0.0.1"
+port = 8080
+
 [logger]
 service = "bch-keygen"
 level = "debug"        # debug, info, warn, error
