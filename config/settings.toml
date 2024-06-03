@@ -1,0 +1,11 @@
+project_name = "api-server"
+
+[logger]
+service = "bch-keygen"
+level = "debug"        # debug, info, warn, error
+
+[pg]
+host = "127.0.0.1:3308"
+dbname = "sample"
+user = "hiromaily"
+password = "hiromaily"
