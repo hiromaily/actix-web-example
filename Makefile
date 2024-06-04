@@ -13,7 +13,7 @@ build:
 
 .PHONY: run
 run:
-	cargo run -- ./config/settings.toml -d
+	RUST_LOG=debug cargo run -- ./config/settings.toml -d
 
 .PHONY: compile
 compile:

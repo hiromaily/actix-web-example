@@ -1,4 +1,7 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, middleware::Logger, post, web, App, HttpResponse, HttpServer, Responder};
+//use env_logger::Builder;
+use log::info;
+//use log::LevelFilter;
 
 mod args;
 mod toml;
@@ -20,6 +23,12 @@ async fn manual_hello() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // initialize log
+    env_logger::init();
+    // Builder::from_default_env()
+    //     .filter_level(LevelFilter::Info)
+    //     .init();
+
     // command line arguments
     let arg = args::get_args();
     dbg!(&arg);
@@ -39,10 +48,12 @@ async fn main() -> std::io::Result<()> {
     let host = config.server.host;
     let port = config.server.port;
 
-    println!("run server {}:{}", host, port);
+    //println!("run server {}:{}", host, port);
+    info!("run server {}:{}", host, port);
 
     HttpServer::new(|| {
         App::new()
+            .wrap(Logger::default())
             .service(hello)
             .service(echo)
             .route("/hey", web::get().to(manual_hello))
