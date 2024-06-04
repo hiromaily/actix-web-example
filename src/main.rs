@@ -1,5 +1,6 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 
+mod args;
 mod toml;
 
 // router
@@ -19,16 +20,19 @@ async fn manual_hello() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // command line arguments
+    let arg = args::get_args();
+    dbg!(&arg);
+
     // load toml
-    let file_path = "./config/settings.toml";
-    let config = toml::load_config(file_path);
+    let file_path = arg.conf;
+    let config = toml::load_config(file_path.as_str());
     let config = match config {
         Ok(conf) => conf,
         Err(error) => {
             panic!("fail to load toml file [{}]: {:?}", file_path, error)
         }
     };
-    // debug
     dbg!(&config);
 
     // connect server
