@@ -1,25 +1,13 @@
-use actix_web::{get, middleware::Logger, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{middleware::Logger, web, App, HttpServer};
+use core::time::Duration;
 //use env_logger::Builder;
 use log::info;
 //use log::LevelFilter;
 
 mod args;
+mod routes;
+mod state;
 mod toml;
-
-// router
-#[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
-}
-
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
-
-async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
-}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -51,13 +39,23 @@ async fn main() -> std::io::Result<()> {
     //println!("run server {}:{}", host, port);
     info!("run server {}:{}", host, port);
 
+    // intentionally try various pattern to set routes
     HttpServer::new(|| {
         App::new()
             .wrap(Logger::default())
-            .service(hello)
-            .service(echo)
-            .route("/hey", web::get().to(manual_hello))
+            .app_data(web::Data::new(state::AppState {
+                app_name: String::from("Actix Web"),
+            }))
+            .service(routes::basis::get_hello)
+            .service(routes::basis::get_hello_user)
+            .service(routes::basis::post_echo)
+            .service(routes::basis::post_echo_json)
+            .service(web::scope("/api/v1").configure(routes::user::config))
+            .service(web::scope("/api/v1").route("/info", web::get().to(routes::info::top))) // return 404
+            .service(web::scope("/app").route("/index.html", web::get().to(routes::app::index)))
+            .route("/health", web::get().to(routes::basis::health))
     })
+    .keep_alive(Duration::from_secs(30))
     .bind((host, port))?
     .run()
     .await
