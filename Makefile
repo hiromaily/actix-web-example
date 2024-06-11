@@ -28,6 +28,19 @@ test:
 	cargo test
 
 #------------------------------------------------------------------------------
+# sea-orm
+# Refer to
+# - https://www.sea-ql.org/SeaORM/docs/migration/setting-up-migration/
+#------------------------------------------------------------------------------
+.PHONY: setup-sea-orm
+setup-sea-orm:
+	cargo install sea-orm-cli
+	sea-orm-cli migrate init
+	rm -rf ./migration/src/m20220101_000001_create_table.rs
+	@echo create table
+	sea-orm-cli migrate generate create_table_users
+
+#------------------------------------------------------------------------------
 # docker
 #------------------------------------------------------------------------------
 .PHONY: build-image

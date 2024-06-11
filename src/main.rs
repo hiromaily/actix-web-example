@@ -5,6 +5,8 @@ use log::info;
 //use log::LevelFilter;
 
 mod args;
+mod registry;
+mod repositories;
 mod routes;
 mod state;
 mod toml;
@@ -32,20 +34,23 @@ async fn main() -> std::io::Result<()> {
     };
     dbg!(&config);
 
-    // connect server
-    let host = config.server.host;
-    let port = config.server.port;
+    // registry
+    // - better to move config
+    let reg = registry::Registry::new(config);
+    let server_data = reg.create_server_data();
+
+    // connect to Server
+    let host = reg.conf.server.host;
+    let port = reg.conf.server.port;
 
     //println!("run server {}:{}", host, port);
     info!("run server {}:{}", host, port);
 
     // intentionally try various pattern to set routes
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .app_data(web::Data::new(state::AppState {
-                app_name: String::from("Actix Web"),
-            }))
+            .app_data(web::Data::new(server_data.clone()))
             .service(routes::basis::get_hello)
             .service(routes::basis::get_hello_user)
             .service(routes::basis::post_echo)

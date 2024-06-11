@@ -7,13 +7,13 @@ use std::fs;
 #[derive(Debug, Deserialize)]
 pub struct Config {
     #[allow(dead_code)]
-    project_name: String,
+    pub project_name: String,
     #[allow(dead_code)]
     pub server: Server,
     #[allow(dead_code)]
-    logger: Logger,
+    pub logger: Logger,
     #[allow(dead_code)]
-    pg: PostgreSQL,
+    pub pg: PostgreSQL,
 }
 
 #[derive(Debug, Deserialize)]
@@ -34,6 +34,8 @@ struct Logger {
 
 #[derive(Debug, Deserialize)]
 struct PostgreSQL {
+    #[allow(dead_code)]
+    pub enabled: bool,
     #[allow(dead_code)]
     host: String,
     #[allow(dead_code)]
