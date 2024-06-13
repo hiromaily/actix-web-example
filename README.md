@@ -46,8 +46,9 @@ Sample project using actix-web
 
 ### Implementation
 
-- [ ] Simple Logger
+- [x] Simple Logger
   - [actix_web::middleware::Logger](https://docs.rs/actix-web/latest/actix_web/middleware/struct.Logger.html)
+- [ ] Set router on app server
 - [ ] Connecting to Database using sea-orm
 - [ ] Generator schema code using sea-orm
 
@@ -60,3 +61,6 @@ Sample project using actix-web
 ## References
 
 - [How to Work With TOML Files in Rust](https://www.makeuseof.com/working-with-toml-files-in-rust/)
+- [How to pass a Trait object via app_data to Actix Web?](https://users.rust-lang.org/t/how-to-pass-a-trait-object-via-app-data-to-actix-web/79096)
+- [actix-web で Data<dyn trait> を使い回す](https://teratail.com/questions/kb8b224km8a6hl)
+- [Struct actix_web::web::Data](https://docs.rs/actix-web/latest/actix_web/web/struct.Data.html)

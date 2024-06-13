@@ -50,12 +50,6 @@ async fn main() -> std::io::Result<()> {
     //println!("run server {}:{}", host, port);
     info!("run server {}:{}", host, port);
 
-    // [Problems] How to pass a Trait object via app_data to Actix Web?
-    // - https://users.rust-lang.org/t/how-to-pass-a-trait-object-via-app-data-to-actix-web/79096
-    // [Problems] actix-web で Data<dyn trait> を使い回す
-    // - https://teratail.com/questions/kb8b224km8a6hl
-    // Struct actix_web::web::Data: https://docs.rs/actix-web/latest/actix_web/web/struct.Data.html
-
     // intentionally try various pattern to set routes
     HttpServer::new(move || {
         App::new()
