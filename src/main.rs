@@ -4,12 +4,11 @@ use log::info;
 //use env_logger::Builder;
 //use log::LevelFilter;
 
-mod args;
-mod registry;
-mod repositories;
-mod routes;
-mod state;
-mod toml;
+// local
+use api_server::args;
+use api_server::registry;
+use api_server::routes;
+use api_server::toml;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

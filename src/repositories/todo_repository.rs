@@ -16,15 +16,8 @@ enum RepositoryError {
     NotFound(i32),
 }
 
-// Trait Bounds
-// Clone + std::marker::Send + std::marker::Sync + 'static
-// These are trait bounds that specify requirements for any type that implements TodoRepository:
-// - Clone
-// - std::marker::Send
-// - std::marker::Sync
-// - 'static
-//pub trait TodoRepository: Debug + Clone + Send + Sync + 'static {
 #[allow(dead_code, unused_variables)]
+//pub trait TodoRepository: Debug + Clone + Send + Sync + 'static {
 pub trait TodoRepository: Debug + Send + Sync + 'static {
     fn create(&self, payload: CreateTodo) -> Todo;
     fn find(&self, id: i32) -> Option<Todo>;
