@@ -1,7 +1,8 @@
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use core::time::Duration;
-//use env_logger::Builder;
 use log::info;
+use std::sync::Arc;
+//use env_logger::Builder;
 //use log::LevelFilter;
 
 mod args;
@@ -10,6 +11,8 @@ mod repositories;
 mod routes;
 mod state;
 mod toml;
+
+use repositories::todo_repository::*;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -36,21 +39,31 @@ async fn main() -> std::io::Result<()> {
 
     // registry
     // - better to move config
-    let reg = registry::Registry::new(config);
-    let server_data = reg.create_server_data();
+    // let reg = registry::Registry::new(config);
+    // let server_data = reg.create_server_data();
+
+    // In this timing, error would occur if TodoRepository has clone trait as supertrait
+    let client_db: web::Data<Arc<dyn TodoRepository>> =
+        web::Data::new(Arc::new(TodoRepositoryForMemory::new()));
 
     // connect to Server
-    let host = reg.conf.server.host;
-    let port = reg.conf.server.port;
+    let host = config.server.host;
+    let port = config.server.port;
 
     //println!("run server {}:{}", host, port);
     info!("run server {}:{}", host, port);
+
+    // [Problems] How to pass a Trait object via app_data to Actix Web?
+    // - https://users.rust-lang.org/t/how-to-pass-a-trait-object-via-app-data-to-actix-web/79096
+    // [Problems] actix-web で Data<dyn trait> を使い回す
+    // - https://teratail.com/questions/kb8b224km8a6hl
+    // Struct actix_web::web::Data: https://docs.rs/actix-web/latest/actix_web/web/struct.Data.html
 
     // intentionally try various pattern to set routes
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .app_data(web::Data::new(server_data.clone()))
+            .app_data(client_db.clone())
             .service(routes::basis::get_hello)
             .service(routes::basis::get_hello_user)
             .service(routes::basis::post_echo)

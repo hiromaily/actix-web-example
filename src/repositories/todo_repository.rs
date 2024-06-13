@@ -4,6 +4,7 @@ use std::{
     clone::Clone,
     collections::HashMap,
     fmt::Debug,
+    marker::{Send, Sync},
     sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard},
 };
 use thiserror::Error;
@@ -22,10 +23,8 @@ enum RepositoryError {
 // - std::marker::Send
 // - std::marker::Sync
 // - 'static
-//pub trait TodoRepository: Clone + std::marker::Send + std::marker::Sync + 'static {
-pub trait TodoRepository:
-    std::fmt::Debug + std::clone::Clone + std::marker::Send + std::marker::Sync + 'static
-{
+//pub trait TodoRepository: Debug + Clone + Send + Sync + 'static {
+pub trait TodoRepository: Debug + Send + Sync + 'static {
     fn create(&self, payload: CreateTodo) -> Todo;
     fn find(&self, id: i32) -> Option<Todo>;
     fn find_all(&self) -> Vec<Todo>;
