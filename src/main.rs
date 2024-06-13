@@ -39,16 +39,17 @@ async fn main() -> std::io::Result<()> {
 
     // registry
     // - better to move config
-    // let reg = registry::Registry::new(config);
-    // let server_data = reg.create_server_data();
+    let reg = registry::Registry::new(config);
+    let server_data = reg.create_server_data();
+    let web_data = web::Data::new(server_data);
 
     // In this timing, error would occur if TodoRepository has clone trait as supertrait
-    let client_db: web::Data<Arc<dyn TodoRepository>> =
-        web::Data::new(Arc::new(TodoRepositoryForMemory::new()));
+    // let client_db: web::Data<Arc<dyn TodoRepository>> =
+    //     web::Data::new(Arc::new(TodoRepositoryForMemory::new()));
 
     // connect to Server
-    let host = config.server.host;
-    let port = config.server.port;
+    let host = reg.conf.server.host;
+    let port = reg.conf.server.port;
 
     //println!("run server {}:{}", host, port);
     info!("run server {}:{}", host, port);
@@ -63,7 +64,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .app_data(client_db.clone())
+            .app_data(web_data.clone())
             .service(routes::basis::get_hello)
             .service(routes::basis::get_hello_user)
             .service(routes::basis::post_echo)

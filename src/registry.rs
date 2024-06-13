@@ -1,6 +1,7 @@
-// use crate::repositories::todo_repository;
-// use crate::state;
+use crate::repositories::todo_repository;
+use crate::state;
 use crate::toml;
+use std::sync::Arc;
 
 #[allow(dead_code)]
 pub struct Registry {
@@ -18,19 +19,26 @@ impl Registry {
     // https://doc.rust-jp.rs/rust-by-example-ja/trait/dyn.html
 
     // `todo_repository::TodoRepository`` traitがcloneを継承するとobject-safetyが失われるため、エラーが出る
-    // #[allow(dead_code)]
+    #[allow(dead_code)]
     // fn new_repository(&self) -> Box<dyn todo_repository::TodoRepository> {
-    //     if self.conf.pg.enabled {
+    //     if self.conf.db.enabled {
     //         return Box::new(todo_repository::TodoRepositoryForDB::new());
     //     } else {
     //         return Box::new(todo_repository::TodoRepositoryForMemory::new());
     //     }
     // }
+    fn new_repository(&self) -> Arc<dyn todo_repository::TodoRepository> {
+        if self.conf.db.enabled {
+            return Arc::new(todo_repository::TodoRepositoryForDB::new());
+        } else {
+            return Arc::new(todo_repository::TodoRepositoryForMemory::new());
+        }
+    }
 
-    // pub fn create_server_data(&self) -> state::AppState {
-    //     state::AppState {
-    //         app_name: String::from("Actix Web"),
-    //         repository: self.new_repository(),
-    //     }
-    // }
+    pub fn create_server_data(&self) -> state::AppState {
+        state::AppState {
+            app_name: String::from("Actix Web"),
+            repository: self.new_repository(),
+        }
+    }
 }

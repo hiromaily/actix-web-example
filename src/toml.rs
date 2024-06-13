@@ -13,7 +13,7 @@ pub struct Config {
     #[allow(dead_code)]
     pub logger: Logger,
     #[allow(dead_code)]
-    pub pg: PostgreSQL,
+    pub db: PostgreSQL,
 }
 
 #[derive(Debug, Deserialize)]
@@ -25,7 +25,7 @@ pub struct Server {
 }
 
 #[derive(Debug, Deserialize)]
-struct Logger {
+pub struct Logger {
     #[allow(dead_code)]
     service: String,
     #[allow(dead_code)]
@@ -33,17 +33,17 @@ struct Logger {
 }
 
 #[derive(Debug, Deserialize)]
-struct PostgreSQL {
+pub struct PostgreSQL {
     #[allow(dead_code)]
     pub enabled: bool,
     #[allow(dead_code)]
-    host: String,
+    pub host: String,
     #[allow(dead_code)]
-    dbname: String,
+    pub dbname: String,
     #[allow(dead_code)]
-    user: String,
+    pub user: String,
     #[allow(dead_code)]
-    password: String,
+    pub password: String,
 }
 
 // print loaded config

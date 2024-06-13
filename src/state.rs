@@ -1,8 +1,9 @@
 use crate::repositories::todo_repository;
+use std::sync::Arc;
 
 #[allow(dead_code)]
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct AppState {
     pub app_name: String,
-    //pub repository: Box<dyn todo_repository::TodoRepository>,
+    pub repository: Arc<dyn todo_repository::TodoRepository>,
 }

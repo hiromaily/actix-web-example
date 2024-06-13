@@ -8,8 +8,8 @@ port = 8080
 service = "bch-keygen"
 level = "debug"        # debug, info, warn, error
 
-[pg]
-enabled = true
+[db]
+enabled = false
 host = "127.0.0.1:3308"
 dbname = "sample"
 user = "hiromaily"
