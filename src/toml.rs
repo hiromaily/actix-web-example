@@ -7,7 +7,7 @@ use std::fs;
 #[derive(Debug, Deserialize)]
 pub struct Config {
     #[allow(dead_code)]
-    pub project_name: String,
+    pub app_name: String,
     #[allow(dead_code)]
     pub server: Server,
     #[allow(dead_code)]

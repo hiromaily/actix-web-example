@@ -24,6 +24,7 @@ enum RepositoryError {
 // - std::marker::Sync
 // - 'static
 //pub trait TodoRepository: Debug + Clone + Send + Sync + 'static {
+#[allow(dead_code, unused_variables)]
 pub trait TodoRepository: Debug + Send + Sync + 'static {
     fn create(&self, payload: CreateTodo) -> Todo;
     fn find(&self, id: i32) -> Option<Todo>;
@@ -73,10 +74,12 @@ impl Todo {
  PostgreSQL
 *******************************************************************************/
 #[derive(Debug, Clone)]
+#[allow(dead_code, unused_variables)]
 pub struct TodoRepositoryForDB {
     store: u16,
 }
 
+#[allow(dead_code, unused_variables)]
 impl TodoRepositoryForDB {
     pub fn new() -> Self {
         todo!()
@@ -91,6 +94,7 @@ impl TodoRepositoryForDB {
     }
 }
 
+#[allow(dead_code, unused_variables)]
 impl TodoRepository for TodoRepositoryForDB {
     fn create(&self, payload: CreateTodo) -> Todo {
         todo!()
@@ -119,10 +123,12 @@ impl TodoRepository for TodoRepositoryForDB {
 type TodoDatas = HashMap<i32, Todo>;
 
 #[derive(Debug, Clone)]
+#[allow(dead_code, unused_variables)]
 pub struct TodoRepositoryForMemory {
     store: Arc<RwLock<TodoDatas>>,
 }
 
+#[allow(dead_code, unused_variables)]
 impl TodoRepositoryForMemory {
     pub fn new() -> Self {
         TodoRepositoryForMemory {
@@ -139,6 +145,7 @@ impl TodoRepositoryForMemory {
     }
 }
 
+#[allow(dead_code, unused_variables)]
 impl TodoRepository for TodoRepositoryForMemory {
     fn create(&self, payload: CreateTodo) -> Todo {
         let mut store = self.write_store_ref();
@@ -150,12 +157,14 @@ impl TodoRepository for TodoRepositoryForMemory {
 
     fn find(&self, id: i32) -> Option<Todo> {
         let store = self.read_store_ref();
-        store.get(&id).map(|todo| todo.clone())
+        //store.get(&id).map(|todo| todo.clone())
+        store.get(&id).cloned()
     }
 
     fn find_all(&self) -> Vec<Todo> {
         let store = self.read_store_ref();
-        Vec::from_iter(store.values().map(|todo| todo.clone()))
+        //Vec::from_iter(store.values().map(|todo| todo.clone()))
+        Vec::from_iter(store.values().cloned())
     }
 
     fn update(&self, id: i32, payload: UpdateTodo) -> anyhow::Result<Todo> {

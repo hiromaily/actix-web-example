@@ -15,11 +15,7 @@ impl Registry {
         Self { conf }
     }
 
-    // Refer to `dynを利用してトレイトを返す`
-    // https://doc.rust-jp.rs/rust-by-example-ja/trait/dyn.html
-
-    // `todo_repository::TodoRepository`` traitがcloneを継承するとobject-safetyが失われるため、エラーが出る
-    #[allow(dead_code)]
+    // error would occur if TodoRepository has clone trait as supertrait
     // fn new_repository(&self) -> Box<dyn todo_repository::TodoRepository> {
     //     if self.conf.db.enabled {
     //         return Box::new(todo_repository::TodoRepositoryForDB::new());
@@ -30,14 +26,13 @@ impl Registry {
     fn new_repository(&self) -> Arc<dyn todo_repository::TodoRepository> {
         if self.conf.db.enabled {
             return Arc::new(todo_repository::TodoRepositoryForDB::new());
-        } else {
-            return Arc::new(todo_repository::TodoRepositoryForMemory::new());
         }
+        Arc::new(todo_repository::TodoRepositoryForMemory::new())
     }
 
     pub fn create_server_data(&self) -> state::AppState {
         state::AppState {
-            app_name: String::from("Actix Web"),
+            app_name: self.conf.app_name.clone(),
             repository: self.new_repository(),
         }
     }

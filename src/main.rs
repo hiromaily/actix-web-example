@@ -1,7 +1,6 @@
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use core::time::Duration;
 use log::info;
-use std::sync::Arc;
 //use env_logger::Builder;
 //use log::LevelFilter;
 
@@ -11,8 +10,6 @@ mod repositories;
 mod routes;
 mod state;
 mod toml;
-
-use repositories::todo_repository::*;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

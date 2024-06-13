@@ -1,4 +1,4 @@
-project_name = "api-server"
+app_name = "api-server"
 
 [server]
 host = "127.0.0.1"
