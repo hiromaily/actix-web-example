@@ -45,11 +45,9 @@ setup-sea-orm:
 # 	sea-orm-cli migrate generate create_table_users
 
 # https://www.sea-ql.org/sea-orm-tutorial/ch01-04-entity-generation.html
-.PHONY: generate-db-code
-generate-db-code:
-	sea-orm-cli generate entity -u mysql://admin:admin@127.0.0.1:5432/example -o src/schemas/admin --with-serde both
-
-
+.PHONY: generate-entity-from-db
+generate-entity-from-db:
+	sea-orm-cli generate entity -u postgresql://admin:admin@127.0.0.1:5432/example -o src/dbs/example --with-serde both
 
 #------------------------------------------------------------------------------
 # docker
