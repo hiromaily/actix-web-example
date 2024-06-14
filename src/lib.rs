@@ -5,3 +5,4 @@ pub mod repositories;
 pub mod routes;
 pub mod state;
 pub mod toml;
+pub mod usecases;

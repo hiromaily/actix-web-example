@@ -1,10 +1,14 @@
-use crate::repositories::{todos, users};
+use crate::usecases::{admin, app};
 use std::sync::Arc;
 
-#[allow(dead_code)]
-#[derive(Debug)]
-pub struct AppState {
+pub struct GlobalState {
     pub app_name: String,
-    pub todos_repo: Arc<dyn todos::TodoRepository>,
-    pub users_repo: Arc<dyn users::UserRepository>,
+}
+
+pub struct AdminState {
+    pub admin_usecase: Arc<dyn admin::AdminUsecase>,
+}
+
+pub struct AppState {
+    pub app_usecase: Arc<dyn app::AppUsecase>,
 }

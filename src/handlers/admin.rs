@@ -1,9 +1,10 @@
+use crate::state;
+use crate::usecases::admin;
 use actix_web::{web, HttpResponse, Responder};
 use log::info;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use validator::Validate;
-
 /*
  Admin
 */
@@ -18,10 +19,11 @@ pub struct LoginBody {
 
 // [post] /login
 pub async fn admin_login(
-    _data: web::Data<crate::state::AppState>,
+    data: web::Data<state::GlobalState>,
+    admin_data: web::Data<state::AdminState>,
     login_body: web::Json<LoginBody>,
 ) -> impl Responder {
-    info!("admin_login received");
+    info!("admin_login received: app_name:{}", data.app_name);
 
     // Validate the login body
     if let Err(e) = login_body.validate() {
@@ -30,9 +32,13 @@ pub async fn admin_login(
 
     // Extract the email and password
     let email = &login_body.email;
-    let _password = &login_body.password;
+    let password = &login_body.password;
 
-    // TODO: authentication by auth usecase
+    // authentication
+    let ret = admin_data.admin_usecase.admin_login(email, password);
+    if !ret {
+        return HttpResponse::BadRequest().json(json!({ "error": "invalid email or password" }));
+    }
 
     // If login is successful, respond accordingly
     //format!("[admin_login] Hello {app_name}:{login_body.email}!")
@@ -40,22 +46,19 @@ pub async fn admin_login(
 }
 
 // [get] /users
-pub async fn get_user_list(data: web::Data<crate::state::AppState>) -> impl Responder {
+pub async fn get_user_list(data: web::Data<state::GlobalState>) -> impl Responder {
     let app_name = &data.app_name;
     HttpResponse::Ok().body(format!("[get_user_list] Hello {app_name}!"))
 }
 
 // [post] /users
-pub async fn add_user(data: web::Data<crate::state::AppState>) -> impl Responder {
+pub async fn add_user(data: web::Data<state::GlobalState>) -> impl Responder {
     let app_name = &data.app_name;
     HttpResponse::Ok().body(format!("[add_user] Hello {app_name}!"))
 }
 
 // [get] "/users/{user_id}"
-pub async fn get_user(
-    data: web::Data<crate::state::AppState>,
-    path: web::Path<u32>,
-) -> impl Responder {
+pub async fn get_user(data: web::Data<state::GlobalState>, path: web::Path<u32>) -> impl Responder {
     let user_id = path.into_inner();
     let app_name = &data.app_name;
     HttpResponse::Ok().body(format!("[get_user] Hello {app_name}:{user_id}!"))
@@ -63,7 +66,7 @@ pub async fn get_user(
 
 // [post] "/users/{user_id}"
 pub async fn update_user(
-    data: web::Data<crate::state::AppState>,
+    data: web::Data<state::GlobalState>,
     path: web::Path<u32>,
 ) -> impl Responder {
     let user_id = path.into_inner();
@@ -73,7 +76,7 @@ pub async fn update_user(
 
 // [delete] "/users/{user_id}"
 pub async fn delete_user(
-    data: web::Data<crate::state::AppState>,
+    data: web::Data<state::GlobalState>,
     path: web::Path<u32>,
 ) -> impl Responder {
     let user_id = path.into_inner();

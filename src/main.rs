@@ -35,11 +35,11 @@ async fn main() -> std::io::Result<()> {
     };
     dbg!(&config);
 
-    // registry
-    // - better to move config
+    // registry and get each states
     let reg = registry::Registry::new(config);
-    let server_data = reg.create_server_data();
-    let web_data = web::Data::new(server_data);
+    let global_data = web::Data::new(reg.create_global_state());
+    let admin_data = web::Data::new(reg.create_admin_state());
+    let app_data = web::Data::new(reg.create_app_state());
 
     // In this timing, error would occur if TodoRepository has clone trait as supertrait
     // let client_db: web::Data<Arc<dyn TodoRepository>> =
@@ -65,19 +65,21 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .wrap(Logger::default())
-            .app_data(web_data.clone())
+            .app_data(global_data.clone()) // global state
             .service(
                 web::scope("api/v1")
                     //.route("/example", web::get().to(move || my_app.greet()))
                     .route("/health", web::get().to(handlers::basis::health))
                     .service(
                         web::scope("/admin")
+                            .app_data(admin_data.clone()) // login state
                             .configure(routes::api_admin_login_config)
                             .configure(routes::api_admin_users_config)
                             .configure(routes::api_admin_users_id_config),
                     )
                     .service(
                         web::scope("/app")
+                            .app_data(app_data.clone()) // login state
                             .configure(routes::api_app_login_config)
                             .configure(routes::api_app_users_todo_config)
                             .configure(routes::api_app_users_todo_id_config),

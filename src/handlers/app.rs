@@ -1,3 +1,4 @@
+use crate::state;
 use actix_web::{web, HttpResponse, Responder};
 
 /*
@@ -5,14 +6,14 @@ use actix_web::{web, HttpResponse, Responder};
 */
 
 // [post] /login
-pub async fn app_login(data: web::Data<crate::state::AppState>) -> impl Responder {
+pub async fn app_login(data: web::Data<state::GlobalState>) -> impl Responder {
     let app_name = &data.app_name;
     HttpResponse::Ok().body(format!("[app_login] Hello {app_name}!"))
 }
 
 // [get] /users/{user_id}/todos
 pub async fn get_user_todo_list(
-    data: web::Data<crate::state::AppState>,
+    data: web::Data<state::GlobalState>,
     path: web::Path<u32>,
 ) -> impl Responder {
     let user_id = path.into_inner();
@@ -22,7 +23,7 @@ pub async fn get_user_todo_list(
 
 // [post] /users/{user_id}/todos
 pub async fn add_user_todo(
-    data: web::Data<crate::state::AppState>,
+    data: web::Data<state::GlobalState>,
     path: web::Path<u32>,
 ) -> impl Responder {
     let user_id = path.into_inner();
@@ -32,7 +33,7 @@ pub async fn add_user_todo(
 
 // [get] "/users/{user_id}/todos/{todo_id}"
 pub async fn get_user_todo(
-    data: web::Data<crate::state::AppState>,
+    data: web::Data<state::GlobalState>,
     path: web::Path<(u32, u32)>,
 ) -> impl Responder {
     let (user_id, todo_id) = path.into_inner();
@@ -44,7 +45,7 @@ pub async fn get_user_todo(
 
 // [post] "/users/{user_id}/todos/{todo_id}"
 pub async fn update_user_todo(
-    data: web::Data<crate::state::AppState>,
+    data: web::Data<state::GlobalState>,
     path: web::Path<(u32, u32)>,
 ) -> impl Responder {
     let (user_id, todo_id) = path.into_inner();
@@ -56,7 +57,7 @@ pub async fn update_user_todo(
 
 // [delete] // [post] "/users/{user_id}/todos/{todo_id}"
 pub async fn delete_user_todo(
-    data: web::Data<crate::state::AppState>,
+    data: web::Data<state::GlobalState>,
     path: web::Path<(u32, u32)>,
 ) -> impl Responder {
     let (user_id, todo_id) = path.into_inner();

@@ -89,3 +89,4 @@ WIP
 - [actix-web で Data<dyn trait> を使い回す](https://teratail.com/questions/kb8b224km8a6hl)
 - [Struct actix_web::web::Data](https://docs.rs/actix-web/latest/actix_web/web/struct.Data.html)
 - [Should handlers be functions only?](https://github.com/actix/actix-web/discussions/2321)
+  - [sod-actix-web](https://github.com/thill/sod-actix-web/tree/main)
