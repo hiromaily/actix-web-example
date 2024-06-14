@@ -73,6 +73,8 @@ WIP
 - [ ] Create `usecase` layer as trait object (it must be abstract type)
 - [ ] JWT
 - [ ] Create handlers for html response
+- [ ] Unittest / Benchmark
+- [ ] CI environment
 
 ## Environment variables
 
@@ -86,3 +88,4 @@ WIP
 - [How to pass a Trait object via app_data to Actix Web?](https://users.rust-lang.org/t/how-to-pass-a-trait-object-via-app-data-to-actix-web/79096)
 - [actix-web で Data<dyn trait> を使い回す](https://teratail.com/questions/kb8b224km8a6hl)
 - [Struct actix_web::web::Data](https://docs.rs/actix-web/latest/actix_web/web/struct.Data.html)
+- [Should handlers be functions only?](https://github.com/actix/actix-web/discussions/2321)

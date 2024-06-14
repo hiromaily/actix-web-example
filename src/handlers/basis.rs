@@ -7,6 +7,23 @@ pub async fn health() -> impl Responder {
     HttpResponse::Ok().body("OK")
 }
 
+// Experimental code
+#[allow(dead_code, unused_variables)]
+#[derive(Debug, Clone)]
+pub struct MyApp {
+    name: String,
+}
+
+impl MyApp {
+    pub fn new(name: String) -> Self {
+        Self { name }
+    }
+    // Handler with path parameter
+    pub async fn greet(&self) -> impl Responder {
+        HttpResponse::Ok().body("[my_app] Hello!".to_string())
+    }
+}
+
 // #[get("/hello")]
 // pub async fn get_hello(data: web::Data<crate::state::AppState>) -> impl Responder {
 //     let app_name = &data.app_name;

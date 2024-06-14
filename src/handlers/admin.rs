@@ -18,7 +18,7 @@ pub struct LoginBody {
 
 // [post] /login
 pub async fn admin_login(
-    data: web::Data<crate::state::AppState>,
+    _data: web::Data<crate::state::AppState>,
     login_body: web::Json<LoginBody>,
 ) -> impl Responder {
     info!("admin_login received");
@@ -30,7 +30,7 @@ pub async fn admin_login(
 
     // Extract the email and password
     let email = &login_body.email;
-    let password = &login_body.password;
+    let _password = &login_body.password;
 
     // TODO: authentication by auth usecase
 

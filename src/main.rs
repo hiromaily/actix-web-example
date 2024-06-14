@@ -51,6 +51,9 @@ async fn main() -> std::io::Result<()> {
 
     info!("run server {}:{}", host, port);
 
+    // [WIP] example code
+    //let my_app = handlers::basis::MyApp::new(String::from("foobar"));
+
     // intentionally try various pattern to set routes
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -65,6 +68,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web_data.clone())
             .service(
                 web::scope("api/v1")
+                    //.route("/example", web::get().to(move || my_app.greet()))
                     .route("/health", web::get().to(handlers::basis::health))
                     .service(
                         web::scope("/admin")
