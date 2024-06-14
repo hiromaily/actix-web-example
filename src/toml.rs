@@ -1,10 +1,9 @@
 use serde::Deserialize;
 use std::error::Error;
 use std::fs;
-//use toml; // no needs
 
 // toml definition
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Config {
     #[allow(dead_code)]
     pub app_name: String,
@@ -16,7 +15,7 @@ pub struct Config {
     pub db: PostgreSQL,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Server {
     #[allow(dead_code)]
     pub host: String,
@@ -24,7 +23,7 @@ pub struct Server {
     pub port: u16,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Logger {
     #[allow(dead_code)]
     service: String,
@@ -32,7 +31,7 @@ pub struct Logger {
     level: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct PostgreSQL {
     #[allow(dead_code)]
     pub enabled: bool,
