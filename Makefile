@@ -35,10 +35,21 @@ test:
 .PHONY: setup-sea-orm
 setup-sea-orm:
 	cargo install sea-orm-cli
-	sea-orm-cli migrate init
-	rm -rf ./migration/src/m20220101_000001_create_table.rs
-	@echo create table
-	sea-orm-cli migrate generate create_table_users
+
+# https://www.sea-ql.org/sea-orm-tutorial/ch01-02-migration-cli.html
+#.PHONY: migrate-db
+# migrate-db:
+# 	sea-orm-cli migrate init
+# 	rm -rf ./migration/src/m20220101_000001_create_table.rs
+# 	@echo create table
+# 	sea-orm-cli migrate generate create_table_users
+
+# https://www.sea-ql.org/sea-orm-tutorial/ch01-04-entity-generation.html
+.PHONY: generate-db-code
+generate-db-code:
+	sea-orm-cli generate entity -u mysql://admin:admin@127.0.0.1:5432/example -o src/schemas/admin --with-serde both
+
+
 
 #------------------------------------------------------------------------------
 # docker
