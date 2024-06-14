@@ -1,3 +1,4 @@
+use actix_cors::Cors;
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use core::time::Duration;
 use log::info;
@@ -52,7 +53,14 @@ async fn main() -> std::io::Result<()> {
 
     // intentionally try various pattern to set routes
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allow_any_method()
+            .allow_any_header()
+            .supports_credentials();
+
         App::new()
+            .wrap(cors)
             .wrap(Logger::default())
             .app_data(web_data.clone())
             .service(

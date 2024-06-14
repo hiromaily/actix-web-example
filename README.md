@@ -61,8 +61,10 @@ Sample project using actix-web
 - [x] Simple Logger
   - [actix_web::middleware::Logger](https://docs.rs/actix-web/latest/actix_web/middleware/struct.Logger.html)
 - [x] Set router on app server
+- [x] CORS
 - [ ] Connecting to Database using sea-orm
 - [ ] Generator schema code using sea-orm
+- [ ] JWT
 
 ## Environment variables
 
