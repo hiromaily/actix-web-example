@@ -67,7 +67,8 @@ up-db:
 request:
 	curl http://127.0.0.1:8080/api/v1/health
 	@echo ""
-	curl -X POST -d '{"user":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/admin/login
+	curl -X POST -H "Content-Type: application/json" -d '{"user":"invalid filed", "password":"xxxxxxxxxxx"}' -s -w "\nhttp status:%{http_code}\n" http://127.0.0.1:8080/api/v1/admin/login
+	curl -X POST -H "Content-Type: application/json" -d '{"email":"foobar@zmail.com", "password":"xxxxxxxxxxx"}' http://127.0.0.1:8080/api/v1/admin/login
 	@echo ""
 	curl http://127.0.0.1:8080/api/v1/admin/users
 	@echo ""

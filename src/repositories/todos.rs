@@ -39,12 +39,12 @@ pub struct CreateTodo {
     text: String,
 }
 
-#[cfg(test)]
-impl CreateTodo {
-    pub fn new(text: String) -> Self {
-        Self { text }
-    }
-}
+// #[cfg(test)]
+// impl CreateTodo {
+//     pub fn new(text: String) -> Self {
+//         Self { text }
+//     }
+// }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Validate)]
 pub struct UpdateTodo {
