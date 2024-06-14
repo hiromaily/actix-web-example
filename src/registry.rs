@@ -1,4 +1,4 @@
-use crate::repositories::todo_repository;
+use crate::repositories::todos;
 use crate::state;
 use crate::toml;
 use std::sync::Arc;
@@ -23,11 +23,11 @@ impl Registry {
     //         return Box::new(todo_repository::TodoRepositoryForMemory::new());
     //     }
     // }
-    fn new_repository(&self) -> Arc<dyn todo_repository::TodoRepository> {
+    fn new_repository(&self) -> Arc<dyn todos::TodoRepository> {
         if self.conf.db.enabled {
-            return Arc::new(todo_repository::TodoRepositoryForDB::new());
+            return Arc::new(todos::TodoRepositoryForDB::new());
         }
-        Arc::new(todo_repository::TodoRepositoryForMemory::new())
+        Arc::new(todos::TodoRepositoryForMemory::new())
     }
 
     pub fn create_server_data(&self) -> state::AppState {
