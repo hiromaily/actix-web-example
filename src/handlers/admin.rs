@@ -32,7 +32,7 @@ pub async fn admin_login(
     let email = &login_body.email;
     let password = &login_body.password;
 
-    // TODO: authentication
+    // TODO: authentication by auth usecase
 
     // If login is successful, respond accordingly
     //format!("[admin_login] Hello {app_name}:{login_body.email}!")

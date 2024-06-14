@@ -1,12 +1,14 @@
 use actix_web::{web, HttpResponse, Responder};
 
+/*
+ App
+*/
+
 // [post] /login
 pub async fn app_login(data: web::Data<crate::state::AppState>) -> impl Responder {
     let app_name = &data.app_name;
     HttpResponse::Ok().body(format!("[app_login] Hello {app_name}!"))
 }
-
-// ----------
 
 // [get] /users/{user_id}/todos
 pub async fn get_user_todo_list(
@@ -27,8 +29,6 @@ pub async fn add_user_todo(
     let app_name = &data.app_name;
     HttpResponse::Ok().body(format!("[add_user_todo] Hello {app_name}:{user_id}!"))
 }
-
-// ----------
 
 // [get] "/users/{user_id}/todos/{todo_id}"
 pub async fn get_user_todo(

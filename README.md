@@ -1,6 +1,10 @@
 # actix-web-sample
 
-Sample project using actix-web
+Sample Todo management web application using [actix-web](https://actix.rs/docs/)
+
+## Status
+
+WIP
 
 ## TODO
 
@@ -62,9 +66,13 @@ Sample project using actix-web
   - [actix_web::middleware::Logger](https://docs.rs/actix-web/latest/actix_web/middleware/struct.Logger.html)
 - [x] Set router on app server
 - [x] CORS
+- [x] Generator schema code using sea-orm
+- [ ] Create repositories for on memory implementation
 - [ ] Connecting to Database using sea-orm
-- [ ] Generator schema code using sea-orm
+- [ ] Create repositories for PostgreSQL implementation
+- [ ] Create `usecase` layer as trait object (it must be abstract type)
 - [ ] JWT
+- [ ] Create handlers for html response
 
 ## Environment variables
 
