@@ -56,21 +56,48 @@ up-db:
 #------------------------------------------------------------------------------
 .PHONY: request
 request:
-	curl http://127.0.0.1:8080/hello
+	curl http://127.0.0.1:8080/api/v1/health
 	@echo ""
-	curl http://127.0.0.1:8080/hello/5/Bob
+	curl -X POST -d '{"user":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/admin/login
 	@echo ""
-	curl http://127.0.0.1:8080/health
+	curl http://127.0.0.1:8080/api/v1/admin/users
 	@echo ""
-	curl -X POST -d '{"name":"Jecy", "age":"30"}' http://127.0.0.1:8080/echo
+	curl -X POST -H "Content-Type: application/json" -d '{"name":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/admin/users
 	@echo ""
-	curl -X POST -H "Content-Type: application/json" -d '{"name":"Jecy", "age":30}' http://127.0.0.1:8080/echojson
+	curl http://127.0.0.1:8080/api/v1/admin/users/1
 	@echo ""
-	curl http://127.0.0.1:8080/api/v1/info
+	curl -X PUT -H "Content-Type: application/json" -d '{"name":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/admin/users/1
 	@echo ""
-	curl http://127.0.0.1:8080/app/index.html
+	curl -X DELETE http://127.0.0.1:8080/api/v1/admin/users/1
 	@echo ""
-	curl http://127.0.0.1:8080/api/v1/user
+	curl -X POST -d '{"user":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/app/login
+	@echo ""
+	curl http://127.0.0.1:8080/api/v1/app/users/1/todos
+	@echo ""
+	curl -X POST -d '{"user":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/app/users/1/todos
+	@echo ""
+	curl http://127.0.0.1:8080/api/v1/app/users/1/todos/1
+	@echo ""
+	curl -X PUT -H "Content-Type: application/json" -d '{"name":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/app/users/1/todos/1
+	@echo ""
+	curl -X DELETE http://127.0.0.1:8080/api/v1/app/users/1/todos/1
+	@echo ""
+
+# curl http://127.0.0.1:8080/hello
+# @echo ""
+# curl http://127.0.0.1:8080/hello/5/Bob
+# @echo ""
+# curl http://127.0.0.1:8080/health
+# @echo ""
+# curl -X POST -d '{"name":"Jecy", "age":"30"}' http://127.0.0.1:8080/echo
+# @echo ""
+# curl -X POST -H "Content-Type: application/json" -d '{"name":"Jecy", "age":30}' http://127.0.0.1:8080/echojson
+# @echo ""
+# curl http://127.0.0.1:8080/api/v1/info
+# @echo ""
+# curl http://127.0.0.1:8080/app/index.html
+# @echo ""
+# curl http://127.0.0.1:8080/api/v1/user
 
 .PHONY: tcpdump
 tcpdump:

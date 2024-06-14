@@ -32,23 +32,35 @@ Sample project using actix-web
     - created_at (TIMESTAMP)
     - updated_at (TIMESTAMP)
 
-- APIs
-
-  - Show User List: [GET] `/users`
-  - Show User: [GET] `/users/{user_id}`
-  - Add User: [POST] `/users`
-  - Update User: [PUT] `/users/{user_id}`
-  - Remove User: [DELETE] `/users/{user_id}`
-  - Show Todos for Specific User: [GET] `/users/{user_id}/todos`
-  - Add Todo: [POST] `/users/{user_id}/todos`
-  - Update Todo for Specific User: [PUT] `/users/{user_id}/todos/{id}`
-  - Remove Todo for Specific User: [DELETE] `/users/{user_id}/todos/{id}`
+- APIs [/api/v1]
+  - health
+    - health check: [GET] `/health`
+  - admin
+    - admin login: [POST] `/admin/login`
+    - Show User List: [GET] `/admin/users`
+    - Show User: [GET] `/admin/users/{user_id}`
+    - Add User: [POST] `/admin/users`
+    - Update User: [PUT] `/admin/users/{user_id}`
+    - Remove User: [DELETE] `/admin/users/{user_id}`
+  - app
+    - client login: [POST] `/app/login`
+    - Show Todos for Specific User: [GET] `/app/users/{user_id}/todos`
+    - Add Todo: [POST] `/app/users/{user_id}/todos`
+    - Update Todo for Specific User: [PUT] `/app/users/{user_id}/todos/{id}`
+    - Remove Todo for Specific User: [DELETE] `/app/users/{user_id}/todos/{id}`
+- Pages [/]
+  - admin
+    - `/admin/`
+    - `/admin/login`
+  - app
+    - `/app/`
+    - `/app/login`
 
 ### Implementation
 
 - [x] Simple Logger
   - [actix_web::middleware::Logger](https://docs.rs/actix-web/latest/actix_web/middleware/struct.Logger.html)
-- [ ] Set router on app server
+- [x] Set router on app server
 - [ ] Connecting to Database using sea-orm
 - [ ] Generator schema code using sea-orm
 

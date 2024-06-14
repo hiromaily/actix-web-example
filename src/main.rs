@@ -6,6 +6,7 @@ use log::info;
 
 // local
 use api_server::args;
+use api_server::handlers;
 use api_server::registry;
 use api_server::routes;
 use api_server::toml;
@@ -47,7 +48,6 @@ async fn main() -> std::io::Result<()> {
     let host = reg.conf.server.host;
     let port = reg.conf.server.port;
 
-    //println!("run server {}:{}", host, port);
     info!("run server {}:{}", host, port);
 
     // intentionally try various pattern to set routes
@@ -55,14 +55,30 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(Logger::default())
             .app_data(web_data.clone())
-            .service(routes::basis::get_hello)
-            .service(routes::basis::get_hello_user)
-            .service(routes::basis::post_echo)
-            .service(routes::basis::post_echo_json)
-            .service(web::scope("/api/v1").configure(routes::user::config))
-            .service(web::scope("/api/v1").route("/info", web::get().to(routes::info::top))) // return 404
-            .service(web::scope("/app").route("/index.html", web::get().to(routes::app::index)))
-            .route("/health", web::get().to(routes::basis::health))
+            .service(
+                web::scope("api/v1")
+                    .route("/health", web::get().to(handlers::basis::health))
+                    .service(
+                        web::scope("/admin")
+                            .configure(routes::api_admin_login_config)
+                            .configure(routes::api_admin_users_config)
+                            .configure(routes::api_admin_users_id_config),
+                    )
+                    .service(
+                        web::scope("/app")
+                            .configure(routes::api_app_login_config)
+                            .configure(routes::api_app_users_todo_config)
+                            .configure(routes::api_app_users_todo_id_config),
+                    ),
+            )
+        // .service(routes::basis::get_hello)
+        // .service(routes::basis::get_hello_user)
+        // .service(routes::basis::post_echo)
+        // .service(routes::basis::post_echo_json)
+        // .service(web::scope("/api/v1").configure(routes::user::config))
+        // .service(web::scope("/api/v1").route("/info", web::get().to(routes::info::top))) // return 404
+        // .service(web::scope("/app").route("/index.html", web::get().to(routes::app::index)))
+        // .route("/health", web::get().to(routes::basis::health))
     })
     .keep_alive(Duration::from_secs(30))
     .bind((host, port))?
