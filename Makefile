@@ -77,23 +77,23 @@ request:
 	@echo ""
 	curl http://127.0.0.1:8080/api/v1/admin/users
 	@echo ""
-	curl -X POST -H "Content-Type: application/json" -d '{"name":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/admin/users
+	curl -X POST -H "Content-Type: application/json" -d '{"first_name": "John","last_name": "Doe","email": "john.doe@example.com","password": "password1234","is_admin": false}' http://127.0.0.1:8080/api/v1/admin/users
 	@echo ""
 	curl http://127.0.0.1:8080/api/v1/admin/users/1
 	@echo ""
-	curl -X PUT -H "Content-Type: application/json" -d '{"name":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/admin/users/1
+	curl -X PUT -H "Content-Type: application/json" -d '{"first_name": "John","last_name": "Doe","email": "john.doe@example.com","password": "password1234","is_admin": false}' http://127.0.0.1:8080/api/v1/admin/users/1
 	@echo ""
 	curl -X DELETE http://127.0.0.1:8080/api/v1/admin/users/1
 	@echo ""
-	curl -X POST -d '{"user":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/app/login
+	curl -X POST -H "Content-Type: application/json" -d '{"email":"foobar@zmail.com", "password":"xxxxxxxxxxx"}' http://127.0.0.1:8080/api/v1/app/login
 	@echo ""
 	curl http://127.0.0.1:8080/api/v1/app/users/1/todos
 	@echo ""
-	curl -X POST -d '{"user":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/app/users/1/todos
+	curl -X POST -H "Content-Type: application/json" -d '{"title":"Programming", "description":"sample program using actix web", "status": "pending"}' http://127.0.0.1:8080/api/v1/app/users/1/todos
 	@echo ""
 	curl http://127.0.0.1:8080/api/v1/app/users/1/todos/1
 	@echo ""
-	curl -X PUT -H "Content-Type: application/json" -d '{"name":"Jecy", "password":"xxxxx"}' http://127.0.0.1:8080/api/v1/app/users/1/todos/1
+	curl -X PUT -H "Content-Type: application/json" -d '{"title":"Programming", "description":"sample program using actix web", "status": "pending"}' http://127.0.0.1:8080/api/v1/app/users/1/todos/1
 	@echo ""
 	curl -X DELETE http://127.0.0.1:8080/api/v1/app/users/1/todos/1
 	@echo ""

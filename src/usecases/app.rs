@@ -7,7 +7,11 @@ use std::sync::Arc;
 pub trait AppUsecase: Send + Sync + 'static {
     fn app_login(&self, email: &String, password: &String) -> anyhow::Result<()>;
     fn get_user_todo_list(&self, user_id: i32) -> Vec<db_todos::Model>;
-    fn add_user_todo(&self, user_body: todos::TodoBody) -> anyhow::Result<db_todos::Model>;
+    fn add_user_todo(
+        &self,
+        user_id: i32,
+        user_body: todos::TodoBody,
+    ) -> anyhow::Result<db_todos::Model>;
     fn get_user_todo(&self, user_id: i32, todo_id: i32) -> Option<db_todos::Model>;
     fn update_user_todo(
         &self,
@@ -56,7 +60,11 @@ impl AppUsecase for AppAction {
     }
 
     // TODO: implementation
-    fn add_user_todo(&self, todo_body: todos::TodoBody) -> anyhow::Result<db_todos::Model> {
+    fn add_user_todo(
+        &self,
+        user_id: i32,
+        todo_body: todos::TodoBody,
+    ) -> anyhow::Result<db_todos::Model> {
         Ok(db_todos::Model {
             id: 1,
             user_id: 1,

@@ -38,6 +38,7 @@ impl AdminAction {
 impl AdminUsecase for AdminAction {
     // TODO: implementation
     fn admin_login(&self, email: &String, password: &String) -> anyhow::Result<()> {
+        //self.users_repo.find(id)
         Ok(())
     }
 

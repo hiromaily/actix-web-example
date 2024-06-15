@@ -66,7 +66,7 @@ pub async fn add_user_todo(
     let todo_body: todos::TodoBody = body.into_inner();
 
     // usecase
-    match app_data.app_usecase.add_user_todo(todo_body) {
+    match app_data.app_usecase.add_user_todo(user_id, todo_body) {
         Ok(user) => HttpResponse::Ok().json(user),
         Err(e) => HttpResponse::BadRequest().json(json!({ "error": e.to_string() })),
     }

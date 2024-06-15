@@ -1,6 +1,6 @@
 # actix-web-sample
 
-Sample Todo management web application using [actix-web](https://actix.rs/docs/)
+Sample Todo management web application based on Clean architecture using [actix-web](https://actix.rs/docs/) and [sea-orm](https://www.sea-ql.org/SeaORM/).
 
 ## Status
 
