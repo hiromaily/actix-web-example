@@ -67,10 +67,11 @@ WIP
 - [x] Set router on app server
 - [x] CORS
 - [x] Generator schema code using sea-orm
+- [ ] Create handler
+- [ ] Create `usecase` layer as trait object (it must be abstract type)
 - [ ] Create repositories for on memory implementation
 - [ ] Connecting to Database using sea-orm
 - [ ] Create repositories for PostgreSQL implementation
-- [ ] Create `usecase` layer as trait object (it must be abstract type)
 - [ ] JWT
 - [ ] Create handlers for html response
 - [ ] Unittest / Benchmark

@@ -1,6 +1,6 @@
 use crate::dbs::users as db_users;
 use crate::entities::users;
-use crate::repositories::{todos, users as repo_users};
+use crate::repositories::{todos as repo_todos, users as repo_users};
 use anyhow;
 use std::sync::Arc;
 
@@ -19,13 +19,13 @@ pub trait AdminUsecase: Send + Sync + 'static {
 
 #[derive(Debug)]
 pub struct AdminAction {
-    pub todos_repo: Arc<dyn todos::TodoRepository>,
+    pub todos_repo: Arc<dyn repo_todos::TodoRepository>,
     pub users_repo: Arc<dyn repo_users::UserRepository>,
 }
 
 impl AdminAction {
     pub fn new(
-        todos_repo: Arc<dyn todos::TodoRepository>,
+        todos_repo: Arc<dyn repo_todos::TodoRepository>,
         users_repo: Arc<dyn repo_users::UserRepository>,
     ) -> Self {
         AdminAction {
