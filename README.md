@@ -76,6 +76,14 @@ WIP
 - [ ] Unittest / Benchmark
 - [ ] CI environment
 
+## About [sea-orm](https://www.sea-ql.org/SeaORM/)
+
+read documents.
+
+- [Database & Async Runtime](https://www.sea-ql.org/SeaORM/docs/install-and-config/database-and-async-runtime/)
+- [crates.io: sea-orm](https://crates.io/crates/sea-orm)
+- [sea-orm-cli](https://www.sea-ql.org/sea-orm-tutorial/ch01-04-entity-generation.html)
+
 ## Environment variables
 
 | Item     | explanation | example |

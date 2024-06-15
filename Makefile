@@ -45,9 +45,14 @@ setup-sea-orm:
 # 	sea-orm-cli migrate generate create_table_users
 
 # https://www.sea-ql.org/sea-orm-tutorial/ch01-04-entity-generation.html
+# deeply nested directory as output doesn't work
 .PHONY: generate-entity-from-db
 generate-entity-from-db:
-	sea-orm-cli generate entity -u postgresql://admin:admin@127.0.0.1:5432/example -o src/dbs/example --with-serde both
+	rm -rf src/dbs
+	sea-orm-cli generate entity -u postgresql://admin:admin@127.0.0.1:5432/example -o src/dbs --with-serde both
+	# maybe bugs
+	# touch src/dbs/mod.rs
+	# echo "pub mod example;" > src/dbs/mod.rs
 
 #------------------------------------------------------------------------------
 # docker

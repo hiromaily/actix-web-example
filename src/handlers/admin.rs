@@ -1,5 +1,4 @@
 use crate::state;
-use crate::usecases::admin;
 use actix_web::{web, HttpResponse, Responder};
 use log::info;
 use serde::{Deserialize, Serialize};
@@ -46,9 +45,14 @@ pub async fn admin_login(
 }
 
 // [get] /users
-pub async fn get_user_list(data: web::Data<state::GlobalState>) -> impl Responder {
-    let app_name = &data.app_name;
-    HttpResponse::Ok().body(format!("[get_user_list] Hello {app_name}!"))
+pub async fn get_user_list(
+    _data: web::Data<state::GlobalState>,
+    admin_data: web::Data<state::AdminState>,
+) -> impl Responder {
+    // let app_name = &data.app_name;
+    // HttpResponse::Ok().body(format!("[get_user_list] Hello {app_name}!"))
+    let user_list = admin_data.admin_usecase.get_user_list();
+    HttpResponse::Ok().json(user_list)
 }
 
 // [post] /users

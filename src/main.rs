@@ -72,14 +72,14 @@ async fn main() -> std::io::Result<()> {
                     .route("/health", web::get().to(handlers::basis::health))
                     .service(
                         web::scope("/admin")
-                            .app_data(admin_data.clone()) // login state
+                            .app_data(admin_data.clone()) // admin state // maybe divide it into each configuration level
                             .configure(routes::api_admin_login_config)
                             .configure(routes::api_admin_users_config)
                             .configure(routes::api_admin_users_id_config),
                     )
                     .service(
                         web::scope("/app")
-                            .app_data(app_data.clone()) // login state
+                            .app_data(app_data.clone()) // app state // maybe divide it into each configuration level
                             .configure(routes::api_app_login_config)
                             .configure(routes::api_app_users_todo_config)
                             .configure(routes::api_app_users_todo_id_config),
