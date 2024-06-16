@@ -1,7 +1,10 @@
 use crate::schemas::users as db_users;
 use anyhow::Context;
 //use serde::{Deserialize, Serialize};
-use sea_orm;
+use crate::schemas::prelude::Users;
+use crate::schemas::users as users_db;
+use async_trait::async_trait;
+use sea_orm::{self, ColumnTrait, DbErr, EntityTrait, QueryFilter};
 use std::{
     clone::Clone,
     collections::HashMap,
@@ -10,7 +13,6 @@ use std::{
     sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard},
 };
 use thiserror::Error;
-//use validator::Validate;
 
 #[derive(Debug, Error)]
 enum RepositoryError {
@@ -18,12 +20,18 @@ enum RepositoryError {
     NotFound(i32),
 }
 
+#[async_trait]
 #[allow(dead_code, unused_variables)]
 //pub trait UserRepository: Debug + Clone + Send + Sync + 'static {
 pub trait UserRepository: Debug + Send + Sync + 'static {
     fn create(&self, payload: db_users::Model) -> db_users::Model;
-    fn find(&self, email: &String, password: &String) -> Option<db_users::Model>;
-    fn findById(&self, id: i32) -> Option<db_users::Model>;
+    async fn find(
+        &self,
+        email: &String,
+        password: &String,
+        is_admin: bool,
+    ) -> Result<Option<db_users::Model>, DbErr>;
+    fn find_by_id(&self, id: i32) -> Option<db_users::Model>;
     fn find_all(&self) -> Vec<db_users::Model>;
     fn update(&self, id: i32, payload: db_users::Model) -> anyhow::Result<db_users::Model>; // FIXME: type of payload must be changed
     fn delete(&self, id: i32) -> anyhow::Result<()>;
@@ -83,17 +91,28 @@ impl UserRepositoryForDB {
     }
 }
 
+#[async_trait]
 #[allow(dead_code, unused_variables)]
 impl UserRepository for UserRepositoryForDB {
     fn create(&self, payload: db_users::Model) -> db_users::Model {
         todo!()
     }
 
-    fn find(&self, email: &String, password: &String) -> Option<db_users::Model> {
-        todo!()
+    async fn find(
+        &self,
+        email: &String,
+        password: &String,
+        is_admin: bool,
+    ) -> Result<Option<db_users::Model>, DbErr> {
+        let query = Users::find()
+            .filter(users_db::Column::Email.eq(email))
+            .filter(users_db::Column::Password.eq(password))
+            .filter(users_db::Column::IsAdmin.eq(is_admin));
+
+        query.one(&self.conn).await
     }
 
-    fn findById(&self, id: i32) -> Option<db_users::Model> {
+    fn find_by_id(&self, id: i32) -> Option<db_users::Model> {
         todo!()
     }
 
@@ -138,6 +157,7 @@ impl UserRepositoryForMemory {
     }
 }
 
+#[async_trait]
 #[allow(dead_code, unused_variables)]
 impl UserRepository for UserRepositoryForMemory {
     fn create(&self, payload: db_users::Model) -> db_users::Model {
@@ -149,11 +169,16 @@ impl UserRepository for UserRepositoryForMemory {
         // user
     }
 
-    fn find(&self, email: &String, password: &String) -> Option<db_users::Model> {
+    async fn find(
+        &self,
+        email: &String,
+        password: &String,
+        is_admin: bool,
+    ) -> Result<Option<db_users::Model>, DbErr> {
         todo!()
     }
 
-    fn findById(&self, id: i32) -> Option<db_users::Model> {
+    fn find_by_id(&self, id: i32) -> Option<db_users::Model> {
         todo!()
         // let store = self.read_store_ref();
         // store.get(&id).cloned()

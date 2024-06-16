@@ -27,7 +27,7 @@ pub async fn admin_login(
     let password = &body.password;
 
     // authentication usecase
-    match admin_data.admin_usecase.admin_login(email, password) {
+    match admin_data.admin_usecase.admin_login(email, password).await {
         Ok(_) => {
             HttpResponse::Ok().json(json!({ "status": "success", "message": "Login successful" }))
         }

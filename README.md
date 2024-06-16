@@ -67,15 +67,17 @@ WIP
 - [x] Set router on app server
 - [x] CORS
 - [x] Generator schema code using sea-orm
-- [ ] Create handler
-- [ ] Create `usecase` layer as trait object (it must be abstract type)
-- [ ] Create repositories for on memory implementation
-- [ ] Connecting to Database using sea-orm
+- [x] Create handler
+- [x] Create `usecase` layer as trait object (it must be abstract type)
+- [x] Connecting to Database using sea-orm
 - [ ] Create repositories for PostgreSQL implementation
+- [ ] Create repositories for on memory implementation
+- [ ] Hash password before inserting, searching
 - [ ] JWT
 - [ ] Create handlers for html response
 - [ ] Unittest / Benchmark
 - [ ] CI environment
+- [ ] Fix lint error
 
 ## About [sea-orm](https://www.sea-ql.org/SeaORM/)
 
@@ -99,3 +101,4 @@ read documents.
 - [Struct actix_web::web::Data](https://docs.rs/actix-web/latest/actix_web/web/struct.Data.html)
 - [Should handlers be functions only?](https://github.com/actix/actix-web/discussions/2321)
   - [sod-actix-web](https://github.com/thill/sod-actix-web/tree/main)
+- [Resolving not-object-safe error with trait having async methods](https://users.rust-lang.org/t/resolving-not-object-safe-error-with-trait-having-async-methods/105175)

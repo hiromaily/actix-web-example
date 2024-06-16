@@ -2,10 +2,13 @@ use crate::entities::users;
 use crate::repositories::{todos as repo_todos, users as repo_users};
 use crate::schemas::users as db_users;
 use anyhow;
+use async_trait::async_trait;
+use log::debug;
 use std::sync::Arc;
 
+#[async_trait]
 pub trait AdminUsecase: Send + Sync + 'static {
-    fn admin_login(&self, email: &String, password: &String) -> anyhow::Result<()>;
+    async fn admin_login(&self, email: &String, password: &String) -> anyhow::Result<()>;
     fn get_user_list(&self) -> Vec<db_users::Model>;
     fn add_user(&self, user_body: users::UserBody) -> anyhow::Result<db_users::Model>;
     fn get_user(&self, user_id: i32) -> Option<db_users::Model>;
@@ -35,11 +38,24 @@ impl AdminAction {
     }
 }
 
+#[async_trait]
 impl AdminUsecase for AdminAction {
-    // TODO: implementation
-    fn admin_login(&self, email: &String, password: &String) -> anyhow::Result<()> {
-        //self.users_repo.find(email, password);
-        Ok(())
+    async fn admin_login(&self, email: &String, password: &String) -> anyhow::Result<()> {
+        const IS_ADMIN: bool = true;
+
+        let ret = self.users_repo.find(email, password, IS_ADMIN).await?;
+        match ret {
+            Some(user) => {
+                // Handle the case where a user is found
+                debug!("User found: {:?}", user);
+                Ok(())
+            }
+            None => {
+                // Handle the case where no user is found
+                debug!("No user found");
+                Ok(())
+            }
+        }
     }
 
     // TODO: implementation
