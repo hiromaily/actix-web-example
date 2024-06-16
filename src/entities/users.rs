@@ -1,4 +1,4 @@
-use crate::dbs::users as db_users;
+use crate::schemas::users as db_users;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 

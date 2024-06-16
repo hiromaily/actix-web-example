@@ -49,10 +49,7 @@ setup-sea-orm:
 .PHONY: generate-entity-from-db
 generate-entity-from-db:
 	rm -rf src/dbs
-	sea-orm-cli generate entity -u postgresql://admin:admin@127.0.0.1:5432/example -o src/dbs --with-serde both
-	# maybe bugs
-	# touch src/dbs/mod.rs
-	# echo "pub mod example;" > src/dbs/mod.rs
+	sea-orm-cli generate entity -u postgresql://admin:admin@127.0.0.1:5432/example -o src/schemas --with-serde both
 
 #------------------------------------------------------------------------------
 # docker

@@ -1,6 +1,6 @@
-use crate::dbs::{sea_orm_active_enums, todos as db_todos};
 use crate::entities::todos;
 use crate::repositories::{todos as repo_todos, users as repo_users};
+use crate::schemas::{sea_orm_active_enums, todos as db_todos};
 use anyhow;
 use std::sync::Arc;
 

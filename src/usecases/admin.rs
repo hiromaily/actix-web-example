@@ -1,6 +1,6 @@
-use crate::dbs::users as db_users;
 use crate::entities::users;
 use crate::repositories::{todos as repo_todos, users as repo_users};
+use crate::schemas::users as db_users;
 use anyhow;
 use std::sync::Arc;
 
@@ -38,7 +38,7 @@ impl AdminAction {
 impl AdminUsecase for AdminAction {
     // TODO: implementation
     fn admin_login(&self, email: &String, password: &String) -> anyhow::Result<()> {
-        //self.users_repo.find(id)
+        //self.users_repo.find(email, password);
         Ok(())
     }
 
