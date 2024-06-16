@@ -9,7 +9,7 @@ use std::sync::Arc;
 #[async_trait]
 pub trait AdminUsecase: Send + Sync + 'static {
     async fn admin_login(&self, email: &String, password: &String) -> anyhow::Result<()>;
-    fn get_user_list(&self) -> Vec<db_users::Model>;
+    async fn get_user_list(&self) -> anyhow::Result<Vec<db_users::Model>>;
     fn add_user(&self, user_body: users::UserBody) -> anyhow::Result<db_users::Model>;
     fn get_user(&self, user_id: i32) -> Option<db_users::Model>;
     fn update_user(
@@ -58,17 +58,18 @@ impl AdminUsecase for AdminAction {
         }
     }
 
-    // TODO: implementation
-    fn get_user_list(&self) -> Vec<db_users::Model> {
-        vec![db_users::Model {
-            id: 1,
-            first_name: "John".to_string(),
-            last_name: "Doe".to_string(),
-            email: "john.doe@example.com".to_string(),
-            password: "password".to_string(),
-            is_admin: true,
-            created_at: None,
-        }]
+    async fn get_user_list(&self) -> anyhow::Result<Vec<db_users::Model>> {
+        let ret = self.users_repo.find_all().await?;
+        Ok(ret)
+        // vec![db_users::Model {
+        //     id: 1,
+        //     first_name: "John".to_string(),
+        //     last_name: "Doe".to_string(),
+        //     email: "john.doe@example.com".to_string(),
+        //     password: "password".to_string(),
+        //     is_admin: true,
+        //     created_at: None,
+        // }]
     }
 
     // TODO: implementation

@@ -1,7 +1,8 @@
 use crate::entities::users::{UserBody, UserUpdateBody};
 use crate::schemas::{prelude::Users, users as db_users};
+//use anyhow::Context;
 use async_trait::async_trait;
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{self, ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter};
 use std::{
@@ -13,6 +14,7 @@ use std::{
 };
 use thiserror::Error;
 
+#[allow(dead_code, unused_variables)]
 #[derive(Debug, Error)]
 enum RepositoryError {
     #[error("NotFound, id is {0}")]
@@ -20,23 +22,22 @@ enum RepositoryError {
 }
 
 #[async_trait]
-#[allow(dead_code, unused_variables)]
 //pub trait UserRepository: Debug + Clone + Send + Sync + 'static {
 pub trait UserRepository: Debug + Send + Sync + 'static {
-    async fn create(&self, payload: UserBody) -> Result<db_users::Model, DbErr>;
+    async fn create(&self, payload: UserBody) -> anyhow::Result<db_users::Model>;
     async fn find(
         &self,
         email: &String,
         password: &String,
         is_admin: bool,
-    ) -> Result<Option<db_users::Model>, DbErr>;
-    async fn find_by_id(&self, id: i32) -> Result<Option<db_users::Model>, DbErr>;
-    async fn find_all(&self) -> Result<Vec<db_users::Model>, DbErr>;
+    ) -> anyhow::Result<Option<db_users::Model>>;
+    async fn find_by_id(&self, id: i32) -> anyhow::Result<Option<db_users::Model>>;
+    async fn find_all(&self) -> anyhow::Result<Vec<db_users::Model>>;
     async fn update(
         &self,
         id: i32,
         payload: UserUpdateBody,
-    ) -> Result<Option<db_users::Model>, DbErr>; // FIXME: type of payload must be changed
+    ) -> anyhow::Result<Option<db_users::Model>>;
     async fn delete(&self, id: i32) -> anyhow::Result<(u64)>;
 }
 
@@ -56,7 +57,8 @@ impl UserRepositoryForDB {
 
 #[async_trait]
 impl UserRepository for UserRepositoryForDB {
-    async fn create(&self, payload: UserBody) -> Result<db_users::Model, DbErr> {
+    async fn create(&self, payload: UserBody) -> anyhow::Result<db_users::Model> {
+        // actually: Result<db_users::Model, DbErr>
         let user = db_users::ActiveModel {
             first_name: Set(payload.first_name),
             last_name: Set(payload.last_name),
@@ -66,7 +68,9 @@ impl UserRepository for UserRepositoryForDB {
             created_at: Set(Some(Utc::now().naive_utc())), // for type `Option<DateTime>`
             ..Default::default()
         };
-        user.insert(&self.conn).await
+        user.insert(&self.conn).await.map_err(Into::into)
+        //.map_err(|e| anyhow::Error::from(e))
+        //.with_context(|| format!("Failed to create user: {:?}", payload))
     }
 
     async fn find(
@@ -74,28 +78,35 @@ impl UserRepository for UserRepositoryForDB {
         email: &String,
         password: &String,
         is_admin: bool,
-    ) -> Result<Option<db_users::Model>, DbErr> {
+    ) -> anyhow::Result<Option<db_users::Model>> {
+        // Result<Option<db_users::Model>, DbErr>
         let query = Users::find()
             .filter(db_users::Column::Email.eq(email))
             .filter(db_users::Column::Password.eq(password))
             .filter(db_users::Column::IsAdmin.eq(is_admin));
 
-        query.one(&self.conn).await
+        query.one(&self.conn).await.map_err(Into::into)
     }
 
-    async fn find_by_id(&self, id: i32) -> Result<Option<db_users::Model>, DbErr> {
-        Users::find_by_id(id).one(&self.conn).await
+    async fn find_by_id(&self, id: i32) -> anyhow::Result<Option<db_users::Model>> {
+        // Result<Option<db_users::Model>, DbErr>
+        Users::find_by_id(id)
+            .one(&self.conn)
+            .await
+            .map_err(Into::into)
     }
 
-    async fn find_all(&self) -> Result<Vec<db_users::Model>, DbErr> {
-        Users::find().all(&self.conn).await
+    async fn find_all(&self) -> anyhow::Result<Vec<db_users::Model>> {
+        // Result<Vec<db_users::Model>, DbErr>
+        Users::find().all(&self.conn).await.map_err(Into::into)
     }
 
     async fn update(
         &self,
         id: i32,
         payload: UserUpdateBody,
-    ) -> Result<Option<db_users::Model>, DbErr> {
+    ) -> anyhow::Result<Option<db_users::Model>> {
+        // Result<Option<db_users::Model>, DbErr>
         let mut user: db_users::ActiveModel =
             Users::find_by_id(id).one(&self.conn).await?.unwrap().into();
 
@@ -115,7 +126,7 @@ impl UserRepository for UserRepositoryForDB {
             user.is_admin = Set(val);
         }
 
-        user.update(&self.conn).await.map(Some)
+        user.update(&self.conn).await.map(Some).map_err(Into::into)
     }
 
     async fn delete(&self, id: i32) -> anyhow::Result<(u64)> {
@@ -128,7 +139,7 @@ impl UserRepository for UserRepositoryForDB {
             .exec(&self.conn)
             .await
             .map(|res| res.rows_affected)
-            .map_err(Into::into) // for converting into anyhow::Result
+            .map_err(Into::into)
     }
 }
 
@@ -163,7 +174,7 @@ impl UserRepositoryForMemory {
 #[async_trait]
 #[allow(dead_code, unused_variables)]
 impl UserRepository for UserRepositoryForMemory {
-    async fn create(&self, payload: UserBody) -> Result<db_users::Model, DbErr> {
+    async fn create(&self, payload: UserBody) -> anyhow::Result<db_users::Model> {
         todo!()
         // let mut store = self.write_store_ref();
         // let id = (store.len() + 1) as i32;
@@ -177,17 +188,17 @@ impl UserRepository for UserRepositoryForMemory {
         email: &String,
         password: &String,
         is_admin: bool,
-    ) -> Result<Option<db_users::Model>, DbErr> {
+    ) -> anyhow::Result<Option<db_users::Model>> {
         todo!()
     }
 
-    async fn find_by_id(&self, id: i32) -> Result<Option<db_users::Model>, DbErr> {
+    async fn find_by_id(&self, id: i32) -> anyhow::Result<Option<db_users::Model>> {
         todo!()
         // let store = self.read_store_ref();
         // store.get(&id).cloned()
     }
 
-    async fn find_all(&self) -> Result<Vec<db_users::Model>, DbErr> {
+    async fn find_all(&self) -> anyhow::Result<Vec<db_users::Model>> {
         todo!()
         // let store = self.read_store_ref();
         // Vec::from_iter(store.values().cloned())
@@ -197,7 +208,7 @@ impl UserRepository for UserRepositoryForMemory {
         &self,
         id: i32,
         payload: UserUpdateBody,
-    ) -> Result<Option<db_users::Model>, DbErr> {
+    ) -> anyhow::Result<Option<db_users::Model>> {
         todo!()
         // let mut store = self.write_store_ref();
         // let user = store.get(&id).context(RepositoryError::NotFound(id))?;

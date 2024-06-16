@@ -44,10 +44,16 @@ pub async fn get_user_list(
     // let app_name = &data.app_name;
     // HttpResponse::Ok().body(format!("[get_user_list] Hello {app_name}!"))
 
+    // let user_list = admin_data.admin_usecase.get_user_list();
+    // // response
+    // HttpResponse::Ok().json(user_list)
+
     // usecase
-    let user_list = admin_data.admin_usecase.get_user_list();
-    // response
-    HttpResponse::Ok().json(user_list)
+    match admin_data.admin_usecase.get_user_list().await {
+        Ok(user_list) => HttpResponse::Ok().json(user_list),
+        Err(e) => HttpResponse::Unauthorized()
+            .json(json!({ "status": "error", "message": e.to_string() })),
+    }
 }
 
 // [post] /users

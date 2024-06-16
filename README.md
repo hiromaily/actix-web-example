@@ -70,9 +70,10 @@ WIP
 - [x] Create handler
 - [x] Create `usecase` layer as trait object (it must be abstract type)
 - [x] Connecting to Database using sea-orm
-- [ ] Create repositories for PostgreSQL implementation
-- [ ] Create repositories for on memory implementation
+- [ ] Create repositories for PostgreSQL users implementation
+- [ ] Create repositories for PostgreSQL todos implementation
 - [ ] Hash password before inserting, searching
+- [ ] Create repositories for on memory implementation
 - [ ] JWT
 - [ ] Create handlers for html response
 - [ ] Unittest / Benchmark
