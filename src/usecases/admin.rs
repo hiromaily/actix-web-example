@@ -10,8 +10,8 @@ use std::sync::Arc;
 pub trait AdminUsecase: Send + Sync + 'static {
     async fn admin_login(&self, email: &String, password: &String) -> anyhow::Result<()>;
     async fn get_user_list(&self) -> anyhow::Result<Vec<db_users::Model>>;
-    fn add_user(&self, user_body: users::UserBody) -> anyhow::Result<db_users::Model>;
-    fn get_user(&self, user_id: i32) -> Option<db_users::Model>;
+    async fn add_user(&self, user_body: users::UserBody) -> anyhow::Result<db_users::Model>;
+    async fn get_user(&self, user_id: i32) -> anyhow::Result<Option<db_users::Model>>;
     fn update_user(
         &self,
         user_id: i32,
@@ -72,33 +72,35 @@ impl AdminUsecase for AdminAction {
         // }]
     }
 
-    // TODO: implementation
-    fn add_user(&self, user_body: users::UserBody) -> anyhow::Result<db_users::Model> {
-        Ok(db_users::Model {
-            id: 1,
-            first_name: "John".to_string(),
-            last_name: "Doe".to_string(),
-            email: "john.doe@example.com".to_string(),
-            password: "password".to_string(),
-            is_admin: true,
-            created_at: None,
-        })
+    async fn add_user(&self, user_body: users::UserBody) -> anyhow::Result<db_users::Model> {
+        let ret = self.users_repo.create(user_body).await?;
+        Ok(ret)
+        // Ok(db_users::Model {
+        //     id: 1,
+        //     first_name: "John".to_string(),
+        //     last_name: "Doe".to_string(),
+        //     email: "john.doe@example.com".to_string(),
+        //     password: "password".to_string(),
+        //     is_admin: true,
+        //     created_at: None,
+        // })
     }
 
-    // TODO: implementation
-    fn get_user(&self, user_id: i32) -> Option<db_users::Model> {
-        match user_id {
-            1 => Some(db_users::Model {
-                id: 1,
-                first_name: "John".to_string(),
-                last_name: "Doe".to_string(),
-                email: "john.doe@example.com".to_string(),
-                password: "password".to_string(),
-                is_admin: true,
-                created_at: None,
-            }),
-            _ => None, // User with user_id not found
-        }
+    async fn get_user(&self, user_id: i32) -> anyhow::Result<Option<db_users::Model>> {
+        let ret = self.users_repo.find_by_id(user_id).await?;
+        Ok(ret)
+        // match user_id {
+        //     1 => Some(db_users::Model {
+        //         id: 1,
+        //         first_name: "John".to_string(),
+        //         last_name: "Doe".to_string(),
+        //         email: "john.doe@example.com".to_string(),
+        //         password: "password".to_string(),
+        //         is_admin: true,
+        //         created_at: None,
+        //     }),
+        //     _ => None, // User with user_id not found
+        // }
     }
 
     // TODO: implementation

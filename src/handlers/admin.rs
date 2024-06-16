@@ -41,17 +41,10 @@ pub async fn get_user_list(
     _data: web::Data<state::GlobalState>,
     admin_data: web::Data<state::AdminState>,
 ) -> impl Responder {
-    // let app_name = &data.app_name;
-    // HttpResponse::Ok().body(format!("[get_user_list] Hello {app_name}!"))
-
-    // let user_list = admin_data.admin_usecase.get_user_list();
-    // // response
-    // HttpResponse::Ok().json(user_list)
-
     // usecase
     match admin_data.admin_usecase.get_user_list().await {
         Ok(user_list) => HttpResponse::Ok().json(user_list),
-        Err(e) => HttpResponse::Unauthorized()
+        Err(e) => HttpResponse::InternalServerError()
             .json(json!({ "status": "error", "message": e.to_string() })),
     }
 }
@@ -62,9 +55,6 @@ pub async fn add_user(
     admin_data: web::Data<state::AdminState>,
     body: web::Json<users::UserBody>,
 ) -> impl Responder {
-    // let app_name = &data.app_name;
-    // HttpResponse::Ok().body(format!("[add_user] Hello {app_name}!"))
-
     // validation
     if let Err(e) = body.validate() {
         return HttpResponse::BadRequest().json(json!({ "error": format!("{:?}", e) }));
@@ -72,7 +62,7 @@ pub async fn add_user(
     let user_body: users::UserBody = body.into_inner();
 
     // usecase
-    match admin_data.admin_usecase.add_user(user_body) {
+    match admin_data.admin_usecase.add_user(user_body).await {
         Ok(user) => HttpResponse::Ok().json(user),
         Err(e) => HttpResponse::BadRequest().json(json!({ "error": e.to_string() })),
     }
@@ -85,32 +75,22 @@ pub async fn get_user(
     path: web::Path<i32>,
 ) -> impl Responder {
     let user_id = path.into_inner();
-    // let app_name = &data.app_name;
-    // HttpResponse::Ok().body(format!("[get_user] Hello {app_name}:{user_id}!"))
 
     // usecase
-    let res = admin_data.admin_usecase.get_user(user_id);
+    let res = admin_data.admin_usecase.get_user(user_id).await;
     // response
-    if let Some(user) = res {
-        HttpResponse::Ok().json(user)
-    } else {
-        // return 404
-        HttpResponse::NotFound().json(json!({
+    // if let Some(user) = res {
+    //     HttpResponse::Ok().json(user)
+    // }
+    match res {
+        Ok(Some(user)) => HttpResponse::Ok().json(user),
+        Ok(None) => HttpResponse::NotFound().json(json!({
             "error": "User not found",
             "message": format!("User with ID {} not found", user_id)
-        }))
+        })),
+        Err(e) => HttpResponse::InternalServerError()
+            .json(json!({ "status": "error", "message": e.to_string() })),
     }
-    // match res {
-    //     Some(user) => {
-    //         HttpResponse::Ok().json(user)
-    //     },
-    //     None => {
-    //         HttpResponse::NotFound().json(json!({
-    //             "error": "User not found",
-    //             "message": format!("User with ID {} not found", user_id)
-    //         }))
-    //     }
-    // }
 }
 
 // [post] "/users/{user_id}"
@@ -150,7 +130,8 @@ pub async fn delete_user(
         Ok(_) => {
             HttpResponse::Ok().json(json!({ "status": "success", "message": "Delete successful" }))
         }
-        Err(e) => HttpResponse::Unauthorized()
-            .json(json!({ "status": "error", "message": e.to_string() })),
+        Err(e) => {
+            HttpResponse::NotFound().json(json!({ "status": "error", "message": e.to_string() }))
+        }
     }
 }
