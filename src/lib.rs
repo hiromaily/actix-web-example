@@ -2,6 +2,7 @@ pub mod args;
 pub mod dbs;
 pub mod entities;
 pub mod handlers;
+pub mod hash;
 pub mod registry;
 pub mod repositories;
 pub mod routes;

@@ -1,4 +1,5 @@
 use crate::dbs::conn;
+use crate::hash;
 use crate::repositories::{todos, users};
 use crate::state;
 use crate::toml;
@@ -34,11 +35,19 @@ async fn new_users_repository(
     Ok(Arc::new(users::UserRepositoryForMemory::new()))
 }
 
+// Must not use for production
+//const SALT: &str = "Salt should be passed in a more secure way";
+
+fn new_hash() -> Arc<dyn hash::Hash> {
+    Arc::new(hash::HashPbkdf2::new())
+}
+
 #[allow(dead_code)]
 pub struct Registry {
     pub conf: toml::Config,
     pub todos_repo: Arc<dyn todos::TodoRepository>,
     pub users_repo: Arc<dyn users::UserRepository>,
+    pub hash: Arc<dyn hash::Hash>,
 }
 
 #[allow(dead_code)]
@@ -47,25 +56,28 @@ impl Registry {
         //let db = conf.db.clone();
         let todos_repo = new_todos_repository(&conf.db).await?;
         let users_repo = new_users_repository(&conf.db).await?;
+        let hash = new_hash();
 
         Ok(Self {
             conf,
             todos_repo,
             users_repo,
+            hash,
         })
     }
 
     fn create_admin_usecase(&self) -> Arc<dyn admin::AdminUsecase> {
         Arc::new(admin::AdminAction::new(
-            self.todos_repo.clone(),
-            self.users_repo.clone(),
+            self.todos_repo.clone(), // TODO: is there any way to avoid clone?
+            self.users_repo.clone(), // TODO: is there any way to avoid clone?
+            self.hash.clone(),       // TODO: is there any way to avoid clone?
         ))
     }
 
     fn create_app_usecase(&self) -> Arc<dyn app::AppUsecase> {
         Arc::new(app::AppAction::new(
-            self.todos_repo.clone(),
-            self.users_repo.clone(),
+            self.todos_repo.clone(), // TODO: is there any way to avoid clone?
+            self.users_repo.clone(), // TODO: is there any way to avoid clone?
         ))
     }
 

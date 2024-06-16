@@ -72,7 +72,7 @@ WIP
 - [x] Connecting to Database using sea-orm
 - [x] Create repositories for PostgreSQL users implementation
 - [ ] Create repositories for PostgreSQL todos implementation
-- [ ] Hash password before inserting, searching
+- [x] Hash implementation and hash password before inserting, searching
 - [ ] Create repositories for on memory implementation
 - [ ] JWT
 - [ ] Create handlers for html response
@@ -80,13 +80,31 @@ WIP
 - [ ] CI environment
 - [ ] Fix lint error if existed
 
-## About [sea-orm](https://www.sea-ql.org/SeaORM/)
+## Tech Stacks
 
-read documents.
+### Web framework: [Actix web](https://actix.rs/)
 
-- [Database & Async Runtime](https://www.sea-ql.org/SeaORM/docs/install-and-config/database-and-async-runtime/)
+- [official docs](https://actix.rs/docs/)
+- [crates.io: actix-web](https://crates.io/crates/actix-web)
+
+### ORM [sea-orm](https://www.sea-ql.org/SeaORM/)
+
 - [crates.io: sea-orm](https://crates.io/crates/sea-orm)
 - [sea-orm-cli](https://www.sea-ql.org/sea-orm-tutorial/ch01-04-entity-generation.html)
+- [Database & Async Runtime](https://www.sea-ql.org/SeaORM/docs/install-and-config/database-and-async-runtime/)
+
+### Hash algorithm
+
+Refer to [RustCrypto/password-hashes](https://github.com/RustCrypto/password-hashes)
+
+- [pbkdf2](https://crates.io/crates/pbkdf2)
+  - 100k dl per day
+- [scrypt](https://crates.io/crates/scrypt)
+  - 23k dl per day
+- [argon2](https://crates.io/crates/argon2)
+  - 10k dl per day
+- [bcrypt](https://crates.io/crates/bcrypt)
+  - 7.5k dl per day
 
 ## Environment variables
 

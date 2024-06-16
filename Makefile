@@ -48,7 +48,7 @@ setup-sea-orm:
 # deeply nested directory as output doesn't work
 .PHONY: generate-entity-from-db
 generate-entity-from-db:
-	rm -rf src/dbs
+	rm -rf src/schemas
 	sea-orm-cli generate entity -u postgresql://admin:admin@127.0.0.1:5432/example -o src/schemas --with-serde both
 
 #------------------------------------------------------------------------------
@@ -69,12 +69,13 @@ up-db:
 request:
 	curl http://127.0.0.1:8080/api/v1/health
 	@echo ""
+	@echo "create user"
+	curl -X POST -H "Content-Type: application/json" -d '{"first_name": "John","last_name": "Doe","email": "john.doe@example.com","password": "password1234","is_admin": false}' http://127.0.0.1:8080/api/v1/admin/users
+	@echo ""
 	#curl -X POST -H "Content-Type: application/json" -d '{"user":"invalid filed", "password":"xxxxxxxxxxx"}' -s -w "\nhttp status:%{http_code}\n" http://127.0.0.1:8080/api/v1/admin/login
 	curl -X POST -H "Content-Type: application/json" -d '{"email":"foobar@zmail.com", "password":"xxxxxxxxxxx"}' http://127.0.0.1:8080/api/v1/admin/login
 	@echo ""
 	curl http://127.0.0.1:8080/api/v1/admin/users
-	@echo ""
-	curl -X POST -H "Content-Type: application/json" -d '{"first_name": "John","last_name": "Doe","email": "john.doe@example.com","password": "password1234","is_admin": false}' http://127.0.0.1:8080/api/v1/admin/users
 	@echo ""
 	curl http://127.0.0.1:8080/api/v1/admin/users/1
 	@echo ""
@@ -114,3 +115,7 @@ request:
 .PHONY: tcpdump
 tcpdump:
 	sudo tcpdump -i lo0 port 8080 -vv
+
+# docker container exec -it {container_id} bash
+# > psql -U postgres example
+# > \d users

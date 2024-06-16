@@ -1,4 +1,5 @@
 use crate::entities::users;
+use crate::hash;
 use crate::repositories::{todos as repo_todos, users as repo_users};
 use crate::schemas::users as db_users;
 use anyhow;
@@ -24,16 +25,19 @@ pub trait AdminUsecase: Send + Sync + 'static {
 pub struct AdminAction {
     pub todos_repo: Arc<dyn repo_todos::TodoRepository>,
     pub users_repo: Arc<dyn repo_users::UserRepository>,
+    pub hash: Arc<dyn hash::Hash>,
 }
 
 impl AdminAction {
     pub fn new(
         todos_repo: Arc<dyn repo_todos::TodoRepository>,
         users_repo: Arc<dyn repo_users::UserRepository>,
+        hash: Arc<dyn hash::Hash>,
     ) -> Self {
         AdminAction {
             todos_repo,
             users_repo,
+            hash,
         }
     }
 }
@@ -43,7 +47,13 @@ impl AdminUsecase for AdminAction {
     async fn admin_login(&self, email: &str, password: &str) -> anyhow::Result<()> {
         const IS_ADMIN: bool = true;
 
-        let ret = self.users_repo.find(email, password, IS_ADMIN).await?;
+        // hash
+        let hash_password = self.hash.hash(password.as_bytes())?;
+
+        let ret = self
+            .users_repo
+            .find(email, hash_password.as_str(), IS_ADMIN)
+            .await?;
         match ret {
             Some(user) => {
                 // Handle the case where a user is found
@@ -73,7 +83,17 @@ impl AdminUsecase for AdminAction {
     }
 
     async fn add_user(&self, user_body: users::UserBody) -> anyhow::Result<db_users::Model> {
-        let ret = self.users_repo.create(user_body).await?;
+        // hash
+        let hash_password = self.hash.hash(user_body.password.as_bytes())?;
+
+        // new object
+        let updated_user_body = users::UserBody {
+            password: hash_password,
+            ..user_body // Copy other fields from the original user_body
+        };
+
+        // I wanna replace user_body.password by hash_password
+        let ret = self.users_repo.create(updated_user_body).await?;
         Ok(ret)
         // Ok(db_users::Model {
         //     id: 1,
