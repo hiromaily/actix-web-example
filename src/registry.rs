@@ -1,7 +1,9 @@
+use crate::dbs::conn;
 use crate::repositories::{todos, users};
 use crate::state;
 use crate::toml;
 use crate::usecases::{admin, app};
+use sea_orm::DbErr;
 use std::sync::Arc;
 
 // error would occur if TodoRepository has clone trait as supertrait
@@ -12,18 +14,24 @@ use std::sync::Arc;
 //         return Box::new(todo_repository::TodoRepositoryForMemory::new());
 //     }
 // }
-fn new_todos_repository(db: &toml::PostgreSQL) -> Arc<dyn todos::TodoRepository> {
+async fn new_todos_repository(
+    db: &toml::PostgreSQL,
+) -> Result<Arc<dyn todos::TodoRepository>, DbErr> {
     if db.enabled {
-        return Arc::new(todos::TodoRepositoryForDB::new());
+        let connected = conn::get_conn(&db.user, &db.password, &db.host, &db.dbname).await?;
+        return Ok(Arc::new(todos::TodoRepositoryForDB::new(connected)));
     }
-    Arc::new(todos::TodoRepositoryForMemory::new())
+    Ok(Arc::new(todos::TodoRepositoryForMemory::new()))
 }
 
-fn new_users_repository(db: &toml::PostgreSQL) -> Arc<dyn users::UserRepository> {
+async fn new_users_repository(
+    db: &toml::PostgreSQL,
+) -> Result<Arc<dyn users::UserRepository>, DbErr> {
     if db.enabled {
-        return Arc::new(users::UserRepositoryForDB::new());
+        let connected = conn::get_conn(&db.user, &db.password, &db.host, &db.dbname).await?;
+        return Ok(Arc::new(users::UserRepositoryForDB::new(connected)));
     }
-    Arc::new(users::UserRepositoryForMemory::new())
+    Ok(Arc::new(users::UserRepositoryForMemory::new()))
 }
 
 #[allow(dead_code)]
@@ -35,13 +43,16 @@ pub struct Registry {
 
 #[allow(dead_code)]
 impl Registry {
-    pub fn new(conf: toml::Config) -> Self {
-        let db = conf.db.clone();
-        Self {
+    pub async fn new(conf: toml::Config) -> Result<(Self), DbErr> {
+        //let db = conf.db.clone();
+        let todos_repo = new_todos_repository(&conf.db).await?;
+        let users_repo = new_users_repository(&conf.db).await?;
+
+        Ok(Self {
             conf,
-            todos_repo: new_todos_repository(&db),
-            users_repo: new_users_repository(&db),
-        }
+            todos_repo,
+            users_repo,
+        })
     }
 
     fn create_admin_usecase(&self) -> Arc<dyn admin::AdminUsecase> {

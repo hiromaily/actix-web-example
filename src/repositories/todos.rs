@@ -1,4 +1,5 @@
 use anyhow::Context;
+use sea_orm;
 use serde::{Deserialize, Serialize};
 use std::{
     clone::Clone,
@@ -69,13 +70,14 @@ impl Todo {
 #[derive(Debug, Clone)]
 #[allow(dead_code, unused_variables)]
 pub struct TodoRepositoryForDB {
+    conn: sea_orm::DatabaseConnection,
     store: u16,
 }
 
 #[allow(dead_code, unused_variables)]
 impl TodoRepositoryForDB {
-    pub fn new() -> Self {
-        todo!()
+    pub fn new(conn: sea_orm::DatabaseConnection) -> Self {
+        Self { conn, store: 0 }
     }
 
     fn write_store_ref(&self) -> RwLockWriteGuard<TodoDatas> {

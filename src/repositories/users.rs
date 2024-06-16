@@ -1,6 +1,7 @@
 use crate::schemas::users as db_users;
 use anyhow::Context;
 //use serde::{Deserialize, Serialize};
+use sea_orm;
 use std::{
     clone::Clone,
     collections::HashMap,
@@ -63,13 +64,14 @@ pub trait UserRepository: Debug + Send + Sync + 'static {
 #[derive(Debug, Clone)]
 #[allow(dead_code, unused_variables)]
 pub struct UserRepositoryForDB {
+    conn: sea_orm::DatabaseConnection,
     store: u16,
 }
 
 #[allow(dead_code, unused_variables)]
 impl UserRepositoryForDB {
-    pub fn new() -> Self {
-        todo!()
+    pub fn new(conn: sea_orm::DatabaseConnection) -> Self {
+        Self { conn, store: 0 }
     }
 
     fn write_store_ref(&self) -> RwLockWriteGuard<UserDatas> {

@@ -1,4 +1,5 @@
 pub mod args;
+pub mod dbs;
 pub mod entities;
 pub mod handlers;
 pub mod registry;

@@ -6,6 +6,7 @@ use log::info;
 //use log::LevelFilter;
 
 // local
+use anyhow;
 use api_server::args;
 use api_server::handlers;
 use api_server::registry;
@@ -36,7 +37,8 @@ async fn main() -> std::io::Result<()> {
     dbg!(&config);
 
     // registry and get each states
-    let reg = registry::Registry::new(config);
+    let reg = registry::Registry::new(config).await.unwrap(); // may panic
+
     let global_data = web::Data::new(reg.create_global_state());
     let admin_data = web::Data::new(reg.create_admin_state());
     let app_data = web::Data::new(reg.create_app_state());

@@ -9,8 +9,8 @@ service = "bch-keygen"
 level = "debug"        # debug, info, warn, error
 
 [db]
-enabled = false
-host = "127.0.0.1:3308"
-dbname = "sample"
-user = "hiromaily"
-password = "hiromaily"
+enabled = true
+host = "127.0.0.1:5432"
+dbname = "example"
+user = "admin"
+password = "admin"
