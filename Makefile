@@ -62,6 +62,13 @@ build-image:
 up-db:
 	docker compose up
 
+# docker container exec -it {container_id} bash
+#  or
+# docker container exec -it actix-web-postgresql bash
+# 
+# > psql -U postgres example
+# > \d users
+
 #------------------------------------------------------------------------------
 # Test Server
 #------------------------------------------------------------------------------
@@ -85,10 +92,10 @@ request:
 # @echo ""
 # curl http://127.0.0.1:8080/api/v1/user
 
+#------------------------------------------------------------------------------
+# Monitoring
+#------------------------------------------------------------------------------
+
 .PHONY: tcpdump
 tcpdump:
 	sudo tcpdump -i lo0 port 8080 -vv
-
-# docker container exec -it {container_id} bash
-# > psql -U postgres example
-# > \d users

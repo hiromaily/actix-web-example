@@ -5,6 +5,7 @@ volumes:
 
 services:
   postgresql:
+    container_name: actix-web-postgresql
     build:
       context: ./docker
       dockerfile: Dockerfile
