@@ -2,6 +2,7 @@ use crate::schemas::users as db_users;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
+// (...Clone, PartialEq, Eq) if needed
 #[derive(Debug, Serialize, Deserialize, Validate)]
 pub struct LoginBody {
     #[validate(length(min = 8, max = 50))]
@@ -10,7 +11,7 @@ pub struct LoginBody {
     pub password: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate, Clone, PartialEq, Eq)]
 pub struct UserBody {
     #[validate(length(min = 1, max = 50))]
     pub first_name: String,

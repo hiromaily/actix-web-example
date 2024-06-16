@@ -1,10 +1,9 @@
-use crate::schemas::users as db_users;
-use anyhow::Context;
-//use serde::{Deserialize, Serialize};
-use crate::schemas::prelude::Users;
-use crate::schemas::users as users_db;
+use crate::entities::users::{UserBody, UserUpdateBody};
+use crate::schemas::{prelude::Users, users as db_users};
 use async_trait::async_trait;
-use sea_orm::{self, ColumnTrait, DbErr, EntityTrait, QueryFilter};
+use chrono::{DateTime, Utc};
+use sea_orm::ActiveValue::Set;
+use sea_orm::{self, ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter};
 use std::{
     clone::Clone,
     collections::HashMap,
@@ -24,78 +23,50 @@ enum RepositoryError {
 #[allow(dead_code, unused_variables)]
 //pub trait UserRepository: Debug + Clone + Send + Sync + 'static {
 pub trait UserRepository: Debug + Send + Sync + 'static {
-    fn create(&self, payload: db_users::Model) -> db_users::Model;
+    async fn create(&self, payload: UserBody) -> Result<db_users::Model, DbErr>;
     async fn find(
         &self,
         email: &String,
         password: &String,
         is_admin: bool,
     ) -> Result<Option<db_users::Model>, DbErr>;
-    fn find_by_id(&self, id: i32) -> Option<db_users::Model>;
-    fn find_all(&self) -> Vec<db_users::Model>;
-    fn update(&self, id: i32, payload: db_users::Model) -> anyhow::Result<db_users::Model>; // FIXME: type of payload must be changed
-    fn delete(&self, id: i32) -> anyhow::Result<()>;
+    async fn find_by_id(&self, id: i32) -> Result<Option<db_users::Model>, DbErr>;
+    async fn find_all(&self) -> Result<Vec<db_users::Model>, DbErr>;
+    async fn update(
+        &self,
+        id: i32,
+        payload: UserUpdateBody,
+    ) -> Result<Option<db_users::Model>, DbErr>; // FIXME: type of payload must be changed
+    async fn delete(&self, id: i32) -> anyhow::Result<(u64)>;
 }
-
-// #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-// pub struct User {
-//     pub id: i32,
-//     pub text: String,
-//     pub completed: bool,
-// }
-
-// #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Validate)]
-// pub struct CreateUser {
-//     #[validate(length(min = 1, max = 100))]
-//     text: String,
-// }
-
-// #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Validate)]
-// pub struct UpdateUser {
-//     #[validate(length(min = 1, max = 100))]
-//     text: Option<String>,
-//     completed: Option<bool>,
-// }
-// impl User {
-//     pub fn new(id: i32, text: String) -> Self {
-//         Self {
-//             id,
-//             text,
-//             completed: false,
-//         }
-//     }
-// }
 
 /*******************************************************************************
  PostgreSQL
 *******************************************************************************/
 #[derive(Debug, Clone)]
-#[allow(dead_code, unused_variables)]
 pub struct UserRepositoryForDB {
     conn: sea_orm::DatabaseConnection,
-    store: u16,
 }
 
-#[allow(dead_code, unused_variables)]
 impl UserRepositoryForDB {
     pub fn new(conn: sea_orm::DatabaseConnection) -> Self {
-        Self { conn, store: 0 }
-    }
-
-    fn write_store_ref(&self) -> RwLockWriteGuard<UserDatas> {
-        todo!()
-    }
-
-    fn read_store_ref(&self) -> RwLockReadGuard<UserDatas> {
-        todo!()
+        Self { conn }
     }
 }
 
 #[async_trait]
-#[allow(dead_code, unused_variables)]
 impl UserRepository for UserRepositoryForDB {
-    fn create(&self, payload: db_users::Model) -> db_users::Model {
-        todo!()
+    async fn create(&self, payload: UserBody) -> Result<db_users::Model, DbErr> {
+        let user = db_users::ActiveModel {
+            first_name: Set(payload.first_name),
+            last_name: Set(payload.last_name),
+            email: Set(payload.email),
+            password: Set(payload.password),
+            is_admin: Set(payload.is_admin),
+            created_at: Set(Some(Utc::now().naive_utc())), // for type `Option<DateTime>`
+            ..Default::default()
+        };
+        user.insert(&self.conn).await
     }
 
     async fn find(
@@ -105,27 +76,59 @@ impl UserRepository for UserRepositoryForDB {
         is_admin: bool,
     ) -> Result<Option<db_users::Model>, DbErr> {
         let query = Users::find()
-            .filter(users_db::Column::Email.eq(email))
-            .filter(users_db::Column::Password.eq(password))
-            .filter(users_db::Column::IsAdmin.eq(is_admin));
+            .filter(db_users::Column::Email.eq(email))
+            .filter(db_users::Column::Password.eq(password))
+            .filter(db_users::Column::IsAdmin.eq(is_admin));
 
         query.one(&self.conn).await
     }
 
-    fn find_by_id(&self, id: i32) -> Option<db_users::Model> {
-        todo!()
+    async fn find_by_id(&self, id: i32) -> Result<Option<db_users::Model>, DbErr> {
+        Users::find_by_id(id).one(&self.conn).await
     }
 
-    fn find_all(&self) -> Vec<db_users::Model> {
-        todo!()
+    async fn find_all(&self) -> Result<Vec<db_users::Model>, DbErr> {
+        Users::find().all(&self.conn).await
     }
 
-    fn update(&self, id: i32, payload: db_users::Model) -> anyhow::Result<db_users::Model> {
-        todo!()
+    async fn update(
+        &self,
+        id: i32,
+        payload: UserUpdateBody,
+    ) -> Result<Option<db_users::Model>, DbErr> {
+        let mut user: db_users::ActiveModel =
+            Users::find_by_id(id).one(&self.conn).await?.unwrap().into();
+
+        if let Some(val) = payload.first_name {
+            user.first_name = Set(val);
+        }
+        if let Some(val) = payload.last_name {
+            user.last_name = Set(val);
+        }
+        if let Some(val) = payload.email {
+            user.email = Set(val);
+        }
+        if let Some(val) = payload.password {
+            user.password = Set(val);
+        }
+        if let Some(val) = payload.is_admin {
+            user.is_admin = Set(val);
+        }
+
+        user.update(&self.conn).await.map(Some)
     }
 
-    fn delete(&self, id: i32) -> anyhow::Result<()> {
-        todo!()
+    async fn delete(&self, id: i32) -> anyhow::Result<(u64)> {
+        // actually: Result<u64, DbErr>
+        let user = db_users::ActiveModel {
+            id: Set(id),
+            ..Default::default()
+        };
+        Users::delete(user)
+            .exec(&self.conn)
+            .await
+            .map(|res| res.rows_affected)
+            .map_err(Into::into) // for converting into anyhow::Result
     }
 }
 
@@ -160,7 +163,7 @@ impl UserRepositoryForMemory {
 #[async_trait]
 #[allow(dead_code, unused_variables)]
 impl UserRepository for UserRepositoryForMemory {
-    fn create(&self, payload: db_users::Model) -> db_users::Model {
+    async fn create(&self, payload: UserBody) -> Result<db_users::Model, DbErr> {
         todo!()
         // let mut store = self.write_store_ref();
         // let id = (store.len() + 1) as i32;
@@ -178,19 +181,23 @@ impl UserRepository for UserRepositoryForMemory {
         todo!()
     }
 
-    fn find_by_id(&self, id: i32) -> Option<db_users::Model> {
+    async fn find_by_id(&self, id: i32) -> Result<Option<db_users::Model>, DbErr> {
         todo!()
         // let store = self.read_store_ref();
         // store.get(&id).cloned()
     }
 
-    fn find_all(&self) -> Vec<db_users::Model> {
+    async fn find_all(&self) -> Result<Vec<db_users::Model>, DbErr> {
         todo!()
         // let store = self.read_store_ref();
         // Vec::from_iter(store.values().cloned())
     }
 
-    fn update(&self, id: i32, payload: db_users::Model) -> anyhow::Result<db_users::Model> {
+    async fn update(
+        &self,
+        id: i32,
+        payload: UserUpdateBody,
+    ) -> Result<Option<db_users::Model>, DbErr> {
         todo!()
         // let mut store = self.write_store_ref();
         // let user = store.get(&id).context(RepositoryError::NotFound(id))?;
@@ -205,7 +212,7 @@ impl UserRepository for UserRepositoryForMemory {
         // Ok(user)
     }
 
-    fn delete(&self, id: i32) -> anyhow::Result<()> {
+    async fn delete(&self, id: i32) -> anyhow::Result<(u64)> {
         todo!()
         // let mut store = self.write_store_ref();
         // store.remove(&id).ok_or(RepositoryError::NotFound(id))?;
