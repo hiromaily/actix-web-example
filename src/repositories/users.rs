@@ -107,8 +107,14 @@ impl UserRepository for UserRepositoryForDB {
         payload: UserUpdateBody,
     ) -> anyhow::Result<Option<db_users::Model>> {
         // Result<Option<db_users::Model>, DbErr>
-        let mut user: db_users::ActiveModel =
-            Users::find_by_id(id).one(&self.conn).await?.unwrap().into();
+
+        // let mut user: db_users::ActiveModel =
+        //     Users::find_by_id(id).one(&self.conn).await?.unwrap().into();
+        let user_option = Users::find_by_id(id).one(&self.conn).await?;
+        let mut user: db_users::ActiveModel = match user_option {
+            Some(user) => user.into(),
+            None => return Ok(None),
+        };
 
         if let Some(val) = payload.first_name {
             user.first_name = Set(val);
