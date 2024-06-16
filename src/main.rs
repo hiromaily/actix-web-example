@@ -6,7 +6,6 @@ use log::info;
 //use log::LevelFilter;
 
 // local
-use anyhow;
 use api_server::args;
 use api_server::handlers;
 use api_server::registry;

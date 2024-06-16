@@ -27,8 +27,8 @@ pub trait UserRepository: Debug + Send + Sync + 'static {
     async fn create(&self, payload: UserBody) -> anyhow::Result<db_users::Model>;
     async fn find(
         &self,
-        email: &String,
-        password: &String,
+        email: &str,
+        password: &str,
         is_admin: bool,
     ) -> anyhow::Result<Option<db_users::Model>>;
     async fn find_by_id(&self, id: i32) -> anyhow::Result<Option<db_users::Model>>;
@@ -75,8 +75,8 @@ impl UserRepository for UserRepositoryForDB {
 
     async fn find(
         &self,
-        email: &String,
-        password: &String,
+        email: &str,
+        password: &str,
         is_admin: bool,
     ) -> anyhow::Result<Option<db_users::Model>> {
         // Result<Option<db_users::Model>, DbErr>
@@ -148,18 +148,24 @@ impl UserRepository for UserRepositoryForDB {
 *******************************************************************************/
 type UserDatas = HashMap<i32, db_users::Model>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 #[allow(dead_code, unused_variables)]
 pub struct UserRepositoryForMemory {
     store: Arc<RwLock<UserDatas>>,
 }
 
+// impl Default for UserRepositoryForMemory {
+//     fn default() -> Self {
+//         UserRepositoryForMemory {
+//             store: Arc::default(),
+//         }
+//     }
+// }
+
 #[allow(dead_code, unused_variables)]
 impl UserRepositoryForMemory {
     pub fn new() -> Self {
-        UserRepositoryForMemory {
-            store: Arc::default(),
-        }
+        Self::default()
     }
 
     fn write_store_ref(&self) -> RwLockWriteGuard<UserDatas> {
@@ -185,8 +191,8 @@ impl UserRepository for UserRepositoryForMemory {
 
     async fn find(
         &self,
-        email: &String,
-        password: &String,
+        email: &str,
+        password: &str,
         is_admin: bool,
     ) -> anyhow::Result<Option<db_users::Model>> {
         todo!()

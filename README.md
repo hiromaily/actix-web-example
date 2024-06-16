@@ -70,7 +70,7 @@ WIP
 - [x] Create handler
 - [x] Create `usecase` layer as trait object (it must be abstract type)
 - [x] Connecting to Database using sea-orm
-- [ ] Create repositories for PostgreSQL users implementation
+- [x] Create repositories for PostgreSQL users implementation
 - [ ] Create repositories for PostgreSQL todos implementation
 - [ ] Hash password before inserting, searching
 - [ ] Create repositories for on memory implementation
@@ -78,7 +78,7 @@ WIP
 - [ ] Create handlers for html response
 - [ ] Unittest / Benchmark
 - [ ] CI environment
-- [ ] Fix lint error
+- [ ] Fix lint error if existed
 
 ## About [sea-orm](https://www.sea-ql.org/SeaORM/)
 
@@ -93,6 +93,29 @@ read documents.
 | Item     | explanation | example |
 | -------- | ----------- | ------- |
 | RUST_LOG | log level   | info    |
+
+## How to run
+
+### Configure toml
+
+[toml configuration file](./config/settings.toml)
+
+if toml.enabled is `true`, PostgreSQL must be run before running server.
+
+```toml
+[db]
+enabled = true
+```
+
+### Run server
+
+```sh
+# run Postgresql if needed
+docker compose up
+
+# run server
+make run
+```
 
 ## References
 

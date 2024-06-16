@@ -5,7 +5,7 @@ use anyhow;
 use std::sync::Arc;
 
 pub trait AppUsecase: Send + Sync + 'static {
-    fn app_login(&self, email: &String, password: &String) -> anyhow::Result<()>;
+    fn app_login(&self, email: &str, password: &str) -> anyhow::Result<()>;
     fn get_user_todo_list(&self, user_id: i32) -> Vec<db_todos::Model>;
     fn add_user_todo(
         &self,
@@ -40,9 +40,10 @@ impl AppAction {
     }
 }
 
+#[allow(dead_code, unused_variables)]
 impl AppUsecase for AppAction {
     // TODO: implementation
-    fn app_login(&self, email: &String, password: &String) -> anyhow::Result<()> {
+    fn app_login(&self, email: &str, password: &str) -> anyhow::Result<()> {
         Ok(())
     }
 

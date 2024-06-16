@@ -117,18 +117,24 @@ impl TodoRepository for TodoRepositoryForDB {
 *******************************************************************************/
 type TodoDatas = HashMap<i32, Todo>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 #[allow(dead_code, unused_variables)]
 pub struct TodoRepositoryForMemory {
     store: Arc<RwLock<TodoDatas>>,
 }
 
+// impl Default for TodoRepositoryForMemory {
+//     fn default() -> Self {
+//         TodoRepositoryForMemory {
+//             store: Arc::default(),
+//         }
+//     }
+// }
+
 #[allow(dead_code, unused_variables)]
 impl TodoRepositoryForMemory {
     pub fn new() -> Self {
-        TodoRepositoryForMemory {
-            store: Arc::default(),
-        }
+        Self::default()
     }
 
     fn write_store_ref(&self) -> RwLockWriteGuard<TodoDatas> {

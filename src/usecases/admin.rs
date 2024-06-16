@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 #[async_trait]
 pub trait AdminUsecase: Send + Sync + 'static {
-    async fn admin_login(&self, email: &String, password: &String) -> anyhow::Result<()>;
+    async fn admin_login(&self, email: &str, password: &str) -> anyhow::Result<()>;
     async fn get_user_list(&self) -> anyhow::Result<Vec<db_users::Model>>;
     async fn add_user(&self, user_body: users::UserBody) -> anyhow::Result<db_users::Model>;
     async fn get_user(&self, user_id: i32) -> anyhow::Result<Option<db_users::Model>>;
@@ -40,7 +40,7 @@ impl AdminAction {
 
 #[async_trait]
 impl AdminUsecase for AdminAction {
-    async fn admin_login(&self, email: &String, password: &String) -> anyhow::Result<()> {
+    async fn admin_login(&self, email: &str, password: &str) -> anyhow::Result<()> {
         const IS_ADMIN: bool = true;
 
         let ret = self.users_repo.find(email, password, IS_ADMIN).await?;

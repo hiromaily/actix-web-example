@@ -43,7 +43,7 @@ pub struct Registry {
 
 #[allow(dead_code)]
 impl Registry {
-    pub async fn new(conf: toml::Config) -> Result<(Self), DbErr> {
+    pub async fn new(conf: toml::Config) -> Result<Self, DbErr> {
         //let db = conf.db.clone();
         let todos_repo = new_todos_repository(&conf.db).await?;
         let users_repo = new_users_repository(&conf.db).await?;
