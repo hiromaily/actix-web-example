@@ -12,12 +12,12 @@ pub trait AdminUsecase: Send + Sync + 'static {
     async fn get_user_list(&self) -> anyhow::Result<Vec<db_users::Model>>;
     async fn add_user(&self, user_body: users::UserBody) -> anyhow::Result<db_users::Model>;
     async fn get_user(&self, user_id: i32) -> anyhow::Result<Option<db_users::Model>>;
-    fn update_user(
+    async fn update_user(
         &self,
         user_id: i32,
         user_body: users::UserUpdateBody,
-    ) -> anyhow::Result<db_users::Model>;
-    fn delete_user(&self, user_id: i32) -> anyhow::Result<()>;
+    ) -> anyhow::Result<Option<db_users::Model>>;
+    async fn delete_user(&self, user_id: i32) -> anyhow::Result<()>;
 }
 
 #[derive(Debug)]
@@ -103,25 +103,26 @@ impl AdminUsecase for AdminAction {
         // }
     }
 
-    // TODO: implementation
-    fn update_user(
+    async fn update_user(
         &self,
         user_id: i32,
         user_body: users::UserUpdateBody,
-    ) -> anyhow::Result<db_users::Model> {
-        Ok(db_users::Model {
-            id: 1,
-            first_name: "John".to_string(),
-            last_name: "Doe".to_string(),
-            email: "john.doe@example.com".to_string(),
-            password: "password".to_string(),
-            is_admin: true,
-            created_at: None,
-        })
+    ) -> anyhow::Result<Option<db_users::Model>> {
+        let ret = self.users_repo.update(user_id, user_body).await?;
+        Ok(ret)
+        // Ok(db_users::Model {
+        //     id: 1,
+        //     first_name: "John".to_string(),
+        //     last_name: "Doe".to_string(),
+        //     email: "john.doe@example.com".to_string(),
+        //     password: "password".to_string(),
+        //     is_admin: true,
+        //     created_at: None,
+        // })
     }
 
-    // TODO: implementation
-    fn delete_user(&self, user_id: i32) -> anyhow::Result<()> {
+    async fn delete_user(&self, user_id: i32) -> anyhow::Result<()> {
+        self.users_repo.delete(user_id).await?;
         Ok(())
     }
 }

@@ -101,8 +101,6 @@ pub async fn update_user(
     body: web::Json<users::UserUpdateBody>,
 ) -> impl Responder {
     let user_id = path.into_inner();
-    // let app_name = &data.app_name;
-    // HttpResponse::Ok().body(format!("[update_user] Hello {app_name}:{user_id}!"))
 
     // validate
     if let Err(e) = body.validate() {
@@ -111,9 +109,19 @@ pub async fn update_user(
     let user_body: users::UserUpdateBody = body.into_inner();
 
     // usecase
-    match admin_data.admin_usecase.update_user(user_id, user_body) {
-        Ok(user) => HttpResponse::Ok().json(user),
-        Err(e) => HttpResponse::BadRequest().json(json!({ "error": e.to_string() })),
+    match admin_data
+        .admin_usecase
+        .update_user(user_id, user_body)
+        .await
+    {
+        Ok(Some(user)) => HttpResponse::Ok().json(user),
+        Ok(None) => HttpResponse::NotFound().json(json!({
+            "error": "User not found",
+            "message": format!("User with ID {} not found", user_id)
+        })),
+        Err(e) => {
+            HttpResponse::BadRequest().json(json!({ "status": "error", "message": e.to_string() }))
+        }
     }
 }
 
@@ -126,7 +134,7 @@ pub async fn delete_user(
     let user_id = path.into_inner();
     // let app_name = &data.app_name;
     // HttpResponse::Ok().body(format!("[delete_user] Hello {app_name}:{user_id}!"))
-    match admin_data.admin_usecase.delete_user(user_id) {
+    match admin_data.admin_usecase.delete_user(user_id).await {
         Ok(_) => {
             HttpResponse::Ok().json(json!({ "status": "success", "message": "Delete successful" }))
         }

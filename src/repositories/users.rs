@@ -4,7 +4,7 @@ use crate::schemas::{prelude::Users, users as db_users};
 use async_trait::async_trait;
 use chrono::Utc;
 use sea_orm::ActiveValue::Set;
-use sea_orm::{self, ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter};
+use sea_orm::{self, ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter}; // DbErr
 use std::{
     clone::Clone,
     collections::HashMap,
@@ -38,7 +38,7 @@ pub trait UserRepository: Debug + Send + Sync + 'static {
         id: i32,
         payload: UserUpdateBody,
     ) -> anyhow::Result<Option<db_users::Model>>;
-    async fn delete(&self, id: i32) -> anyhow::Result<(u64)>;
+    async fn delete(&self, id: i32) -> anyhow::Result<u64>;
 }
 
 /*******************************************************************************
@@ -129,7 +129,7 @@ impl UserRepository for UserRepositoryForDB {
         user.update(&self.conn).await.map(Some).map_err(Into::into)
     }
 
-    async fn delete(&self, id: i32) -> anyhow::Result<(u64)> {
+    async fn delete(&self, id: i32) -> anyhow::Result<u64> {
         // actually: Result<u64, DbErr>
         let user = db_users::ActiveModel {
             id: Set(id),
@@ -223,7 +223,7 @@ impl UserRepository for UserRepositoryForMemory {
         // Ok(user)
     }
 
-    async fn delete(&self, id: i32) -> anyhow::Result<(u64)> {
+    async fn delete(&self, id: i32) -> anyhow::Result<u64> {
         todo!()
         // let mut store = self.write_store_ref();
         // store.remove(&id).ok_or(RepositoryError::NotFound(id))?;
