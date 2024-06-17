@@ -26,8 +26,8 @@ echo user id: $(userid)
 echo "[get user id: ${userid}]"
 curl -w'\n' http://127.0.0.1:8080/api/v1/admin/users/${userid}
 
-echo "[update user] FIXME: hash password"
-curl -w'\n' -X PUT -H "Content-Type: application/json" -d '{"first_name": "John","last_name": "Doe","email": "john.doe@example.com","password": "password1234","is_admin": true}' http://127.0.0.1:8080/api/v1/admin/users/1
+echo "[update user]"
+curl -w'\n' -X PUT -H "Content-Type: application/json" -d '{"first_name": "John3","last_name": "Doe3","email": "john.doe3@example.com","password": "password12345","is_admin": true}' http://127.0.0.1:8080/api/v1/admin/users/1
 
 echo "[delete uer] FIXME: somehow result is ok"
 curl -w'\n' -X DELETE http://127.0.0.1:8080/api/v1/admin/users/1

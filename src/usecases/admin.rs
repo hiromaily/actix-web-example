@@ -85,11 +85,11 @@ impl AdminUsecase for AdminAction {
 
     async fn add_user(&self, user_body: users::UserBody) -> anyhow::Result<db_users::Model> {
         // hash
-        let hash_password = self.hash.hash(user_body.password.as_bytes())?;
+        let hashed_password = self.hash.hash(user_body.password.as_bytes())?;
 
         // new object
         let updated_user_body = users::UserBody {
-            password: hash_password,
+            password: hashed_password,
             ..user_body // Copy other fields from the original user_body
         };
 
@@ -129,7 +129,21 @@ impl AdminUsecase for AdminAction {
         user_id: i32,
         user_body: users::UserUpdateBody,
     ) -> anyhow::Result<Option<db_users::Model>> {
-        let ret = self.users_repo.update(user_id, user_body).await?;
+        // if user_body contains password, it must be hashed
+        let hashed_password = if let Some(_password) = &user_body.password {
+            // Hash the password
+            Some(self.hash.hash(user_body.password.unwrap().as_bytes())?)
+        } else {
+            None
+        };
+
+        // create new object
+        let updated_user_body = users::UserUpdateBody {
+            password: hashed_password,
+            ..user_body // Copy other fields from the original user_body
+        };
+
+        let ret = self.users_repo.update(user_id, updated_user_body).await?;
         Ok(ret)
         // Ok(db_users::Model {
         //     id: 1,
