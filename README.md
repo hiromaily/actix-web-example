@@ -136,6 +136,9 @@ docker compose up
 
 # run server
 make run
+
+# check script for API endpoints and responses
+make request
 ```
 
 ## References

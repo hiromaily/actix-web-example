@@ -151,7 +151,7 @@ impl AppUsecase for AppAction {
     }
 
     async fn delete_user_todo(&self, _user_id: i32, todo_id: i32) -> anyhow::Result<u64> {
-        let ret = self.users_repo.delete(todo_id).await?;
+        let ret = self.todos_repo.delete(todo_id).await?;
         Ok(ret)
     }
 }

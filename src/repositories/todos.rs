@@ -74,7 +74,6 @@ impl TodoRepository for TodoRepositoryForDB {
             .map_err(Into::into)
     }
 
-    // FIXME: only user related data
     async fn find_all(&self, user_id: i32) -> anyhow::Result<Vec<db_todos::Model>> {
         // Result<Vec<db_todos::Model>, DbErr>
         //Todos::find().all(&self.conn).await.map_err(Into::into)
