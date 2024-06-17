@@ -3,8 +3,7 @@ use crate::schemas::{prelude::Users, users as db_users};
 //use anyhow::Context;
 use async_trait::async_trait;
 use chrono::Utc;
-use sea_orm::ActiveValue::Set;
-use sea_orm::{self, ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter}; // DbErr
+use sea_orm::{self, ActiveModelTrait, ActiveValue::Set, ColumnTrait, EntityTrait, QueryFilter}; // DbErr
 use std::{
     clone::Clone,
     collections::HashMap,

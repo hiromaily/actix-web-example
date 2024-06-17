@@ -27,11 +27,13 @@ pub async fn app_login(
     let password = &body.password;
 
     // authentication usecase
-    match app_data.app_usecase.app_login(email, password) {
-        Ok(_) => {
+    match app_data.app_usecase.app_login(email, password).await {
+        Ok(true) => {
             HttpResponse::Ok().json(json!({ "status": "success", "message": "Login successful" }))
         }
-        Err(e) => HttpResponse::Unauthorized()
+        Ok(false) => HttpResponse::Unauthorized()
+            .json(json!({ "status": "error", "message": "user is not found" })),
+        Err(e) => HttpResponse::InternalServerError()
             .json(json!({ "status": "error", "message": e.to_string() })),
     }
 }
@@ -45,9 +47,11 @@ pub async fn get_user_todo_list(
     let user_id = path.into_inner();
 
     // usecase
-    let user_list = app_data.app_usecase.get_user_todo_list(user_id);
-    // response
-    HttpResponse::Ok().json(user_list)
+    match app_data.app_usecase.get_user_todo_list(user_id).await {
+        Ok(todo_list) => HttpResponse::Ok().json(todo_list),
+        Err(e) => HttpResponse::InternalServerError()
+            .json(json!({ "status": "error", "message": e.to_string() })),
+    }
 }
 
 // [post] /users/{user_id}/todos
@@ -66,8 +70,8 @@ pub async fn add_user_todo(
     let todo_body: todos::TodoBody = body.into_inner();
 
     // usecase
-    match app_data.app_usecase.add_user_todo(user_id, todo_body) {
-        Ok(user) => HttpResponse::Ok().json(user),
+    match app_data.app_usecase.add_user_todo(user_id, todo_body).await {
+        Ok(todo) => HttpResponse::Ok().json(todo),
         Err(e) => HttpResponse::BadRequest().json(json!({ "error": e.to_string() })),
     }
 }
@@ -79,17 +83,18 @@ pub async fn get_user_todo(
     path: web::Path<(i32, i32)>,
 ) -> impl Responder {
     let (user_id, todo_id) = path.into_inner();
+
     // usecase
-    let res = app_data.app_usecase.get_user_todo(user_id, todo_id);
+    let res = app_data.app_usecase.get_user_todo(user_id, todo_id).await;
     // response
-    if let Some(todo) = res {
-        HttpResponse::Ok().json(todo)
-    } else {
-        // return 404
-        HttpResponse::NotFound().json(json!({
+    match res {
+        Ok(Some(todo)) => HttpResponse::Ok().json(todo),
+        Ok(None) => HttpResponse::NotFound().json(json!({
             "error": "Todo not found",
-            "message": format!("User with ID {}, todoID {} not found", user_id, todo_id)
-        }))
+            "message": format!("Todo with ID {} not found", todo_id)
+        })),
+        Err(e) => HttpResponse::InternalServerError()
+            .json(json!({ "status": "error", "message": e.to_string() })),
     }
 }
 
@@ -112,9 +117,16 @@ pub async fn update_user_todo(
     match app_data
         .app_usecase
         .update_user_todo(user_id, todo_id, todo_body)
+        .await
     {
-        Ok(todo) => HttpResponse::Ok().json(todo),
-        Err(e) => HttpResponse::BadRequest().json(json!({ "error": e.to_string() })),
+        Ok(Some(todo)) => HttpResponse::Ok().json(todo),
+        Ok(None) => HttpResponse::NotFound().json(json!({
+            "error": "Todo not found",
+            "message": format!("Todo with ID {} not found", todo_id)
+        })),
+        Err(e) => {
+            HttpResponse::BadRequest().json(json!({ "status": "error", "message": e.to_string() }))
+        }
     }
 }
 
@@ -125,12 +137,21 @@ pub async fn delete_user_todo(
     path: web::Path<(i32, i32)>,
 ) -> impl Responder {
     let (user_id, todo_id) = path.into_inner();
-    match app_data.app_usecase.delete_user_todo(user_id, todo_id) {
+    match app_data
+        .app_usecase
+        .delete_user_todo(user_id, todo_id)
+        .await
+    {
+        Ok(0) => HttpResponse::NotFound().json(json!({
+            "error": "Todo not found",
+            "message": format!("Todo with ID {} not found", todo_id)
+        })),
         Ok(_) => {
             HttpResponse::Ok().json(json!({ "status": "success", "message": "Delete successful" }))
         }
-        Err(e) => HttpResponse::Unauthorized()
-            .json(json!({ "status": "error", "message": e.to_string() })),
+        Err(e) => {
+            HttpResponse::NotFound().json(json!({ "status": "error", "message": e.to_string() }))
+        }
     }
 }
 

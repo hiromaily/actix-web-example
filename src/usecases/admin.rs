@@ -93,7 +93,6 @@ impl AdminUsecase for AdminAction {
             ..user_body // Copy other fields from the original user_body
         };
 
-        // I wanna replace user_body.password by hash_password
         let ret = self.users_repo.create(updated_user_body).await?;
         Ok(ret)
         // Ok(db_users::Model {

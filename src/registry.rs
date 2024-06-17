@@ -78,6 +78,7 @@ impl Registry {
         Arc::new(app::AppAction::new(
             self.todos_repo.clone(), // TODO: is there any way to avoid clone?
             self.users_repo.clone(), // TODO: is there any way to avoid clone?
+            self.hash.clone(),       // TODO: is there any way to avoid clone?
         ))
     }
 

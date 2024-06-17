@@ -3,8 +3,7 @@ use crate::schemas::{prelude::Todos, sea_orm_active_enums::TodoStatus, todos as 
 //use anyhow::Context;
 use async_trait::async_trait;
 use chrono::Utc;
-use sea_orm::ActiveValue::Set;
-use sea_orm::{self, ActiveModelTrait, EntityTrait}; // DbErr
+use sea_orm::{self, ActiveModelTrait, ActiveValue::Set, ColumnTrait, EntityTrait, QueryFilter}; // DbErr
 use std::{
     clone::Clone,
     collections::HashMap,
@@ -26,7 +25,7 @@ enum RepositoryError {
 pub trait TodoRepository: Debug + Send + Sync + 'static {
     async fn create(&self, user_id: i32, payload: TodoBody) -> anyhow::Result<db_todos::Model>;
     async fn find_by_id(&self, todo_id: i32) -> anyhow::Result<Option<db_todos::Model>>;
-    async fn find_all(&self) -> anyhow::Result<Vec<db_todos::Model>>;
+    async fn find_all(&self, user_id: i32) -> anyhow::Result<Vec<db_todos::Model>>;
     async fn update(
         &self,
         todo_id: i32,
@@ -75,9 +74,12 @@ impl TodoRepository for TodoRepositoryForDB {
             .map_err(Into::into)
     }
 
-    async fn find_all(&self) -> anyhow::Result<Vec<db_todos::Model>> {
+    // FIXME: only user related data
+    async fn find_all(&self, user_id: i32) -> anyhow::Result<Vec<db_todos::Model>> {
         // Result<Vec<db_todos::Model>, DbErr>
-        Todos::find().all(&self.conn).await.map_err(Into::into)
+        //Todos::find().all(&self.conn).await.map_err(Into::into)
+        let query = Todos::find().filter(db_todos::Column::UserId.eq(user_id));
+        query.all(&self.conn).await.map_err(Into::into)
     }
 
     async fn update(
@@ -165,7 +167,7 @@ impl TodoRepository for TodoRepositoryForMemory {
         todo!()
     }
 
-    async fn find_all(&self) -> anyhow::Result<Vec<db_todos::Model>> {
+    async fn find_all(&self, user_id: i32) -> anyhow::Result<Vec<db_todos::Model>> {
         todo!()
     }
 
