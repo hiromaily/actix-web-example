@@ -18,7 +18,7 @@ pub trait AdminUsecase: Send + Sync + 'static {
         user_id: i32,
         user_body: users::UserUpdateBody,
     ) -> anyhow::Result<Option<db_users::Model>>;
-    async fn delete_user(&self, user_id: i32) -> anyhow::Result<()>;
+    async fn delete_user(&self, user_id: i32) -> anyhow::Result<u64>;
 }
 
 #[derive(Debug)]
@@ -156,8 +156,8 @@ impl AdminUsecase for AdminAction {
         // })
     }
 
-    async fn delete_user(&self, user_id: i32) -> anyhow::Result<()> {
-        self.users_repo.delete(user_id).await?;
-        Ok(())
+    async fn delete_user(&self, user_id: i32) -> anyhow::Result<u64> {
+        let ret = self.users_repo.delete(user_id).await?;
+        Ok(ret)
     }
 }

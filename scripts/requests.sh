@@ -7,6 +7,8 @@ ENDPOINT=http://127.0.0.1:8080
 echo "[health check]"
 curl -w'\n' http://127.0.0.1:8080/api/v1/health
 
+## Admin functionality
+
 echo "[create user]"
 curl -w'\n' -X POST -H "Content-Type: application/json" -d '{"first_name": "John","last_name": "Doe","email": "john.doe@example.com","password": "password1234","is_admin": true}' http://127.0.0.1:8080/api/v1/admin/users
 
@@ -27,10 +29,12 @@ echo "[get user id: ${userid}]"
 curl -w'\n' http://127.0.0.1:8080/api/v1/admin/users/${userid}
 
 echo "[update user]"
-curl -w'\n' -X PUT -H "Content-Type: application/json" -d '{"first_name": "John3","last_name": "Doe3","email": "john.doe3@example.com","password": "password12345","is_admin": true}' http://127.0.0.1:8080/api/v1/admin/users/1
+curl -w'\n' -X PUT -H "Content-Type: application/json" -d '{"first_name": "John3","last_name": "Doe3","email": "john.doe3@example.com","password": "password12345","is_admin": true}' http://127.0.0.1:8080/api/v1/admin/users/${userid}
 
-echo "[delete uer] FIXME: somehow result is ok"
-curl -w'\n' -X DELETE http://127.0.0.1:8080/api/v1/admin/users/1
+echo "[delete uer]"
+curl -w'\n' -X DELETE http://127.0.0.1:8080/api/v1/admin/users/${userid}
+
+## App functionality
 
 echo "[app login]"
 curl -w'\n' -X POST -H "Content-Type: application/json" -d '{"email":"foobar@zmail.com", "password":"xxxxxxxxxxx"}' http://127.0.0.1:8080/api/v1/app/login

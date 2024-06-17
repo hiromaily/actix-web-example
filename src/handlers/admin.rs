@@ -137,6 +137,10 @@ pub async fn delete_user(
     // let app_name = &data.app_name;
     // HttpResponse::Ok().body(format!("[delete_user] Hello {app_name}:{user_id}!"))
     match admin_data.admin_usecase.delete_user(user_id).await {
+        Ok(0) => HttpResponse::NotFound().json(json!({
+            "error": "User not found",
+            "message": format!("User with ID {} not found", user_id)
+        })),
         Ok(_) => {
             HttpResponse::Ok().json(json!({ "status": "success", "message": "Delete successful" }))
         }
