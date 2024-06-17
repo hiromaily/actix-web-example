@@ -53,11 +53,15 @@ impl TodoRepositoryForDB {
 impl TodoRepository for TodoRepositoryForDB {
     async fn create(&self, user_id: i32, payload: TodoBody) -> anyhow::Result<db_todos::Model> {
         // actually: Result<db_todos::Model, DbErr>
+
+        // already validated
+        let status = payload.status.parse::<TodoStatus>().unwrap();
+
         let todo = db_todos::ActiveModel {
             user_id: Set(user_id),
             title: Set(payload.title),
             description: Set(payload.description),
-            status: Set(TodoStatus::Pending), //FIXME: how to convert string to enum: TodoStatus??
+            status: Set(status),
             created_at: Set(Some(Utc::now().naive_utc())), // for type `Option<DateTime>`
             ..Default::default()
         };
@@ -100,9 +104,14 @@ impl TodoRepository for TodoRepositoryForDB {
         if let Some(val) = payload.description {
             todo.description = Set(Some(val));
         }
-        // if let Some(val) = payload.status {
-        //     todo.status = Set(TodoStatus::Pending); //FIXME: how to convert string to enum: TodoStatus??
-        // }
+        // payload.status is already option
+        if let Some(val) = Some(payload.status) {
+            // need to be flattening
+            //if let Some(val) = payload.status.and_then(|status| status) {
+            // already validated
+            let status = val.parse::<TodoStatus>().unwrap();
+            todo.status = Set(status);
+        }
 
         todo.update(&self.conn).await.map(Some).map_err(Into::into)
     }

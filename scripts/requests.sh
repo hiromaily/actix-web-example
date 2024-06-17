@@ -62,7 +62,7 @@ echo "[get user todo]"
 curl -w'\n' http://127.0.0.1:8080/api/v1/app/users/${userid}/todos/${todoid}
 
 echo "[update todo]"
-curl -w'\n' -X PUT -H "Content-Type: application/json" -d '{"title":"Programming2", "description":"sample program using actix web 2", "status": "doing"}' http://127.0.0.1:8080/api/v1/app/users/${userid}/todos/1
+curl -w'\n' -X PUT -H "Content-Type: application/json" -d '{"title":"Programming2", "description":"sample program using actix web 2", "status": "doing"}' http://127.0.0.1:8080/api/v1/app/users/${userid}/todos/${todoid}
 
 echo "[delete todo]"
 curl -w'\n' -X DELETE http://127.0.0.1:8080/api/v1/app/users/${userid}/todos/${todoid}

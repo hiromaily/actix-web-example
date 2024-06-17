@@ -1,3 +1,4 @@
+use crate::schemas::sea_orm_active_enums::TodoStatus;
 use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError};
 
@@ -26,4 +27,42 @@ pub struct TodoUpdateBody {
     pub description: Option<String>,
     #[validate(length(min = 1), custom(function = "validate_status"))]
     pub status: String,
+}
+
+/*
+ extension for TodoStatus
+
+ [Example]
+ ```
+ let status_str = TodoStatus::Doing.to_string();
+ println!("Status as string: {}", status_str);
+
+ let status_from_str = "done".parse::<TodoStatus>().unwrap();
+ println!("Status from string: {:?}", status_from_str);
+```
+
+*/
+impl std::str::FromStr for TodoStatus {
+    type Err = ();
+
+    fn from_str(input: &str) -> Result<TodoStatus, Self::Err> {
+        match input {
+            "canceled" => Ok(TodoStatus::Canceled),
+            "doing" => Ok(TodoStatus::Doing),
+            "done" => Ok(TodoStatus::Done),
+            "pending" => Ok(TodoStatus::Pending),
+            _ => Err(()),
+        }
+    }
+}
+
+impl TodoStatus {
+    pub fn to_string(&self) -> &str {
+        match self {
+            TodoStatus::Canceled => "canceled",
+            TodoStatus::Doing => "doing",
+            TodoStatus::Done => "done",
+            TodoStatus::Pending => "pending",
+        }
+    }
 }
