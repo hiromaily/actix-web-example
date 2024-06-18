@@ -11,6 +11,7 @@ use std::sync::Arc;
 pub trait AuthUsecase: Send + Sync + 'static {
     async fn login(&self, email: &str, password: &str) -> anyhow::Result<Option<db_users::Model>>;
     fn generate_token(&self, user_id: i32, email: &str) -> anyhow::Result<String>;
+    fn validate_token(&self, token: &str) -> anyhow::Result<()>;
 }
 
 /*******************************************************************************
@@ -74,6 +75,10 @@ impl AuthUsecase for AuthAdminAction {
         let token = self.jwt.issue(payload)?;
         Ok(token)
     }
+    fn validate_token(&self, token: &str) -> anyhow::Result<()> {
+        self.jwt.validate(token)?;
+        Ok(())
+    }
 }
 
 /*******************************************************************************
@@ -134,5 +139,9 @@ impl AuthUsecase for AuthAppAction {
         let payload = PayLoad::new(user_id as u64, email.to_string());
         let token = self.jwt.issue(payload)?;
         Ok(token)
+    }
+    fn validate_token(&self, token: &str) -> anyhow::Result<()> {
+        self.jwt.validate(token)?;
+        Ok(())
     }
 }

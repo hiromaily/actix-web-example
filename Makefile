@@ -72,9 +72,13 @@ up-db:
 #------------------------------------------------------------------------------
 # Test Server
 #------------------------------------------------------------------------------
-.PHONY: request
-request:
+.PHONY: req
+req:
 	./scripts/requests.sh
+
+.PHONY: devreq
+devreq:
+	./scripts/dev.sh
 
 # curl http://127.0.0.1:8080/hello
 # @echo ""

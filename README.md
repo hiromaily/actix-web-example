@@ -163,4 +163,3 @@ make request
 - [Should handlers be functions only?](https://github.com/actix/actix-web/discussions/2321)
   - [sod-actix-web](https://github.com/thill/sod-actix-web/tree/main)
 - [Resolving not-object-safe error with trait having async methods](https://users.rust-lang.org/t/resolving-not-object-safe-error-with-trait-having-async-methods/105175)
-- [shuttle: Getting Started with Actix Web in Rust](https://www.shuttle.rs/blog/2023/12/15/using-actix-rust)

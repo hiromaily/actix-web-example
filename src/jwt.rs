@@ -6,7 +6,7 @@ use std::{
 
 pub trait JWT: Debug + Send + Sync + 'static {
     fn issue(&self, payload: PayLoad) -> anyhow::Result<String>;
-    fn validate(&self, key: String) -> anyhow::Result<bool>;
+    fn validate(&self, token: &str) -> anyhow::Result<bool>;
 }
 
 /*******************************************************************************
@@ -64,13 +64,11 @@ impl JWT for SimpleJWT {
     }
 
     // TODO: done implementation
-    fn validate(&self, token: String) -> anyhow::Result<bool> {
+    fn validate(&self, token: &str) -> anyhow::Result<bool> {
         // let claim = self
         //     .token_key
         //     .verify_token::<NoCustomClaims>(token.as_str(), None)?;
-        let _claims = self
-            .token_key
-            .verify_token::<PayLoad>(token.as_str(), None)?;
+        let _claims = self.token_key.verify_token::<PayLoad>(token, None)?;
         Ok(true)
     }
 }

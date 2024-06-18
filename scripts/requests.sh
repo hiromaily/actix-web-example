@@ -16,16 +16,14 @@ curl -w'\n' -X POST -H "Content-Type: application/json" -d '{"first_name": "John
 echo "[admin login error]"
 curl -w'\n' -X POST -H "Content-Type: application/json" -d '{"email":"foobar@zmail.com", "password":"xxxxxxxxxxx"}' http://127.0.0.1:8080/api/v1/admin/login
 
-echo "[admin login success]"
-echo "[ and get jwt token]"
+echo "[admin login success and get jwt token]"
 token=$(curl -s curl -w'\n' -X POST -H "Content-Type: application/json" -d '{"email":"john.doe@example.com", "password":"password1234"}' http://127.0.0.1:8080/api/v1/admin/login | jq -r '.token')
 #curl -w'\n' -X POST -H "Content-Type: application/json" -d '{"email":"john.doe@example.com", "password":"password1234"}' http://127.0.0.1:8080/api/v1/admin/login
 echo token: ${token}
 
 # TODO: use jwt token
-#curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" https://{hostname}/api/myresource
-
 echo "[user list]"
+#curl -w'\n' -H 'Accept: application/json' -H "Authorization: Bearer ${token}" http://127.0.0.1:8080/api/v1/admin/users
 curl -w'\n' http://127.0.0.1:8080/api/v1/admin/users
 
 echo "[get user id]"
