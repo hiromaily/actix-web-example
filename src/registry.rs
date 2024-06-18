@@ -3,7 +3,7 @@ use crate::hash;
 use crate::repositories::{todos, users};
 use crate::state;
 use crate::toml;
-use crate::usecases::{admin, app};
+use crate::usecases::{admin, app, auth};
 use sea_orm::DbErr;
 use std::sync::Arc;
 
@@ -66,6 +66,21 @@ impl Registry {
         })
     }
 
+    // is_admin: true => AuthAdminAction, false => AuthAppAction
+    fn create_auth_usecase(&self, is_admin: bool) -> Arc<dyn auth::AuthUsecase> {
+        if is_admin {
+            Arc::new(auth::AuthAdminAction::new(
+                self.users_repo.clone(), // TODO: is there any way to avoid clone?
+                self.hash.clone(),       // TODO: is there any way to avoid clone?
+            ))
+        } else {
+            Arc::new(auth::AuthAppAction::new(
+                self.users_repo.clone(), // TODO: is there any way to avoid clone?
+                self.hash.clone(),       // TODO: is there any way to avoid clone?
+            ))
+        }
+    }
+
     fn create_admin_usecase(&self) -> Arc<dyn admin::AdminUsecase> {
         Arc::new(admin::AdminAction::new(
             self.todos_repo.clone(), // TODO: is there any way to avoid clone?
@@ -78,7 +93,6 @@ impl Registry {
         Arc::new(app::AppAction::new(
             self.todos_repo.clone(), // TODO: is there any way to avoid clone?
             self.users_repo.clone(), // TODO: is there any way to avoid clone?
-            self.hash.clone(),       // TODO: is there any way to avoid clone?
         ))
     }
 
@@ -90,12 +104,14 @@ impl Registry {
 
     pub fn create_admin_state(&self) -> state::AdminState {
         state::AdminState {
+            auth_usecase: self.create_auth_usecase(true),
             admin_usecase: self.create_admin_usecase(),
         }
     }
 
     pub fn create_app_state(&self) -> state::AppState {
         state::AppState {
+            auth_usecase: self.create_auth_usecase(false),
             app_usecase: self.create_app_usecase(),
         }
     }

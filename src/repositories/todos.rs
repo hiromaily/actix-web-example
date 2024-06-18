@@ -38,7 +38,6 @@ pub trait TodoRepository: Debug + Send + Sync + 'static {
  PostgreSQL
 *******************************************************************************/
 #[derive(Debug, Clone)]
-#[allow(dead_code, unused_variables)]
 pub struct TodoRepositoryForDB {
     conn: sea_orm::DatabaseConnection,
 }
