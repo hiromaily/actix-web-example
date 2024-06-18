@@ -22,3 +22,6 @@ CREATE TABLE todos (
       FOREIGN KEY(user_id) 
         REFERENCES users(id)
 );
+
+INSERT INTO users (first_name, last_name, email, password, is_admin)
+VALUES ('John', 'Doe', 'john.doe@example.com', '634f23224f289fe2de45dce08e4258b56ad8a1cd8e62afd327779fc5f5282450', true);

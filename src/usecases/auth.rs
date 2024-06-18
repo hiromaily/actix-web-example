@@ -52,22 +52,6 @@ impl AuthUsecase for AuthAdminAction {
         self.users_repo
             .find(email, hash_password.as_str(), IS_ADMIN)
             .await
-        // let ret = self
-        //     .users_repo
-        //     .find(email, hash_password.as_str(), IS_ADMIN)
-        //     .await?;
-        // match ret {
-        //     Some(user) => {
-        //         // Handle the case where a user is found
-        //         debug!("User found: {:?}", user);
-        //         Ok(user.id)
-        //     }
-        //     None => {
-        //         // Handle the case where no user is found
-        //         debug!("No user found");
-        //         Ok(0)
-        //     }
-        // }
     }
 
     fn generate_token(&self, user_id: i32, email: &str) -> anyhow::Result<String> {
@@ -117,22 +101,6 @@ impl AuthUsecase for AuthAppAction {
         self.users_repo
             .find(email, hash_password.as_str(), IS_ADMIN)
             .await
-        // let ret = self
-        //     .users_repo
-        //     .find(email, hash_password.as_str(), IS_ADMIN)
-        //     .await?;
-        // match ret {
-        //     Some(user) => {
-        //         // Handle the case where a user is found
-        //         debug!("User found: {:?}", user);
-        //         Ok(user.id)
-        //     }
-        //     None => {
-        //         // Handle the case where no user is found
-        //         debug!("No user found");
-        //         Ok(0)
-        //     }
-        // }
     }
 
     fn generate_token(&self, user_id: i32, email: &str) -> anyhow::Result<String> {
