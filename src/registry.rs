@@ -39,10 +39,12 @@ async fn new_users_repository(
 //const SALT: &str = "Salt should be passed in a more secure way";
 
 fn new_hash() -> Arc<dyn hash::Hash> {
+    // for now, only 1 implementation
     Arc::new(hash::HashPbkdf2::new())
 }
 
 fn new_jwt() -> Arc<dyn jwt::JWT> {
+    // for now, only 1 implementation
     Arc::new(jwt::SimpleJWT::new(1))
 }
 

@@ -6,6 +6,7 @@ use std::{
 
 pub trait JWT: Debug + Send + Sync + 'static {
     fn issue(&self, payload: PayLoad) -> anyhow::Result<String>;
+    fn validate(&self, key: String) -> anyhow::Result<bool>;
 }
 
 /*******************************************************************************
@@ -49,6 +50,7 @@ impl SimpleJWT {
     }
 }
 
+// refer to: https://www.abc.osaka/actix/jwt-token
 impl JWT for SimpleJWT {
     // issue access token
     // issue is called after login succeeded
@@ -59,5 +61,16 @@ impl JWT for SimpleJWT {
         // sign
         let token = self.token_key.authenticate(claims)?;
         Ok(token)
+    }
+
+    // TODO: done implementation
+    fn validate(&self, token: String) -> anyhow::Result<bool> {
+        // let claim = self
+        //     .token_key
+        //     .verify_token::<NoCustomClaims>(token.as_str(), None)?;
+        let _claims = self
+            .token_key
+            .verify_token::<PayLoad>(token.as_str(), None)?;
+        Ok(true)
     }
 }

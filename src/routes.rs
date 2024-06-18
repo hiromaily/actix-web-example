@@ -1,4 +1,6 @@
+use crate::middlewares::auth_jwt;
 use actix_web::{web, HttpResponse};
+use actix_web_lab::middleware::from_fn;
 
 use crate::handlers;
 
@@ -10,6 +12,7 @@ use crate::handlers;
 // - Update User: [PUT] `/admin/users/{user_id}`
 // - Remove User: [DELETE] `/admin/users/{user_id}`
 
+// Note: In this case, middleware is configured per config
 pub fn api_admin_login_config(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::resource("/login")
@@ -18,20 +21,24 @@ pub fn api_admin_login_config(cfg: &mut web::ServiceConfig) {
     );
 }
 
+// Note: In this case, middleware is configured per config
 pub fn api_admin_users_config(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::resource("/users")
             .route(web::get().to(handlers::admin::get_user_list))
-            .route(web::post().to(handlers::admin::add_user)),
+            .route(web::post().to(handlers::admin::add_user))
+            .wrap(from_fn(auth_jwt::mw_auth_jwt)),
     );
 }
 
+// Note: In this case, middleware is configured per config
 pub fn api_admin_users_id_config(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::resource("/users/{user_id}")
             .route(web::get().to(handlers::admin::get_user))
             .route(web::put().to(handlers::admin::update_user))
-            .route(web::delete().to(handlers::admin::delete_user)),
+            .route(web::delete().to(handlers::admin::delete_user))
+            .wrap(from_fn(auth_jwt::mw_auth_jwt)),
     );
 }
 
