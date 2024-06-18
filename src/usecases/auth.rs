@@ -10,7 +10,7 @@ use std::sync::Arc;
 #[async_trait]
 pub trait AuthUsecase: Send + Sync + 'static {
     async fn login(&self, email: &str, password: &str) -> anyhow::Result<Option<db_users::Model>>;
-    fn generate_token(&self, user_id: i32, email: &str) -> anyhow::Result<String>;
+    fn generate_token(&self, user_id: i32, email: &str, is_admin: bool) -> anyhow::Result<String>;
     fn validate_token(&self, token: &str) -> anyhow::Result<()>;
 }
 
@@ -54,8 +54,8 @@ impl AuthUsecase for AuthAdminAction {
             .await
     }
 
-    fn generate_token(&self, user_id: i32, email: &str) -> anyhow::Result<String> {
-        let payload = PayLoad::new(user_id as u64, email.to_string());
+    fn generate_token(&self, user_id: i32, email: &str, is_admin: bool) -> anyhow::Result<String> {
+        let payload = PayLoad::new(user_id as u64, email.to_string(), is_admin);
         let token = self.jwt.issue(payload)?;
         Ok(token)
     }
@@ -103,8 +103,8 @@ impl AuthUsecase for AuthAppAction {
             .await
     }
 
-    fn generate_token(&self, user_id: i32, email: &str) -> anyhow::Result<String> {
-        let payload = PayLoad::new(user_id as u64, email.to_string());
+    fn generate_token(&self, user_id: i32, email: &str, is_admin: bool) -> anyhow::Result<String> {
+        let payload = PayLoad::new(user_id as u64, email.to_string(), is_admin);
         let token = self.jwt.issue(payload)?;
         Ok(token)
     }

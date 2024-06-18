@@ -30,10 +30,11 @@ pub async fn admin_login(
     match admin_data.auth_usecase.login(email, password).await {
         Ok(Some(user)) => {
             // TODO: return access key
-            match admin_data
-                .auth_usecase
-                .generate_token(user.id, user.email.as_str())
-            {
+            match admin_data.auth_usecase.generate_token(
+                user.id,
+                user.email.as_str(),
+                user.is_admin,
+            ) {
                 Ok(token) => HttpResponse::Ok().json(json!({
                     "status": "success",
                     "message": "Login successful",

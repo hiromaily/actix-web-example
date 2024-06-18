@@ -7,6 +7,7 @@ use std::{
 pub trait JWT: Debug + Send + Sync + 'static {
     fn issue(&self, payload: PayLoad) -> anyhow::Result<String>;
     fn validate(&self, token: &str) -> anyhow::Result<bool>;
+    fn validate_with_id(&self, token: &str, user_id: i32) -> anyhow::Result<bool>;
 }
 
 /*******************************************************************************
@@ -18,11 +19,16 @@ pub trait JWT: Debug + Send + Sync + 'static {
 pub struct PayLoad {
     user_id: u64,
     email: String,
+    is_admin: bool,
 }
 
 impl PayLoad {
-    pub fn new(user_id: u64, email: String) -> Self {
-        Self { user_id, email }
+    pub fn new(user_id: u64, email: String, is_admin: bool) -> Self {
+        Self {
+            user_id,
+            email,
+            is_admin,
+        }
     }
 }
 
@@ -63,12 +69,22 @@ impl JWT for SimpleJWT {
         Ok(token)
     }
 
-    // TODO: done implementation
     fn validate(&self, token: &str) -> anyhow::Result<bool> {
         // let claim = self
         //     .token_key
         //     .verify_token::<NoCustomClaims>(token.as_str(), None)?;
         let _claims = self.token_key.verify_token::<PayLoad>(token, None)?;
         Ok(true)
+    }
+
+    // TODO: implement
+    // - need to return is_admin
+    fn validate_with_id(&self, token: &str, user_id: i32) -> anyhow::Result<bool> {
+        let claims = self.token_key.verify_token::<PayLoad>(token, None)?;
+        if claims.custom.user_id == user_id as u64 {
+            Ok(true)
+        } else {
+            Ok(false)
+        }
     }
 }

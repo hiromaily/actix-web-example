@@ -32,7 +32,7 @@ pub async fn app_login(
             // TODO: return access key
             match app_data
                 .auth_usecase
-                .generate_token(user.id, user.email.as_str())
+                .generate_token(user.id, user.email.as_str(), user.is_admin)
             {
                 Ok(token) => HttpResponse::Ok().json(json!({
                     "status": "success",
