@@ -3,6 +3,7 @@ pub mod dbs;
 pub mod entities;
 pub mod handlers;
 pub mod hash;
+pub mod jwt;
 pub mod registry;
 pub mod repositories;
 pub mod routes;

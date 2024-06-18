@@ -110,6 +110,18 @@ Refer to [RustCrypto/password-hashes](https://github.com/RustCrypto/password-has
 - [bcrypt](https://crates.io/crates/bcrypt)
   - 7.5k dl per day
 
+### JWT
+
+- [jsonwebtoken](https://crates.io/crates/jsonwebtoken)
+  - 90k dl per day, upper trend
+- [jwt-simple](https://crates.io/crates/jwt-simple)
+  - 10k dl per day, upper trend
+  - somehow `v0.12` can't build
+- [smpl_jwt](https://crates.io/crates/smpl_jwt)
+  - 10k dl per day
+- [jwt](https://crates.io/crates/jwt)
+  - 5k dl per day
+
 ## Environment variables
 
 | Item     | explanation | example |

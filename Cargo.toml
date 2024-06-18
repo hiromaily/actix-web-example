@@ -29,3 +29,4 @@ thiserror = "1.0"
 toml = "0.8.13"
 tokio = { version = "1", features = ["full"] }
 validator = { version = "0.18", features = ["derive"] }
+jwt-simple = "0.11"
