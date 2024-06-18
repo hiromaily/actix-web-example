@@ -19,6 +19,12 @@ pub struct PayLoad {
     email: String,
 }
 
+impl PayLoad {
+    pub fn new(user_id: u64, email: String) -> Self {
+        Self { user_id, email }
+    }
+}
+
 #[derive(Debug)]
 pub struct SimpleJWT {
     token_key: HS256Key,

@@ -28,10 +28,25 @@ pub async fn admin_login(
 
     // authentication usecase
     match admin_data.auth_usecase.login(email, password).await {
-        Ok(true) => {
-            HttpResponse::Ok().json(json!({ "status": "success", "message": "Login successful" }))
+        Ok(Some(user)) => {
+            // TODO: return access key
+            match admin_data
+                .auth_usecase
+                .generate_token(user.id, user.email.as_str())
+            {
+                Ok(token) => HttpResponse::Ok().json(json!({
+                    "status": "success",
+                    "message": "Login successful",
+                    "token": token
+                })),
+                Err(e) => HttpResponse::InternalServerError().json(json!({
+                    "status": "error",
+                    "message": e.to_string()
+                })),
+            }
+            //HttpResponse::Ok().json(json!({ "status": "success", "message": "Login successful" }))
         }
-        Ok(false) => HttpResponse::Unauthorized()
+        Ok(None) => HttpResponse::Unauthorized()
             .json(json!({ "status": "error", "message": "user is not found" })),
         Err(e) => HttpResponse::InternalServerError()
             .json(json!({ "status": "error", "message": e.to_string() })),
