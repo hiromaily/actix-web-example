@@ -6,8 +6,8 @@ use std::{
 
 pub trait JWT: Debug + Send + Sync + 'static {
     fn issue(&self, payload: PayLoad) -> anyhow::Result<String>;
-    fn validate(&self, token: &str) -> anyhow::Result<bool>;
-    fn validate_with_id(&self, token: &str, user_id: i32) -> anyhow::Result<bool>;
+    fn validate(&self, token: &str) -> anyhow::Result<PayLoad>;
+    //fn validate_with_id(&self, token: &str, user_id: i32) -> anyhow::Result<bool>;
 }
 
 /*******************************************************************************
@@ -17,9 +17,9 @@ pub trait JWT: Debug + Send + Sync + 'static {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PayLoad {
-    user_id: u64,
-    email: String,
-    is_admin: bool,
+    pub user_id: u64,
+    pub email: String,
+    pub is_admin: bool,
 }
 
 impl PayLoad {
@@ -69,22 +69,23 @@ impl JWT for SimpleJWT {
         Ok(token)
     }
 
-    fn validate(&self, token: &str) -> anyhow::Result<bool> {
+    // TODO: after validating, is_admin value needs to be returned
+    fn validate(&self, token: &str) -> anyhow::Result<PayLoad> {
         // let claim = self
         //     .token_key
         //     .verify_token::<NoCustomClaims>(token.as_str(), None)?;
-        let _claims = self.token_key.verify_token::<PayLoad>(token, None)?;
-        Ok(true)
+        let claims = self.token_key.verify_token::<PayLoad>(token, None)?;
+        Ok(claims.custom)
     }
 
-    // TODO: implement
+    // TODO: after validating, is_admin value needs to be returned
     // - need to return is_admin
-    fn validate_with_id(&self, token: &str, user_id: i32) -> anyhow::Result<bool> {
-        let claims = self.token_key.verify_token::<PayLoad>(token, None)?;
-        if claims.custom.user_id == user_id as u64 {
-            Ok(true)
-        } else {
-            Ok(false)
-        }
-    }
+    // fn validate_with_id(&self, token: &str, user_id: i32) -> anyhow::Result<bool> {
+    //     let claims = self.token_key.verify_token::<PayLoad>(token, None)?;
+    //     if claims.custom.user_id == user_id as u64 {
+    //         Ok(true)
+    //     } else {
+    //         Ok(false)
+    //     }
+    // }
 }

@@ -25,7 +25,7 @@ pub async fn app_login(
     // authentication usecase
     match auth_data.auth_usecase.login(email, password).await {
         Ok(Some(user)) => {
-            // TODO: return access key
+            // return access key
             match auth_data
                 .auth_usecase
                 .generate_token(user.id, user.email.as_str(), user.is_admin)

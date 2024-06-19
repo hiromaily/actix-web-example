@@ -1,6 +1,7 @@
 pub mod args;
 pub mod dbs;
 pub mod entities;
+pub mod errors;
 pub mod handlers;
 pub mod hash;
 pub mod jwt;

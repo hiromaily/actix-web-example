@@ -110,12 +110,13 @@ make request
 - [x] set timeout for connecting database when not running
 - [x] JWT craits, token response after login
 - [x] middleware for jwt authentication
-- [ ] refactoring auth usecase decoupling from admin/app states. establish auth state.
-- [ ] admin role can access any user's todo, but user role is limited to only own todo.
-- [ ] Create repositories for on memory implementation
+- [x] refactoring auth usecase decoupling from admin/app states. establish auth state.
+- [x] admin role can access any user's todo, but user role is limited to only own todo.
+- [ ] e2e by [hurl](https://hurl.dev/)
 - [ ] Unittest / Benchmark
 - [ ] CI environment
-- [ ] Fix lint error if existed
+- [ ] Create repositories for on memory implementation
+- [x] Fix lint error if existed
 
 ## Tech Stacks
 

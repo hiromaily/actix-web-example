@@ -16,7 +16,7 @@ pub trait AuthUsecase: Send + Sync + 'static {
         password: &str,
     ) -> anyhow::Result<Option<db_users::Model>>;
     fn generate_token(&self, user_id: i32, email: &str, is_admin: bool) -> anyhow::Result<String>;
-    fn validate_token(&self, token: &str) -> anyhow::Result<()>;
+    fn validate_token(&self, token: &str) -> anyhow::Result<PayLoad>;
 }
 
 /*******************************************************************************
@@ -76,8 +76,8 @@ impl AuthUsecase for AuthAction {
         let token = self.jwt.issue(payload)?;
         Ok(token)
     }
-    fn validate_token(&self, token: &str) -> anyhow::Result<()> {
-        self.jwt.validate(token)?;
-        Ok(())
+    fn validate_token(&self, token: &str) -> anyhow::Result<PayLoad> {
+        let payload = self.jwt.validate(token)?;
+        Ok(payload)
     }
 }

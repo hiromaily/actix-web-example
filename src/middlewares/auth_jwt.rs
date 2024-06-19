@@ -1,3 +1,4 @@
+use crate::errors::CustomError;
 use crate::state;
 use actix_web::{
     body::MessageBody,
@@ -24,19 +25,26 @@ pub async fn mw_admin_auth_jwt(
 
     // retrieve token from request
     let headers = req.headers();
-    //debug!("headers: {:?}", headers);
 
     let token = match headers.get("authorization") {
         Some(value) => value.to_str().unwrap().strip_prefix("Bearer ").unwrap(),
-        None => "",
+        None => return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess)),
     };
     debug!("token: {}", token);
 
-    if let Err(e) = auth_data.auth_usecase.validate_token(token) {
-        // return 401
-        debug!("token in invalid: {}", e);
-        return Err(ErrorUnauthorized(e));
-    }
+    // is_admin must be true
+    match auth_data.auth_usecase.validate_token(token) {
+        Ok(payload) => {
+            // admin only
+            if !payload.is_admin {
+                return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess)); // return 401
+            }
+        }
+        Err(e) => {
+            debug!("token in invalid: {}", e);
+            return Err(ErrorUnauthorized(e)); // return 401
+        }
+    };
 
     // pre-processing
     next.call(req).await
@@ -45,7 +53,6 @@ pub async fn mw_admin_auth_jwt(
 
 pub async fn mw_app_auth_jwt(
     auth_data: web::Data<state::AuthState>,
-    //query: web::Query<HashMap<String, String>>,
     req: ServiceRequest,
     next: Next<impl MessageBody>,
 ) -> Result<ServiceResponse<impl MessageBody>, ActixErr> {
@@ -53,23 +60,53 @@ pub async fn mw_app_auth_jwt(
 
     // retrieve token from request
     let headers = req.headers();
-    //debug!("headers: {:?}", headers);
-
-    //debug!("query: {:?}", query);
-
     let token = match headers.get("authorization") {
         Some(value) => value.to_str().unwrap().strip_prefix("Bearer ").unwrap(),
-        None => "",
+        None => return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess)),
     };
     debug!("token: {}", token);
 
-    if let Err(e) = auth_data.auth_usecase.validate_token(token) {
-        // return 401
-        debug!("token in invalid: {}", e);
-        return Err(ErrorUnauthorized(e));
-    }
+    let user_id = match extract_user_id(req.path()) {
+        Ok(user_id) => user_id,
+        Err(_) => 0,
+    };
+    debug!("user_id: {}", user_id);
+
+    match auth_data.auth_usecase.validate_token(token) {
+        Ok(payload) => {
+            if !payload.is_admin && payload.user_id as i32 != user_id {
+                return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess)); // return 401
+            }
+        }
+        Err(e) => {
+            debug!("token in invalid: {}", e);
+            return Err(ErrorUnauthorized(e)); // return 401
+        }
+    };
 
     // pre-processing
     next.call(req).await
     // post-processing
+}
+
+// extract user_id from request path
+fn extract_user_id(path: &str) -> Result<i32, String> {
+    let segments: Vec<&str> = path.split('/').collect();
+
+    if let Some(pos) = segments.iter().position(|&s| s == "users") {
+        // there is a segment after "users" for the user_id
+        if pos + 1 < segments.len() {
+            let user_id_str = segments[pos + 1];
+
+            // parse the user_id into an integer
+            match user_id_str.parse::<i32>() {
+                Ok(user_id) => Ok(user_id),
+                Err(_) => Err("Invalid user ID format".into()),
+            }
+        } else {
+            Err("User ID not found in the path".into())
+        }
+    } else {
+        Err("Path does not contain 'users' segment".into())
+    }
 }
