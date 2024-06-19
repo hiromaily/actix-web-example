@@ -11,11 +11,10 @@ use validator::Validate;
 
 // [post] /login
 pub async fn admin_login(
-    data: web::Data<state::GlobalState>,
-    admin_data: web::Data<state::AdminState>,
+    auth_data: web::Data<state::AuthState>,
     body: web::Json<users::LoginBody>,
 ) -> impl Responder {
-    info!("admin_login received: app_name:{}", data.app_name);
+    info!("admin_login received");
 
     // validation
     if let Err(e) = body.validate() {
@@ -27,14 +26,13 @@ pub async fn admin_login(
     let password = &body.password;
 
     // authentication usecase
-    match admin_data.auth_usecase.login(email, password).await {
+    match auth_data.auth_usecase.login_admin(email, password).await {
         Ok(Some(user)) => {
             // TODO: return access key
-            match admin_data.auth_usecase.generate_token(
-                user.id,
-                user.email.as_str(),
-                user.is_admin,
-            ) {
+            match auth_data
+                .auth_usecase
+                .generate_token(user.id, user.email.as_str(), user.is_admin)
+            {
                 Ok(token) => HttpResponse::Ok().json(json!({
                     "status": "success",
                     "message": "Login successful",
@@ -55,10 +53,7 @@ pub async fn admin_login(
 }
 
 // [get] /users
-pub async fn get_user_list(
-    _data: web::Data<state::GlobalState>,
-    admin_data: web::Data<state::AdminState>,
-) -> impl Responder {
+pub async fn get_user_list(admin_data: web::Data<state::AdminState>) -> impl Responder {
     // usecase
     match admin_data.admin_usecase.get_user_list().await {
         Ok(user_list) => HttpResponse::Ok().json(user_list),
@@ -69,7 +64,6 @@ pub async fn get_user_list(
 
 // [post] /users
 pub async fn add_user(
-    _data: web::Data<state::GlobalState>,
     admin_data: web::Data<state::AdminState>,
     body: web::Json<users::UserBody>,
 ) -> impl Responder {
@@ -88,7 +82,6 @@ pub async fn add_user(
 
 // [get] "/users/{user_id}"
 pub async fn get_user(
-    _data: web::Data<state::GlobalState>,
     admin_data: web::Data<state::AdminState>,
     path: web::Path<i32>,
 ) -> impl Responder {
@@ -113,7 +106,6 @@ pub async fn get_user(
 
 // [post] "/users/{user_id}"
 pub async fn update_user(
-    _data: web::Data<state::GlobalState>,
     admin_data: web::Data<state::AdminState>,
     path: web::Path<i32>,
     body: web::Json<users::UserUpdateBody>,
@@ -145,7 +137,6 @@ pub async fn update_user(
 
 // [delete] "/users/{user_id}"
 pub async fn delete_user(
-    _data: web::Data<state::GlobalState>,
     admin_data: web::Data<state::AdminState>,
     path: web::Path<i32>,
 ) -> impl Responder {

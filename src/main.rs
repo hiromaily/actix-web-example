@@ -38,7 +38,8 @@ async fn main() -> std::io::Result<()> {
     // registry and get each states
     let reg = registry::Registry::new(config).await.unwrap(); // may panic
 
-    let global_data = web::Data::new(reg.create_global_state());
+    //let global_data = web::Data::new(reg.create_global_state());
+    let auth_data = web::Data::new(reg.create_auth_state());
     let admin_data = web::Data::new(reg.create_admin_state());
     let app_data = web::Data::new(reg.create_app_state());
 
@@ -52,7 +53,7 @@ async fn main() -> std::io::Result<()> {
 
     info!("run server {}:{}", host, port);
 
-    // [WIP] example code
+    // [WIP] experimental code
     //let my_app = handlers::basis::MyApp::new(String::from("foobar"));
 
     // intentionally try various pattern to set routes
@@ -66,7 +67,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .wrap(Logger::default())
-            .app_data(global_data.clone()) // global state
+            //.app_data(global_data.clone()) // global state
+            .app_data(auth_data.clone()) // global state
             .service(
                 web::scope("api/v1")
                     //.route("/example", web::get().to(move || my_app.greet()))
@@ -86,14 +88,6 @@ async fn main() -> std::io::Result<()> {
                             .configure(routes::api_app_users_todo_id_config),
                     ),
             )
-        // .service(routes::basis::get_hello)
-        // .service(routes::basis::get_hello_user)
-        // .service(routes::basis::post_echo)
-        // .service(routes::basis::post_echo_json)
-        // .service(web::scope("/api/v1").configure(routes::user::config))
-        // .service(web::scope("/api/v1").route("/info", web::get().to(routes::info::top))) // return 404
-        // .service(web::scope("/app").route("/index.html", web::get().to(routes::app::index)))
-        // .route("/health", web::get().to(routes::basis::health))
     })
     .keep_alive(Duration::from_secs(30))
     .bind((host, port))?

@@ -7,7 +7,7 @@ use actix_web::{
 };
 use actix_web_lab::middleware::Next;
 use log::{debug, info};
-use std::collections::HashMap;
+//use std::collections::HashMap;
 
 // refer to
 // - https://crates.io/crates/actix-web-lab
@@ -15,8 +15,8 @@ use std::collections::HashMap;
 // - https://github.com/openobserve/openobserve/blob/27eab898aa5b4dd74592299916c1df483282ea4a/src/common/meta/middleware_data.rs#L79
 
 pub async fn mw_admin_auth_jwt(
-    admin_data: web::Data<state::AdminState>,
-    _query: web::Query<HashMap<String, String>>,
+    auth_data: web::Data<state::AuthState>,
+    //_query: web::Query<HashMap<String, String>>,
     req: ServiceRequest,
     next: Next<impl MessageBody>,
 ) -> Result<ServiceResponse<impl MessageBody>, ActixErr> {
@@ -32,7 +32,7 @@ pub async fn mw_admin_auth_jwt(
     };
     debug!("token: {}", token);
 
-    if let Err(e) = admin_data.auth_usecase.validate_token(token) {
+    if let Err(e) = auth_data.auth_usecase.validate_token(token) {
         // return 401
         debug!("token in invalid: {}", e);
         return Err(ErrorUnauthorized(e));
@@ -44,8 +44,8 @@ pub async fn mw_admin_auth_jwt(
 }
 
 pub async fn mw_app_auth_jwt(
-    app_data: web::Data<state::AppState>,
-    query: web::Query<HashMap<String, String>>,
+    auth_data: web::Data<state::AuthState>,
+    //query: web::Query<HashMap<String, String>>,
     req: ServiceRequest,
     next: Next<impl MessageBody>,
 ) -> Result<ServiceResponse<impl MessageBody>, ActixErr> {
@@ -55,7 +55,7 @@ pub async fn mw_app_auth_jwt(
     let headers = req.headers();
     //debug!("headers: {:?}", headers);
 
-    debug!("query: {:?}", query);
+    //debug!("query: {:?}", query);
 
     let token = match headers.get("authorization") {
         Some(value) => value.to_str().unwrap().strip_prefix("Bearer ").unwrap(),
@@ -63,7 +63,7 @@ pub async fn mw_app_auth_jwt(
     };
     debug!("token: {}", token);
 
-    if let Err(e) = app_data.auth_usecase.validate_token(token) {
+    if let Err(e) = auth_data.auth_usecase.validate_token(token) {
         // return 401
         debug!("token in invalid: {}", e);
         return Err(ErrorUnauthorized(e));

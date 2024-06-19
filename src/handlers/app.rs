@@ -1,7 +1,6 @@
 use crate::entities::{todos, users};
 use crate::state;
 use actix_web::{web, HttpResponse, Responder};
-use log::info;
 use serde_json::json;
 use validator::Validate;
 
@@ -11,12 +10,9 @@ use validator::Validate;
 
 // [post] /login
 pub async fn app_login(
-    data: web::Data<state::GlobalState>,
-    app_data: web::Data<state::AppState>,
+    auth_data: web::Data<state::AuthState>,
     body: web::Json<users::LoginBody>,
 ) -> impl Responder {
-    info!("app_login received: app_name:{}", data.app_name);
-
     // validation
     if let Err(e) = body.validate() {
         return HttpResponse::BadRequest().json(json!({ "error": format!("{:?}", e) }));
@@ -27,10 +23,10 @@ pub async fn app_login(
     let password = &body.password;
 
     // authentication usecase
-    match app_data.auth_usecase.login(email, password).await {
+    match auth_data.auth_usecase.login(email, password).await {
         Ok(Some(user)) => {
             // TODO: return access key
-            match app_data
+            match auth_data
                 .auth_usecase
                 .generate_token(user.id, user.email.as_str(), user.is_admin)
             {
@@ -55,7 +51,6 @@ pub async fn app_login(
 
 // [get] /users/{user_id}/todos
 pub async fn get_user_todo_list(
-    _data: web::Data<state::GlobalState>,
     app_data: web::Data<state::AppState>,
     path: web::Path<i32>,
 ) -> impl Responder {
@@ -71,7 +66,6 @@ pub async fn get_user_todo_list(
 
 // [post] /users/{user_id}/todos
 pub async fn add_user_todo(
-    _data: web::Data<state::GlobalState>,
     app_data: web::Data<state::AppState>,
     path: web::Path<i32>,
     body: web::Json<todos::TodoBody>,
@@ -93,7 +87,6 @@ pub async fn add_user_todo(
 
 // [get] "/users/{user_id}/todos/{todo_id}"
 pub async fn get_user_todo(
-    _data: web::Data<state::GlobalState>,
     app_data: web::Data<state::AppState>,
     path: web::Path<(i32, i32)>,
 ) -> impl Responder {
@@ -115,7 +108,6 @@ pub async fn get_user_todo(
 
 // [post] "/users/{user_id}/todos/{todo_id}"
 pub async fn update_user_todo(
-    _data: web::Data<state::GlobalState>,
     app_data: web::Data<state::AppState>,
     path: web::Path<(i32, i32)>,
     body: web::Json<todos::TodoUpdateBody>,
@@ -147,7 +139,6 @@ pub async fn update_user_todo(
 
 // [delete] // [post] "/users/{user_id}/todos/{todo_id}"
 pub async fn delete_user_todo(
-    _data: web::Data<state::GlobalState>,
     app_data: web::Data<state::AppState>,
     path: web::Path<(i32, i32)>,
 ) -> impl Responder {

@@ -5,12 +5,14 @@ pub struct GlobalState {
     pub app_name: String,
 }
 
-pub struct AdminState {
+pub struct AuthState {
     pub auth_usecase: Arc<dyn auth::AuthUsecase>,
+}
+
+pub struct AdminState {
     pub admin_usecase: Arc<dyn admin::AdminUsecase>,
 }
 
 pub struct AppState {
-    pub auth_usecase: Arc<dyn auth::AuthUsecase>,
     pub app_usecase: Arc<dyn app::AppUsecase>,
 }

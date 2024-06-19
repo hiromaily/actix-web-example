@@ -106,16 +106,20 @@ impl Registry {
         }
     }
 
+    pub fn create_auth_state(&self) -> state::AuthState {
+        state::AuthState {
+            auth_usecase: self.create_auth_usecase(),
+        }
+    }
+
     pub fn create_admin_state(&self) -> state::AdminState {
         state::AdminState {
-            auth_usecase: self.create_auth_usecase(),
             admin_usecase: self.create_admin_usecase(),
         }
     }
 
     pub fn create_app_state(&self) -> state::AppState {
         state::AppState {
-            auth_usecase: self.create_auth_usecase(),
             app_usecase: self.create_app_usecase(),
         }
     }
