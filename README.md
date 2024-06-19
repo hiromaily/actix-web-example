@@ -113,6 +113,8 @@ make request
 - [x] refactoring auth usecase decoupling from admin/app states. establish auth state.
 - [x] admin role can access any user's todo, but user role is limited to only own todo.
 - [ ] e2e by [hurl](https://hurl.dev/)
+- [ ] more implementation for jwt and configuration on toml
+- [ ] more implementation for hash and configuration on toml
 - [ ] Unittest / Benchmark
 - [ ] CI environment
 - [ ] Create repositories for on memory implementation

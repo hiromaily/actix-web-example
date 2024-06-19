@@ -74,11 +74,11 @@ up-db:
 #------------------------------------------------------------------------------
 .PHONY: req
 req:
-	./scripts/requests.sh
+	hurl --verbose ./scripts/admin.hurl
 
-.PHONY: devreq
-devreq:
-	./scripts/dev.sh
+.PHONY: req-sh
+req-sh:
+	./scripts/req.sh
 
 # curl http://127.0.0.1:8080/hello
 # @echo ""
