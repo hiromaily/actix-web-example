@@ -76,21 +76,12 @@ impl Registry {
     }
 
     // is_admin: true => AuthAdminAction, false => AuthAppAction
-    fn create_auth_usecase(&self, is_admin: bool) -> Arc<dyn auth::AuthUsecase> {
-        // TODO: is there any way to avoid clone?
-        if is_admin {
-            Arc::new(auth::AuthAdminAction::new(
-                self.users_repo.clone(),
-                self.hash.clone(),
-                self.jwt.clone(),
-            ))
-        } else {
-            Arc::new(auth::AuthAppAction::new(
-                self.users_repo.clone(),
-                self.hash.clone(),
-                self.jwt.clone(),
-            ))
-        }
+    fn create_auth_usecase(&self) -> Arc<dyn auth::AuthUsecase> {
+        Arc::new(auth::AuthAction::new(
+            self.users_repo.clone(),
+            self.hash.clone(),
+            self.jwt.clone(),
+        ))
     }
 
     fn create_admin_usecase(&self) -> Arc<dyn admin::AdminUsecase> {
@@ -117,14 +108,14 @@ impl Registry {
 
     pub fn create_admin_state(&self) -> state::AdminState {
         state::AdminState {
-            auth_usecase: self.create_auth_usecase(true),
+            auth_usecase: self.create_auth_usecase(),
             admin_usecase: self.create_admin_usecase(),
         }
     }
 
     pub fn create_app_state(&self) -> state::AppState {
         state::AppState {
-            auth_usecase: self.create_auth_usecase(false),
+            auth_usecase: self.create_auth_usecase(),
             app_usecase: self.create_app_usecase(),
         }
     }

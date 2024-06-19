@@ -6,6 +6,37 @@ Sample Todo management web application based on Clean architecture using [actix-
 
 WIP
 
+## Requirements
+
+- Docker
+- [hurl](https://github.com/Orange-OpenSource/hurl)
+
+## How to run
+
+### Configure toml
+
+[toml configuration file](./config/settings.toml)
+
+if toml.enabled is `true`, PostgreSQL must be run before running server.
+
+```toml
+[db]
+enabled = true
+```
+
+### Run server
+
+```sh
+# run Postgresql if needed
+docker compose up
+
+# run server
+make run
+
+# check script for API endpoints and responses
+make request
+```
+
 ## TODO
 
 ### Designing
@@ -129,32 +160,6 @@ Refer to [RustCrypto/password-hashes](https://github.com/RustCrypto/password-has
 | Item     | explanation | example |
 | -------- | ----------- | ------- |
 | RUST_LOG | log level   | info    |
-
-## How to run
-
-### Configure toml
-
-[toml configuration file](./config/settings.toml)
-
-if toml.enabled is `true`, PostgreSQL must be run before running server.
-
-```toml
-[db]
-enabled = true
-```
-
-### Run server
-
-```sh
-# run Postgresql if needed
-docker compose up
-
-# run server
-make run
-
-# check script for API endpoints and responses
-make request
-```
 
 ## References
 

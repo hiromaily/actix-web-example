@@ -24,7 +24,8 @@ enum RepositoryError {
 //pub trait UserRepository: Debug + Clone + Send + Sync + 'static {
 pub trait UserRepository: Debug + Send + Sync + 'static {
     async fn create(&self, payload: UserBody) -> anyhow::Result<db_users::Model>;
-    async fn find(
+    async fn find(&self, email: &str, password: &str) -> anyhow::Result<Option<db_users::Model>>;
+    async fn find_with_is_admin(
         &self,
         email: &str,
         password: &str,
@@ -72,7 +73,16 @@ impl UserRepository for UserRepositoryForDB {
         //.with_context(|| format!("Failed to create user: {:?}", payload))
     }
 
-    async fn find(
+    async fn find(&self, email: &str, password: &str) -> anyhow::Result<Option<db_users::Model>> {
+        // Result<Option<db_users::Model>, DbErr>
+        let query = Users::find()
+            .filter(db_users::Column::Email.eq(email))
+            .filter(db_users::Column::Password.eq(password));
+
+        query.one(&self.conn).await.map_err(Into::into)
+    }
+
+    async fn find_with_is_admin(
         &self,
         email: &str,
         password: &str,
@@ -194,7 +204,11 @@ impl UserRepository for UserRepositoryForMemory {
         // user
     }
 
-    async fn find(
+    async fn find(&self, email: &str, password: &str) -> anyhow::Result<Option<db_users::Model>> {
+        todo!()
+    }
+
+    async fn find_with_is_admin(
         &self,
         email: &str,
         password: &str,
