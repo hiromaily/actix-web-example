@@ -74,8 +74,8 @@ echo todo id: ${todoid}
 echo "[get user todo]"
 curl -w'\n' -H "Authorization: Bearer ${token}" http://127.0.0.1:8080/api/v1/app/users/${userid}/todos/${todoid}
 
-# echo "[update todo]"
-# curl -w'\n' -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer ${token}" -d '{"title":"Programming2", "description":"sample program using actix web 2", "status": "doing"}' http://127.0.0.1:8080/api/v1/app/users/${userid}/todos/${todoid}
+echo "[update todo]"
+curl -w'\n' -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer ${token}" -d '{"title":"Programming2", "description":"sample program using actix web 2", "status": "doing"}' http://127.0.0.1:8080/api/v1/app/users/${userid}/todos/${todoid}
 
-# echo "[delete todo]"
-# curl -w'\n' -X DELETE -H "Authorization: Bearer ${token}" http://127.0.0.1:8080/api/v1/app/users/${userid}/todos/${todoid}
+echo "[delete todo]"
+curl -w'\n' -X DELETE -H "Authorization: Bearer ${token}" http://127.0.0.1:8080/api/v1/app/users/${userid}/todos/${todoid}

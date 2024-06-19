@@ -3,10 +3,11 @@ GET http://127.0.0.1:8080/api/v1/health
 HTTP 200
 
 #------------------------------------------------------------------------------
-# For admin endpoint
+# For admin endpoint using admin user
 #------------------------------------------------------------------------------
 
-# Login error
+# Login with wrong password
+# expects error
 POST http://127.0.0.1:8080/api/v1/admin/login
 Content-Type: application/json
 {
@@ -102,11 +103,24 @@ PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {
-    "first_name": "John3",
-    "last_name": "Doe3",
-    "email": "john.doe3@example.com",
+    "first_name": "John2",
+    "last_name": "Doe2",
+    "email": "john.doe2@example.com",
     "password": "password12345",
     "is_admin": true
+}
+HTTP 200
+[Asserts]
+jsonpath "$.id" exists
+
+
+# partially update user
+PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+{
+    "first_name": "John3",
+    "last_name": "Doe3"
 }
 HTTP 200
 [Asserts]
@@ -122,7 +136,7 @@ HTTP 200
 jsonpath "$.id" == {{userid}}
 jsonpath "$.first_name" == "John3"
 jsonpath "$.last_name" == "Doe3"
-jsonpath "$.email" == "john.doe3@example.com"
+jsonpath "$.email" == "john.doe2@example.com"
 jsonpath "$.password" exists
 jsonpath "$.is_admin" == true
 jsonpath "$.created_at" exists
@@ -147,6 +161,48 @@ HTTP 200
 jsonpath "$" count == 0
 
 
+#------------------------------------------------------------------------------
+# For admin endpoint using app user
+#------------------------------------------------------------------------------
+
+# add app user (not admin user)
+POST http://127.0.0.1:8080/api/v1/admin/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+{
+    "first_name": "Foo",
+    "last_name": "Bar",
+    "email": "foo.bar@example.com",
+    "password": "password9999",
+    "is_admin": false
+}
+HTTP 200
+[Asserts]
+jsonpath "$.id" exists
+[Captures]
+app_userid: jsonpath "$.id"
+
+
+# Login error because user is not admin user
+POST http://127.0.0.1:8080/api/v1/admin/login
+Content-Type: application/json
+{
+    "email": "foo.bar@example.com",
+    "password": "password9999"
+}
+HTTP 401
+
+
+# delete app user
+DELETE http://127.0.0.1:8080/api/v1/admin/users/{{app_userid}}
+Authorization: Bearer {{token}}
+HTTP 200
+
+
+#------------------------------------------------------------------------------
+# reset
+#------------------------------------------------------------------------------
+
 # reset data by adding initial data
 POST http://127.0.0.1:8080/api/v1/admin/users
 Authorization: Bearer {{token}}
@@ -159,4 +215,3 @@ Content-Type: application/json
     "is_admin": true
 }
 HTTP 200
-

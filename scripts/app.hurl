@@ -1,0 +1,163 @@
+# Health check
+GET http://127.0.0.1:8080/api/v1/health
+HTTP 200
+
+#------------------------------------------------------------------------------
+# For app endpoint using admin user
+#------------------------------------------------------------------------------
+
+# login with admin user
+# Login success
+POST http://127.0.0.1:8080/api/v1/admin/login
+Content-Type: application/json
+{
+    "email": "john.doe@example.com",
+    "password": "password1234"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.status" == "success"
+jsonpath "$.token" exists
+[Captures]
+token: jsonpath "$.token"
+
+
+# get user for user_id
+GET http://127.0.0.1:8080/api/v1/admin/users
+Authorization: Bearer {{token}}
+HTTP 200
+[Asserts]
+jsonpath "$" count == 1
+[Captures]
+userid: jsonpath "$[0].id"
+
+
+# add todo without token
+POST http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos
+Content-Type: application/json
+{
+    "title": "Programming",
+    "description": "sample program using actix web",
+    "status": "pending"
+}
+HTTP 401
+
+
+# add todo
+POST http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+{
+    "title": "Programming",
+    "description": "sample program using actix web",
+    "status": "pending"
+}
+HTTP 200
+
+
+# get user todo list without token
+GET http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos
+HTTP 401
+
+
+# get user todo list
+GET http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos
+Authorization: Bearer {{token}}
+HTTP 200
+[Asserts]
+jsonpath "$" count == 1
+jsonpath "$[0].title" == "Programming"
+jsonpath "$[0].description" == "sample program using actix web"
+jsonpath "$[0].status" == "Pending" #FIXME: return `pending`
+[Captures]
+todoid: jsonpath "$[0].id"
+
+
+# get user todo by todo_id without token
+GET http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos/{{todoid}}
+HTTP 401
+
+
+# get user todo by todo_id
+GET http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos/{{todoid}}
+Authorization: Bearer {{token}}
+HTTP 200
+[Asserts]
+jsonpath "$.title" == "Programming"
+jsonpath "$.description" == "sample program using actix web"
+jsonpath "$.status" == "Pending" #FIXME: return `pending`
+
+
+# update todo without token
+PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
+Content-Type: application/json
+{
+    "title": "Programming2",
+    "description": "sample program using actix web2",
+    "status": "doing"
+}
+HTTP 401
+
+
+# update todo without body
+PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
+Authorization: Bearer {{token}}
+HTTP 400
+
+
+# update todo
+PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+{
+    "title": "Programming2",
+    "description": "sample program using actix web2",
+    "status": "doing"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.id" exists
+# jsonpath "$.title" == "Programming2"
+# jsonpath "$.description" == "sample program using actix web2"
+# jsonpath "$.status" == "doing"
+
+
+# partially update todo
+PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+{
+    "title": "Programming3"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.id" exists
+# jsonpath "$.title" == "Programming3"
+# jsonpath "$.description" == "sample program using actix web2"
+# jsonpath "$.status" == "doing"
+
+
+# delete todo without token
+
+
+# delete todo
+
+
+# add app user
+
+
+# add todo for new app user by admin user
+
+
+# get todo for new app user by admin user
+
+
+# update todo for new app user by admin user
+
+
+# delete todo for new app user by admin user
+
+
+#------------------------------------------------------------------------------
+# For app endpoint using app user
+#------------------------------------------------------------------------------
