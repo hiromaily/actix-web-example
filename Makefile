@@ -90,21 +90,24 @@ req:
 req-sh:
 	./scripts/req.sh
 
-# curl http://127.0.0.1:8080/hello
-# @echo ""
-# curl http://127.0.0.1:8080/hello/5/Bob
-# @echo ""
-# curl http://127.0.0.1:8080/health
-# @echo ""
-# curl -X POST -d '{"name":"Jecy", "age":"30"}' http://127.0.0.1:8080/echo
-# @echo ""
-# curl -X POST -H "Content-Type: application/json" -d '{"name":"Jecy", "age":30}' http://127.0.0.1:8080/echojson
-# @echo ""
-# curl http://127.0.0.1:8080/api/v1/info
-# @echo ""
-# curl http://127.0.0.1:8080/app/index.html
-# @echo ""
-# curl http://127.0.0.1:8080/api/v1/user
+.PHONY: get-token
+get-token:
+	curl -s curl -w'\n' -X POST -H "Content-Type: application/json" -d '{"email":"john.doe@example.com", "password":"password1234"}' http://127.0.0.1:8080/api/v1/admin/login | jq -r '.token'
+
+# This runs a benchmark for 30 seconds, using 12 threads, and keeping 400 HTTP connections open.
+# for now, token needs to be updated at ./scripts/auth.lua
+.PHONY: bench-http
+bench-http:
+	wrk -t12 -c400 -d30s -s ./scripts/auth.lua http://127.0.0.1:8080/api/v1/admin/users
+
+# .PHONY: bench
+# bench:
+# 	cargo bench
+
+.PHONY: httpstat
+httpstat:
+	httpstat -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTg4NTkyMTEsImV4cCI6MTcxODg2MjgxMSwibmJmIjoxNzE4ODU5MjExLCJ1c2VyX2lkIjoxLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiaXNfYWRtaW4iOnRydWV9.TGQsrzGk57Fh2HNLnuztO7NMxbwljH-y-uDNbzP4SSk' http://127.0.0.1:8080/api/v1/admin/users
+
 
 #------------------------------------------------------------------------------
 # Monitoring

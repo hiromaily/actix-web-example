@@ -9,7 +9,10 @@ WIP
 ## Requirements
 
 - Docker
-- [hurl](https://github.com/Orange-OpenSource/hurl)
+- [hurl](https://github.com/Orange-OpenSource/hurl) for e2e
+- [wrk](https://github.com/wg/wrk) for HTTP benchmarking
+  - MacOS: `brew install wrk`
+- [httpstat](https://github.com/davecheney/httpstat) for checking HTTP statistics
 
 ## How to run
 
