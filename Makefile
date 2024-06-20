@@ -62,6 +62,12 @@ build-image:
 up-db:
 	docker compose up
 
+.PHONY: reset-db
+reset-db:
+	docker compose down -v
+	docker compose up
+
+
 # docker container exec -it {container_id} bash
 #  or
 # docker container exec -it actix-web-postgresql bash
@@ -74,7 +80,9 @@ up-db:
 #------------------------------------------------------------------------------
 .PHONY: req
 req:
-	hurl --verbose ./scripts/admin.hurl
+	#hurl --verbose ./scripts/admin.hurl
+	hurl --very-verbose ./scripts/admin.hurl
+	
 
 .PHONY: req-sh
 req-sh:

@@ -115,6 +115,9 @@ make req
 - [ ] e2e by [hurl](https://hurl.dev/)
 - [ ] more implementation for jwt and configuration on toml
 - [ ] more implementation for hash and configuration on toml
+- [ ] HTTP 2 / TLS(Transport Layer Security)
+- [ ] OpenAPI
+- [ ] another pluggable option of framework like [axum](https://github.com/tokio-rs/axum)
 - [ ] Unittest / Benchmark
 - [ ] CI environment
 - [ ] Create repositories for on memory implementation

@@ -89,7 +89,7 @@ jsonpath "$.status" == "Pending" #FIXME: return `pending`
 
 
 # update todo without token
-PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
+PUT http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos/{{todoid}}
 Content-Type: application/json
 {
     "title": "Programming2",
@@ -100,13 +100,13 @@ HTTP 401
 
 
 # update todo without body
-PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
+PUT http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos/{{todoid}}
 Authorization: Bearer {{token}}
 HTTP 400
 
 
 # update todo
-PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
+PUT http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos/{{todoid}}
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {
@@ -117,13 +117,13 @@ Content-Type: application/json
 HTTP 200
 [Asserts]
 jsonpath "$.id" exists
-# jsonpath "$.title" == "Programming2"
-# jsonpath "$.description" == "sample program using actix web2"
-# jsonpath "$.status" == "doing"
+jsonpath "$.title" == "Programming2"
+jsonpath "$.description" == "sample program using actix web2"
+jsonpath "$.status" == "Doing" #FIXME: return `doing`
 
 
 # partially update todo
-PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
+PUT http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos/{{todoid}}
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {
@@ -132,9 +132,9 @@ Content-Type: application/json
 HTTP 200
 [Asserts]
 jsonpath "$.id" exists
-# jsonpath "$.title" == "Programming3"
-# jsonpath "$.description" == "sample program using actix web2"
-# jsonpath "$.status" == "doing"
+jsonpath "$.title" == "Programming3"
+jsonpath "$.description" == "sample program using actix web2"
+jsonpath "$.status" == "Doing" #FIXME: return `doing`
 
 
 # delete todo without token

@@ -98,6 +98,16 @@ Authorization: Bearer {{token}}
 HTTP 400
 
 
+# FIXME: update user with wrong body
+# PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
+# Authorization: Bearer {{token}}
+# Content-Type: application/json
+# {
+#     "title": "Programming3"
+# }
+# HTTP 400
+
+
 # update user
 PUT http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
 Authorization: Bearer {{token}}
