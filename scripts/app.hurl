@@ -53,6 +53,10 @@ Content-Type: application/json
     "status": "pending"
 }
 HTTP 200
+[Asserts]
+jsonpath "$.title" == "Programming"
+jsonpath "$.description" == "sample program using actix web"
+jsonpath "$.status" == "Pending" #FIXME: return `pending`
 
 
 # get user todo list without token
@@ -138,24 +142,85 @@ jsonpath "$.status" == "Doing" #FIXME: return `doing`
 
 
 # delete todo without token
+DELETE http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos/{{todoid}}
+HTTP 401
 
 
 # delete todo
+DELETE http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos/{{todoid}}
+Authorization: Bearer {{token}}
+HTTP 200
 
 
 # add app user
+POST http://127.0.0.1:8080/api/v1/admin/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+{
+    "first_name": "Foo",
+    "last_name": "Bar",
+    "email": "foo.bar@example.com",
+    "password": "password9999",
+    "is_admin": false
+}
+HTTP 200
+[Asserts]
+jsonpath "$.id" exists
+[Captures]
+app_userid: jsonpath "$.id"
 
 
 # add todo for new app user by admin user
+POST http://127.0.0.1:8080/api/v1/app/users/{{app_userid}}/todos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+{
+    "title": "Rading book",
+    "description": "read books",
+    "status": "pending"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.id" exists
+[Captures]
+app_todoid: jsonpath "$.id"
 
 
 # get todo for new app user by admin user
+GET http://127.0.0.1:8080/api/v1/app/users/{{app_userid}}/todos/{{app_todoid}}
+Authorization: Bearer {{token}}
+HTTP 200
+[Asserts]
+jsonpath "$.title" == "Rading book"
+jsonpath "$.description" == "read books"
+jsonpath "$.status" == "Pending" #FIXME: return `pending`
 
 
 # update todo for new app user by admin user
+PUT http://127.0.0.1:8080/api/v1/app/users/{{app_userid}}/todos/{{app_todoid}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+{
+    "title": "Rading book2",
+    "description": "read books2",
+    "status": "doing"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.id" exists
+jsonpath "$.title" == "Rading book2"
+jsonpath "$.description" == "read books2"
+jsonpath "$.status" == "Doing" #FIXME: return `doing`
 
 
 # delete todo for new app user by admin user
+DELETE http://127.0.0.1:8080/api/v1/app/users/{{app_userid}}/todos/{{app_todoid}}
+Authorization: Bearer {{token}}
+HTTP 200
+
+GET http://127.0.0.1:8080/api/v1/app/users/{{app_userid}}/todos/{{app_todoid}}
+Authorization: Bearer {{token}}
+HTTP 404
 
 
 #------------------------------------------------------------------------------
