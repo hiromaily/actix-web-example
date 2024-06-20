@@ -176,3 +176,4 @@ Refer to [RustCrypto/password-hashes](https://github.com/RustCrypto/password-has
 - [Should handlers be functions only?](https://github.com/actix/actix-web/discussions/2321)
   - [sod-actix-web](https://github.com/thill/sod-actix-web/tree/main)
 - [Resolving not-object-safe error with trait having async methods](https://users.rust-lang.org/t/resolving-not-object-safe-error-with-trait-having-async-methods/105175)
+- [Documenting API for Actix-web](https://medium.com/netwo/documenting-api-for-actix-web-b575adb841a1)

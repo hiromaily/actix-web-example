@@ -77,11 +77,13 @@ reset-db:
 
 #------------------------------------------------------------------------------
 # Test Server
+# - `hurl --verbose`
+# - `hurl --very-verbose`
 #------------------------------------------------------------------------------
 .PHONY: req
 req:
-	#hurl --verbose ./scripts/admin.hurl
 	hurl --very-verbose ./scripts/admin.hurl
+	hurl --very-verbose ./scripts/app.hurl
 	
 
 .PHONY: req-sh
