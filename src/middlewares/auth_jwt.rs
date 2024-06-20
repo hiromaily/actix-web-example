@@ -66,10 +66,11 @@ pub async fn mw_app_auth_jwt(
     };
     debug!("token: {}", token);
 
-    let user_id = match extract_user_id(req.path()) {
-        Ok(user_id) => user_id,
-        Err(_) => 0,
-    };
+    // let user_id = match extract_user_id(req.path()) {
+    //     Ok(user_id) => user_id,
+    //     Err(_) => 0,
+    // };
+    let user_id = extract_user_id(req.path()).unwrap_or(0);
     debug!("user_id: {}", user_id);
 
     match auth_data.auth_usecase.validate_token(token) {

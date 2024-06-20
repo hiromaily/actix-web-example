@@ -26,7 +26,7 @@ pub struct TodoUpdateBody {
     #[validate(length(min = 1, max = 200))]
     pub description: Option<String>,
     #[validate(length(min = 1), custom(function = "validate_status"))]
-    pub status: String,
+    pub status: Option<String>,
 }
 
 /*

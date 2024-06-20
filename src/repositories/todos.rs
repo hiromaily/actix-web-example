@@ -79,7 +79,6 @@ impl TodoRepository for TodoRepositoryForDB {
 
     async fn find_all(&self, user_id: i32) -> anyhow::Result<Vec<db_todos::Model>> {
         // Result<Vec<db_todos::Model>, DbErr>
-        //Todos::find().all(&self.conn).await.map_err(Into::into)
         let query = Todos::find().filter(db_todos::Column::UserId.eq(user_id));
         query.all(&self.conn).await.map_err(Into::into)
     }
@@ -89,8 +88,6 @@ impl TodoRepository for TodoRepositoryForDB {
         todo_id: i32,
         payload: TodoUpdateBody,
     ) -> anyhow::Result<Option<db_todos::Model>> {
-        // Result<Option<db_todos::Model>, DbErr>
-
         let todo_option = Todos::find_by_id(todo_id).one(&self.conn).await?;
         let mut todo: db_todos::ActiveModel = match todo_option {
             Some(todo) => todo.into(),
@@ -103,15 +100,11 @@ impl TodoRepository for TodoRepositoryForDB {
         if let Some(val) = payload.description {
             todo.description = Set(Some(val));
         }
-        // payload.status is already option
-        if let Some(val) = Some(payload.status) {
-            // need to be flattening
-            //if let Some(val) = payload.status.and_then(|status| status) {
-            // already validated
-            let status = val.parse::<TodoStatus>().unwrap();
-            todo.status = Set(status);
+        // payload.status is enum (Option<String>)
+        // need to convert Option<String> to TodoStatus
+        if let Some(val) = payload.status {
+            todo.status = Set(val.parse::<TodoStatus>().unwrap());
         }
-
         todo.update(&self.conn).await.map(Some).map_err(Into::into)
     }
 
