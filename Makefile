@@ -27,6 +27,10 @@ compile:
 test:
 	cargo test
 
+.PHONY: update-deps
+update-deps:
+	cargo update
+
 #------------------------------------------------------------------------------
 # sea-orm
 # Refer to

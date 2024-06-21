@@ -15,6 +15,8 @@ base64 = "0.22"
 chrono = "0.4"
 clap = { version = "4", features = ["derive"] }
 env_logger = "0.11"
+jsonwebtoken = "9"
+jwt-simple = "0.11"
 log = { version = "0.4", features = ["std", "serde"] }
 pbkdf2 = { version = "0.12", features = ["simple"] }
 rand_core = { version = "0.6", features = ["std"] }
@@ -31,7 +33,6 @@ thiserror = "1.0"
 toml = "0.8.13"
 tokio = { version = "1", features = ["full"] }
 validator = { version = "0.18", features = ["derive"] }
-jwt-simple = "0.11"
 schemars = { package = "apistos-schemars", version = "0.8" }
 apistos = { version = "0.2", features = [
   "swagger-ui",

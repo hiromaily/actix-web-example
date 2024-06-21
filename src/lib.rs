@@ -6,6 +6,7 @@ pub mod handlers;
 pub mod hash;
 pub mod jwt;
 pub mod middlewares;
+pub mod rand;
 pub mod registry;
 pub mod repositories;
 pub mod routes;

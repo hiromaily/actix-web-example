@@ -42,7 +42,7 @@ make run
 make req
 
 # check OpenAPI
-open [openapi.json](http://127.0.0.1:8080/openapi.json)
+open http://127.0.0.1:8080/openapi.json
 ```
 
 ## TODO
