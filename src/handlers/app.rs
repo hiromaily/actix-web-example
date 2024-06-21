@@ -1,6 +1,10 @@
+use crate::entities::login::LoginResult;
 use crate::entities::{todos, users};
+use crate::handlers::error::ErrorResponse;
 use crate::state;
-use actix_web::{web, HttpResponse, Responder};
+use actix_http::StatusCode;
+use actix_web::{web, HttpResponse};
+use apistos::api_operation;
 use serde_json::json;
 use validator::Validate;
 
@@ -9,13 +13,16 @@ use validator::Validate;
 */
 
 // [post] /login
+#[api_operation(summary = "login for app")]
 pub async fn app_login(
     auth_data: web::Data<state::AuthState>,
     body: web::Json<users::LoginBody>,
-) -> impl Responder {
+) -> HttpResponse {
     // validation
     if let Err(e) = body.validate() {
-        return HttpResponse::BadRequest().json(json!({ "error": format!("{:?}", e) }));
+        return HttpResponse::BadRequest().json(ErrorResponse {
+            error: format!("request body is invalid: {:?}", e),
+        });
     }
 
     // Extract the email and password
@@ -30,66 +37,75 @@ pub async fn app_login(
                 .auth_usecase
                 .generate_token(user.id, user.email.as_str(), user.is_admin)
             {
-                Ok(token) => HttpResponse::Ok().json(json!({
-                    "status": "success",
-                    "message": "Login successful",
-                    "token": token
-                })),
-                Err(e) => HttpResponse::InternalServerError().json(json!({
-                    "status": "error",
-                    "message": e.to_string()
-                })),
+                Ok(token) => HttpResponse::Ok().json(LoginResult {
+                    message: "Login successful".into(),
+                    token: Some(token),
+                }),
+                Err(e) => HttpResponse::InternalServerError().json(ErrorResponse {
+                    error: format!("Fatal error: {:?}", e),
+                }),
             }
             //HttpResponse::Ok().json(json!({ "status": "success", "message": "Login successful" }))
         }
-        Ok(None) => HttpResponse::Unauthorized()
-            .json(json!({ "status": "error", "message": "user is not found" })),
-        Err(e) => HttpResponse::InternalServerError()
-            .json(json!({ "status": "error", "message": e.to_string() })),
+        Ok(None) => HttpResponse::Unauthorized().json(LoginResult {
+            message: "user is not found".into(),
+            token: None,
+        }),
+        Err(e) => HttpResponse::InternalServerError().json(ErrorResponse {
+            error: format!("Fatal error: {:?}", e),
+        }),
     }
 }
 
 // [get] /users/{user_id}/todos
+#[api_operation(summary = "get user todo list")]
 pub async fn get_user_todo_list(
     app_data: web::Data<state::AppState>,
     path: web::Path<i32>,
-) -> impl Responder {
+) -> HttpResponse {
     let user_id = path.into_inner();
 
     // usecase
     match app_data.app_usecase.get_user_todo_list(user_id).await {
         Ok(todo_list) => HttpResponse::Ok().json(todo_list),
-        Err(e) => HttpResponse::InternalServerError()
-            .json(json!({ "status": "error", "message": e.to_string() })),
+        Err(e) => HttpResponse::InternalServerError().json(ErrorResponse {
+            error: format!("Fatal error: {:?}", e),
+        }),
     }
 }
 
 // [post] /users/{user_id}/todos
+#[api_operation(summary = "add user todo")]
 pub async fn add_user_todo(
     app_data: web::Data<state::AppState>,
     path: web::Path<i32>,
     body: web::Json<todos::TodoBody>,
-) -> impl Responder {
+) -> HttpResponse {
     let user_id = path.into_inner();
 
     // validation
     if let Err(e) = body.validate() {
-        return HttpResponse::BadRequest().json(json!({ "error": format!("{:?}", e) }));
+        return HttpResponse::BadRequest().json(ErrorResponse {
+            error: format!("request body is invalid: {:?}", e),
+        });
     }
     let todo_body: todos::TodoBody = body.into_inner();
 
     // usecase
     match app_data.app_usecase.add_user_todo(user_id, todo_body).await {
         Ok(todo) => HttpResponse::Ok().json(todo),
-        Err(e) => HttpResponse::BadRequest().json(json!({ "error": e.to_string() })),
+        Err(e) => HttpResponse::InternalServerError().json(ErrorResponse {
+            error: format!("Fatal error: {:?}", e),
+        }),
     }
 }
 
 // [get] "/users/{user_id}/todos/{todo_id}"
+#[api_operation(summary = "get user todo")]
 pub async fn get_user_todo(
     app_data: web::Data<state::AppState>,
     path: web::Path<(i32, i32)>,
-) -> impl Responder {
+) -> HttpResponse {
     let (user_id, todo_id) = path.into_inner();
 
     // usecase
@@ -97,26 +113,29 @@ pub async fn get_user_todo(
     // response
     match res {
         Ok(Some(todo)) => HttpResponse::Ok().json(todo),
-        Ok(None) => HttpResponse::NotFound().json(json!({
-            "error": "Todo not found",
-            "message": format!("Todo with ID {} not found", todo_id)
-        })),
-        Err(e) => HttpResponse::InternalServerError()
-            .json(json!({ "status": "error", "message": e.to_string() })),
+        Ok(None) => HttpResponse::NotFound().json(ErrorResponse {
+            error: format!("User with ID {} not found", user_id),
+        }),
+        Err(e) => HttpResponse::InternalServerError().json(ErrorResponse {
+            error: format!("Fatal error: {:?}", e),
+        }),
     }
 }
 
-// [post] "/users/{user_id}/todos/{todo_id}"
+// [put] "/users/{user_id}/todos/{todo_id}"
+#[api_operation(summary = "update user todo")]
 pub async fn update_user_todo(
     app_data: web::Data<state::AppState>,
     path: web::Path<(i32, i32)>,
     body: web::Json<todos::TodoUpdateBody>,
-) -> impl Responder {
+) -> HttpResponse {
     let (user_id, todo_id) = path.into_inner();
 
     // validate
     if let Err(e) = body.validate() {
-        return HttpResponse::BadRequest().json(json!({ "error": format!("{:?}", e) }));
+        return HttpResponse::BadRequest().json(ErrorResponse {
+            error: format!("request body is invalid: {:?}", e),
+        });
     }
     let todo_body: todos::TodoUpdateBody = body.into_inner();
 
@@ -127,10 +146,9 @@ pub async fn update_user_todo(
         .await
     {
         Ok(Some(todo)) => HttpResponse::Ok().json(todo),
-        Ok(None) => HttpResponse::NotFound().json(json!({
-            "error": "Todo not found",
-            "message": format!("Todo with ID {} not found", todo_id)
-        })),
+        Ok(None) => HttpResponse::NotFound().json(ErrorResponse {
+            error: format!("User with ID {} not found", user_id),
+        }),
         Err(e) => {
             HttpResponse::BadRequest().json(json!({ "status": "error", "message": e.to_string() }))
         }
@@ -138,30 +156,26 @@ pub async fn update_user_todo(
 }
 
 // [delete] // [post] "/users/{user_id}/todos/{todo_id}"
+#[api_operation(summary = "elete user todo")]
 pub async fn delete_user_todo(
     app_data: web::Data<state::AppState>,
     path: web::Path<(i32, i32)>,
-) -> impl Responder {
+) -> HttpResponse {
     let (user_id, todo_id) = path.into_inner();
     match app_data
         .app_usecase
         .delete_user_todo(user_id, todo_id)
         .await
     {
-        Ok(0) => HttpResponse::NotFound().json(json!({
-            "error": "Todo not found",
-            "message": format!("Todo with ID {} not found", todo_id)
-        })),
+        Ok(0) => HttpResponse::NotFound().json(ErrorResponse {
+            error: format!("User with ID {} not found", user_id),
+        }),
         Ok(_) => {
-            HttpResponse::Ok().json(json!({ "status": "success", "message": "Delete successful" }))
+            //HttpResponse::Ok().json(json!({ "status": "success", "message": "Delete successful" }))
+            HttpResponse::new(StatusCode::NO_CONTENT)
         }
-        Err(e) => {
-            HttpResponse::NotFound().json(json!({ "status": "error", "message": e.to_string() }))
-        }
+        Err(e) => HttpResponse::InternalServerError().json(ErrorResponse {
+            error: format!("Fatal error: {:?}", e),
+        }),
     }
 }
-
-// pub async fn index(data: web::Data<crate::state::AppState>) -> impl Responder {
-//     let app_name = &data.app_name;
-//     format!("Hello {app_name}!")
-// }

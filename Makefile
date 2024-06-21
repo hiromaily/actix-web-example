@@ -45,7 +45,15 @@ setup-sea-orm:
 # 	sea-orm-cli migrate generate create_table_users
 
 # https://www.sea-ql.org/sea-orm-tutorial/ch01-04-entity-generation.html
-# deeply nested directory as output doesn't work
+#
+# FIXME: by shell script
+# For now, generated code is modified for apistos, adding ApiComponent, JsonSchema
+# ```
+# #[derive(
+#    Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize, ApiComponent, JsonSchema,
+#)]
+# ```
+#
 .PHONY: generate-entity-from-db
 generate-entity-from-db:
 	rm -rf src/schemas

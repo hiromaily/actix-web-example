@@ -1,8 +1,14 @@
+use crate::schemas::users::Model;
+use apistos::ApiComponent;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-// (...Clone, PartialEq, Eq) if needed
-#[derive(Debug, Serialize, Deserialize, Validate)]
+/*
+ HTTP request body and response
+*/
+
+#[derive(Debug, Serialize, Deserialize, Validate, ApiComponent, JsonSchema)]
 pub struct LoginBody {
     #[validate(length(min = 8, max = 50))]
     pub email: String,
@@ -10,7 +16,9 @@ pub struct LoginBody {
     pub password: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Validate, Clone, PartialEq, Eq)]
+#[derive(
+    Debug, Serialize, Deserialize, Validate, Clone, PartialEq, Eq, ApiComponent, JsonSchema,
+)]
 pub struct UserBody {
     #[validate(length(min = 1, max = 50))]
     pub first_name: String,
@@ -23,7 +31,7 @@ pub struct UserBody {
     pub is_admin: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate, ApiComponent, JsonSchema)]
 pub struct UserUpdateBody {
     #[validate(length(min = 1, max = 50))]
     pub first_name: Option<String>,
@@ -34,4 +42,9 @@ pub struct UserUpdateBody {
     #[validate(length(min = 10, max = 20))]
     pub password: Option<String>,
     pub is_admin: Option<bool>,
+}
+
+#[derive(ApiComponent, JsonSchema)]
+pub struct UserModel {
+    pub model: Model,
 }

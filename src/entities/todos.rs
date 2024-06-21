@@ -1,6 +1,12 @@
 use crate::schemas::sea_orm_active_enums::TodoStatus;
+use apistos::ApiComponent;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError};
+
+/*
+ HTTP request body and response
+*/
 
 fn validate_status(status: &str) -> Result<(), ValidationError> {
     match status {
@@ -9,7 +15,7 @@ fn validate_status(status: &str) -> Result<(), ValidationError> {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate, ApiComponent, JsonSchema)]
 pub struct TodoBody {
     #[validate(length(min = 1, max = 50))]
     pub title: String,
@@ -19,7 +25,7 @@ pub struct TodoBody {
     pub status: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate, ApiComponent, JsonSchema)]
 pub struct TodoUpdateBody {
     #[validate(length(min = 1, max = 50))]
     pub title: Option<String>,

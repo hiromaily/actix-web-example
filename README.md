@@ -2,6 +2,8 @@
 
 Sample Todo management web application based on Clean architecture using [actix-web](https://actix.rs/docs/) and [sea-orm](https://www.sea-ql.org/SeaORM/). Database, Hash algorithm are defined as traits object and these are initialized by Dependency Injection(DI).
 
+This API server generates OpenAPI spec using [apistos](https://crates.io/crates/apistos).
+
 ## Status
 
 WIP
@@ -38,6 +40,9 @@ make run
 
 # run e2e
 make req
+
+# check OpenAPI
+open [openapi.json](http://127.0.0.1:8080/openapi.json)
 ```
 
 ## TODO
@@ -115,7 +120,8 @@ make req
 - [x] middleware for jwt authentication
 - [x] refactoring auth usecase decoupling from admin/app states. establish auth state.
 - [x] admin role can access any user's todo, but user role is limited to only own todo.
-- [ ] e2e by [hurl](https://hurl.dev/)
+- [x] e2e by [hurl](https://hurl.dev/)
+- [x] exporting OpenAPI documentation
 - [ ] more implementation for jwt and configuration on toml
 - [ ] more implementation for hash and configuration on toml
 - [ ] HTTP 2 / TLS(Transport Layer Security)
@@ -158,11 +164,22 @@ Refer to [RustCrypto/password-hashes](https://github.com/RustCrypto/password-has
   - 90k dl per day, upper trend
 - [jwt-simple](https://crates.io/crates/jwt-simple)
   - 10k dl per day, upper trend
-  - somehow `v0.12` can't build
+  - somehow `v0.12` can't build and development is stopped since then 2023
 - [smpl_jwt](https://crates.io/crates/smpl_jwt)
   - 10k dl per day
 - [jwt](https://crates.io/crates/jwt)
   - 5k dl per day
+
+### OpenAPI Documentation (not code generation for server)
+
+After running, access to [openapi.json](http://127.0.0.1:8080/openapi.json)
+
+#### [apistos](https://crates.io/crates/apistos)
+
+- [github: apistos](https://github.com/netwo-io/apistos)
+- [example](https://github.com/netwo-io/apistos/tree/main/examples)
+  - [example: rust-farm/gcc-api](https://github.com/buraksenyurt/rust-farm/blob/2b8ac3cb410ee10868b0e12df2724b734b7d8dfc/Practices/green-code-challenge/gcc-api/src/main.rs#L9)
+- [Documenting API for Actix-web](https://medium.com/netwo/documenting-api-for-actix-web-b575adb841a1)
 
 ## Environment variables
 
@@ -170,7 +187,7 @@ Refer to [RustCrypto/password-hashes](https://github.com/RustCrypto/password-has
 | -------- | ----------- | ------- |
 | RUST_LOG | log level   | info    |
 
-## References
+## References to develop
 
 - [How to Work With TOML Files in Rust](https://www.makeuseof.com/working-with-toml-files-in-rust/)
 - [How to pass a Trait object via app_data to Actix Web?](https://users.rust-lang.org/t/how-to-pass-a-trait-object-via-app-data-to-actix-web/79096)
@@ -179,4 +196,3 @@ Refer to [RustCrypto/password-hashes](https://github.com/RustCrypto/password-has
 - [Should handlers be functions only?](https://github.com/actix/actix-web/discussions/2321)
   - [sod-actix-web](https://github.com/thill/sod-actix-web/tree/main)
 - [Resolving not-object-safe error with trait having async methods](https://users.rust-lang.org/t/resolving-not-object-safe-error-with-trait-having-async-methods/105175)
-- [Documenting API for Actix-web](https://medium.com/netwo/documenting-api-for-actix-web-b575adb841a1)

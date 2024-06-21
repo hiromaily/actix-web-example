@@ -1,8 +1,7 @@
 use actix_web::{HttpResponse, Responder};
-//use actix_web::{get, post, web, HttpResponse, Responder, Result};
-// use log::info;
-// use serde::Deserialize;
+use apistos::api_operation;
 
+#[api_operation(summary = "health check")]
 pub async fn health() -> impl Responder {
     HttpResponse::Ok().body("OK")
 }

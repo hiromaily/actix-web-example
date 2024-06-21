@@ -16,7 +16,6 @@ Content-Type: application/json
 }
 HTTP 200
 [Asserts]
-jsonpath "$.status" == "success"
 jsonpath "$.token" exists
 [Captures]
 token: jsonpath "$.token"
@@ -154,7 +153,7 @@ HTTP 401
 # delete todo
 DELETE http://127.0.0.1:8080/api/v1/app/users/{{userid}}/todos/{{todoid}}
 Authorization: Bearer {{token}}
-HTTP 200
+HTTP 204
 
 
 #------------------------------------------------------------------------------
@@ -225,7 +224,7 @@ jsonpath "$.status" == "Doing" #FIXME: return `doing`
 # delete todo for new app user by admin user
 DELETE http://127.0.0.1:8080/api/v1/app/users/{{app_userid}}/todos/{{app_todoid}}
 Authorization: Bearer {{token}}
-HTTP 200
+HTTP 204
 
 GET http://127.0.0.1:8080/api/v1/app/users/{{app_userid}}/todos/{{app_todoid}}
 Authorization: Bearer {{token}}
@@ -262,7 +261,6 @@ Content-Type: application/json
 }
 HTTP 200
 [Asserts]
-jsonpath "$.status" == "success"
 jsonpath "$.token" exists
 [Captures]
 app2_token: jsonpath "$.token"
@@ -314,7 +312,7 @@ jsonpath "$.status" == "Doing" #FIXME: return `doing`
 # delete todo
 DELETE http://127.0.0.1:8080/api/v1/app/users/{{app2_userid}}/todos/{{app2_todoid}}
 Authorization: Bearer {{app2_token}}
-HTTP 200
+HTTP 204
 
 
 #------------------------------------------------------------------------------

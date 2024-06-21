@@ -2,6 +2,10 @@
 GET http://127.0.0.1:8080/api/v1/health
 HTTP 200
 
+# OpenAPI
+GET http://127.0.0.1:8080/openapi.json
+HTTP 200
+
 #------------------------------------------------------------------------------
 # For admin endpoint using admin user
 #------------------------------------------------------------------------------
@@ -26,7 +30,6 @@ Content-Type: application/json
 }
 HTTP 200
 [Asserts]
-jsonpath "$.status" == "success"
 jsonpath "$.token" exists
 [Captures]
 token: jsonpath "$.token"
@@ -160,7 +163,7 @@ HTTP 401
 # delete user
 DELETE http://127.0.0.1:8080/api/v1/admin/users/{{userid}}
 Authorization: Bearer {{token}}
-HTTP 200
+HTTP 204
 
 
 # make sure no record by getting user list
@@ -206,7 +209,7 @@ HTTP 401
 # delete app user
 DELETE http://127.0.0.1:8080/api/v1/admin/users/{{app_userid}}
 Authorization: Bearer {{token}}
-HTTP 200
+HTTP 204
 
 
 #------------------------------------------------------------------------------

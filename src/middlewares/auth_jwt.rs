@@ -23,28 +23,32 @@ pub async fn mw_admin_auth_jwt(
 ) -> Result<ServiceResponse<impl MessageBody>, ActixErr> {
     info!("middleware run");
 
-    // retrieve token from request
-    let headers = req.headers();
+    // [temporary] skip `/login`
+    if !req.path().contains("/login") {
+        // retrieve token from request
+        let headers = req.headers();
 
-    let token = match headers.get("authorization") {
-        Some(value) => value.to_str().unwrap().strip_prefix("Bearer ").unwrap(),
-        None => return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess)),
-    };
-    debug!("token: {}", token);
+        let token = match headers.get("authorization") {
+            Some(value) => value.to_str().unwrap().strip_prefix("Bearer ").unwrap(),
+            None => return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess)),
+        };
+        debug!("token: {}", token);
 
-    // is_admin must be true
-    match auth_data.auth_usecase.validate_token(token) {
-        Ok(payload) => {
-            // admin only
-            if !payload.is_admin {
-                return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess)); // return 401
+        // is_admin must be true
+        match auth_data.auth_usecase.validate_token(token) {
+            Ok(payload) => {
+                // admin only
+                if !payload.is_admin {
+                    return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess));
+                    // return 401
+                }
             }
-        }
-        Err(e) => {
-            debug!("token in invalid: {}", e);
-            return Err(ErrorUnauthorized(e)); // return 401
-        }
-    };
+            Err(e) => {
+                debug!("token in invalid: {}", e);
+                return Err(ErrorUnauthorized(e)); // return 401
+            }
+        };
+    }
 
     // pre-processing
     next.call(req).await
@@ -58,32 +62,36 @@ pub async fn mw_app_auth_jwt(
 ) -> Result<ServiceResponse<impl MessageBody>, ActixErr> {
     info!("middleware run");
 
-    // retrieve token from request
-    let headers = req.headers();
-    let token = match headers.get("authorization") {
-        Some(value) => value.to_str().unwrap().strip_prefix("Bearer ").unwrap(),
-        None => return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess)),
-    };
-    debug!("token: {}", token);
+    // [temporary] skip `/login`
+    if !req.path().contains("/login") {
+        // retrieve token from request
+        let headers = req.headers();
+        let token = match headers.get("authorization") {
+            Some(value) => value.to_str().unwrap().strip_prefix("Bearer ").unwrap(),
+            None => return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess)),
+        };
+        debug!("token: {}", token);
 
-    // let user_id = match extract_user_id(req.path()) {
-    //     Ok(user_id) => user_id,
-    //     Err(_) => 0,
-    // };
-    let user_id = extract_user_id(req.path()).unwrap_or(0);
-    debug!("user_id: {}", user_id);
+        // let user_id = match extract_user_id(req.path()) {
+        //     Ok(user_id) => user_id,
+        //     Err(_) => 0,
+        // };
+        let user_id = extract_user_id(req.path()).unwrap_or(0);
+        debug!("user_id: {}", user_id);
 
-    match auth_data.auth_usecase.validate_token(token) {
-        Ok(payload) => {
-            if !payload.is_admin && payload.user_id as i32 != user_id {
-                return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess)); // return 401
+        match auth_data.auth_usecase.validate_token(token) {
+            Ok(payload) => {
+                if !payload.is_admin && payload.user_id as i32 != user_id {
+                    return Err(ErrorUnauthorized(CustomError::UnauthorizedAccess));
+                    // return 401
+                }
             }
-        }
-        Err(e) => {
-            debug!("token in invalid: {}", e);
-            return Err(ErrorUnauthorized(e)); // return 401
-        }
-    };
+            Err(e) => {
+                debug!("token in invalid: {}", e);
+                return Err(ErrorUnauthorized(e)); // return 401
+            }
+        };
+    }
 
     // pre-processing
     next.call(req).await

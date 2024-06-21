@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 actix-cors = "0.7.0"
+actix-http = "3.8.0"
 actix-web = "4"
 actix-web-lab = "0.20"
 anyhow = "1.0"
@@ -31,3 +32,12 @@ toml = "0.8.13"
 tokio = { version = "1", features = ["full"] }
 validator = { version = "0.18", features = ["derive"] }
 jwt-simple = "0.11"
+schemars = { package = "apistos-schemars", version = "0.8" }
+apistos = { version = "0.2", features = [
+  "swagger-ui",
+  "extras",
+  "qs_query",
+  "rapidoc",
+  "redoc",
+] }
+apistos-models = "0.2"
