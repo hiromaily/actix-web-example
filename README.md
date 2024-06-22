@@ -99,6 +99,34 @@ open http://127.0.0.1:8080/openapi.json
     - `/app/`
     - `/app/login`
 
+#### WIP: HTTP status code
+
+- POST (Creating Data)
+  - 201 Created: The request has been fulfilled, resulting in the creation of a new resource. Include a Location header to point to the URL of the new resource.
+  - 400 Bad Request: The server could not understand the request due to invalid syntax.
+  - 401 Unauthorized: The client must authenticate itself to get the requested response.
+  - 403 Forbidden: The client does not have access rights to the content.
+- GET (Retrieving Data)
+  - 200 OK: The request was successful, and the server is returning the requested resource.
+  - 400 Bad Request: The server could not understand the request due to invalid syntax.
+  - 401 Unauthorized: The client must authenticate itself to get the requested response.
+  - 403 Forbidden: The client does not have access rights to the content.
+  - 404 Not Found: The server can not find the requested resource.
+- PUT (Updating Data)
+  - 200 OK: The request was successful, and the server is returning the updated resource.
+  - 400 Bad Request: The server could not understand the request due to invalid syntax.
+  - 401 Unauthorized: The client must authenticate itself to get the requested response.
+  - 403 Forbidden: The client does not have access rights to the content.
+  - 404 Not Found: The server can not find the requested resource.
+- DELETE (Deleting Data)
+  - 204 No Content: The request was successful, but the server is not returning any content.
+  - 400 Bad Request: The server could not understand the request due to invalid syntax.
+  - 401 Unauthorized: The client must authenticate itself to get the requested response.
+  - 403 Forbidden: The client does not have access rights to the content.
+  - 404 Not Found: The server can not find the requested resource.
+- General Error Codes
+  - 500 Internal Server Error: The server has encountered a situation it doesn't know how to handle.
+
 ### Implementation
 
 - [x] Simple Logger
