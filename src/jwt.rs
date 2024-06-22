@@ -48,6 +48,7 @@ impl PayLoadExp {
 }
 
 pub trait JWT: Debug + Send + Sync + 'static {
+    fn is_disabled(&self) -> bool;
     fn issue(&self, payload: PayLoad) -> anyhow::Result<String>;
     fn validate(&self, token: &str) -> anyhow::Result<PayLoad>;
     //fn validate_with_id(&self, token: &str, user_id: i32) -> anyhow::Result<bool>;
@@ -60,6 +61,7 @@ pub trait JWT: Debug + Send + Sync + 'static {
 
 #[derive(Debug)]
 pub struct SimpleJWT {
+    is_disabled: bool,
     token_key: HS256Key,
     duration_min: u64,
 }
@@ -67,6 +69,7 @@ pub struct SimpleJWT {
 impl Default for SimpleJWT {
     fn default() -> Self {
         Self {
+            is_disabled: false,
             token_key: HS256Key::generate(),
             duration_min: 30,
         }
@@ -76,6 +79,7 @@ impl Default for SimpleJWT {
 impl SimpleJWT {
     pub fn new(duration_min: u64) -> Self {
         Self {
+            is_disabled: false,
             token_key: HS256Key::generate(),
             duration_min,
         }
@@ -84,6 +88,10 @@ impl SimpleJWT {
 
 // refer to: https://www.abc.osaka/actix/jwt-token
 impl JWT for SimpleJWT {
+    fn is_disabled(&self) -> bool {
+        self.is_disabled
+    }
+
     // issue access token
     // issue is called after login succeeded
     fn issue(&self, payload: PayLoad) -> anyhow::Result<String> {
@@ -108,6 +116,7 @@ impl JWT for SimpleJWT {
 
 #[derive(Debug)]
 pub struct JsonWebToken {
+    is_disabled: bool,
     token_key: String,
     duration_sec: u64,
 }
@@ -115,6 +124,7 @@ pub struct JsonWebToken {
 impl Default for JsonWebToken {
     fn default() -> Self {
         Self {
+            is_disabled: false,
             token_key: "secret".to_string(),
             duration_sec: 3600,
         }
@@ -127,6 +137,7 @@ impl JsonWebToken {
         let secret = generate_secret(32);
 
         Self {
+            is_disabled: false,
             token_key: secret,
             duration_sec,
         }
@@ -134,6 +145,10 @@ impl JsonWebToken {
 }
 
 impl JWT for JsonWebToken {
+    fn is_disabled(&self) -> bool {
+        self.is_disabled
+    }
+
     fn issue(&self, payload: PayLoad) -> anyhow::Result<String> {
         let expiration = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -158,5 +173,41 @@ impl JWT for JsonWebToken {
             &Validation::new(Algorithm::HS256),
         )?;
         Ok(token_data.claims)
+    }
+}
+
+/*******************************************************************************
+dummy
+******************************************************************************/
+
+#[derive(Debug)]
+pub struct DummyJWT {
+    is_disabled: bool,
+}
+
+impl Default for DummyJWT {
+    fn default() -> Self {
+        Self { is_disabled: true }
+    }
+}
+
+impl DummyJWT {
+    pub fn new() -> Self {
+        DummyJWT::default()
+    }
+}
+
+impl JWT for DummyJWT {
+    fn is_disabled(&self) -> bool {
+        self.is_disabled
+    }
+
+    fn issue(&self, _payload: PayLoad) -> anyhow::Result<String> {
+        Ok("token".to_string())
+    }
+
+    fn validate(&self, _token: &str) -> anyhow::Result<PayLoad> {
+        let payload = PayLoad::new(1, "example@example.com".to_string(), true);
+        Ok(payload)
     }
 }

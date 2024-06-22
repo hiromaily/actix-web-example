@@ -122,10 +122,10 @@ open http://127.0.0.1:8080/openapi.json
 - [x] admin role can access any user's todo, but user role is limited to only own todo.
 - [x] e2e by [hurl](https://hurl.dev/)
 - [x] exporting OpenAPI documentation
-- [ ] more implementation for jwt and configuration on toml
+- [x] OpenAPI
+- [x] more implementation for jwt and configuration on toml
 - [ ] more implementation for hash and configuration on toml
 - [ ] HTTP 2 / TLS(Transport Layer Security)
-- [ ] OpenAPI
 - [ ] another pluggable option of framework like [axum](https://github.com/tokio-rs/axum)
 - [ ] Unittest / Benchmark
 - [ ] CI environment

@@ -4,6 +4,10 @@ app_name = "api-server"
 host = "127.0.0.1"
 port = 8080
 
+[jwt]
+kind = "jsonwebtoken" # jwt-simple, jsonwebtoken, none
+duration_min = 30
+
 [logger]
 service = "api-server"
 level = "debug"        # debug, info, warn, error

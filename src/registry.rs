@@ -43,9 +43,12 @@ fn new_hash() -> Arc<dyn hash::Hash> {
     Arc::new(hash::HashPbkdf2::new())
 }
 
-fn new_jwt() -> Arc<dyn jwt::JWT> {
-    // for now, only 1 implementation
-    Arc::new(jwt::SimpleJWT::new(1))
+fn new_jwt(cjwt: &toml::JWT) -> Arc<dyn jwt::JWT> {
+    match cjwt.kind {
+        toml::JWTKind::JWTSimple => Arc::new(jwt::SimpleJWT::new(cjwt.duration_min)),
+        toml::JWTKind::JsonWebToken => Arc::new(jwt::JsonWebToken::new(cjwt.duration_min * 60)),
+        toml::JWTKind::None => Arc::new(jwt::DummyJWT::new()),
+    }
 }
 
 #[allow(dead_code)]
@@ -64,7 +67,7 @@ impl Registry {
         let todos_repo = new_todos_repository(&conf.db).await?;
         let users_repo = new_users_repository(&conf.db).await?;
         let hash = new_hash();
-        let jwt = new_jwt();
+        let jwt = new_jwt(&conf.jwt);
 
         Ok(Self {
             conf,
