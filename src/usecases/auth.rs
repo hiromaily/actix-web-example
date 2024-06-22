@@ -15,6 +15,7 @@ pub trait AuthUsecase: Send + Sync + 'static {
         email: &str,
         password: &str,
     ) -> anyhow::Result<Option<db_users::Model>>;
+    fn is_jwt_disable(&self) -> bool;
     fn generate_token(&self, user_id: i32, email: &str, is_admin: bool) -> anyhow::Result<String>;
     fn validate_token(&self, token: &str) -> anyhow::Result<PayLoad>;
 }
@@ -69,6 +70,10 @@ impl AuthUsecase for AuthAction {
         self.users_repo
             .find_with_is_admin(email, hash_password.as_str(), IS_ADMIN)
             .await
+    }
+
+    fn is_jwt_disable(&self) -> bool {
+        self.jwt.is_disabled()
     }
 
     fn generate_token(&self, user_id: i32, email: &str, is_admin: bool) -> anyhow::Result<String> {

@@ -23,8 +23,9 @@ pub async fn mw_admin_auth_jwt(
 ) -> Result<ServiceResponse<impl MessageBody>, ActixErr> {
     info!("middleware run");
 
-    // [temporary] skip `/login`
-    if !req.path().contains("/login") {
+    // [temporary] skip `/login`, or is_disable==true
+    let is_login_page = req.path().contains("/login");
+    if !is_login_page || (!is_login_page && !auth_data.auth_usecase.is_jwt_disable()) {
         // retrieve token from request
         let headers = req.headers();
 
@@ -62,8 +63,9 @@ pub async fn mw_app_auth_jwt(
 ) -> Result<ServiceResponse<impl MessageBody>, ActixErr> {
     info!("middleware run");
 
-    // [temporary] skip `/login`
-    if !req.path().contains("/login") {
+    // [temporary] skip `/login` or is_disable==true
+    let is_login_page = req.path().contains("/login");
+    if !is_login_page || (!is_login_page && !auth_data.auth_usecase.is_jwt_disable()) {
         // retrieve token from request
         let headers = req.headers();
         let token = match headers.get("authorization") {
