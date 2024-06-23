@@ -153,12 +153,11 @@ open http://127.0.0.1:8080/openapi.json
 - [x] OpenAPI
 - [x] more implementation for jwt and configuration on toml
 - [ ] more implementation for hash and configuration on toml
-- [ ] HTTP 2 / TLS(Transport Layer Security)
-- [ ] another pluggable option of framework like [axum](https://github.com/tokio-rs/axum)
+- [ ] Create repositories for on memory implementation using [airone](https://crates.io/crates/airone). This feature is required for CI.
 - [ ] Unittest / Benchmark
 - [ ] CI environment
-- [ ] Create repositories for on memory implementation
-- [x] Fix lint error if existed
+- [ ] HTTP 2 / TLS(Transport Layer Security)
+- [ ] another pluggable option of framework like [axum](https://github.com/tokio-rs/axum)
 
 ## Tech Stacks
 

@@ -35,19 +35,17 @@ pub struct TodoUpdateBody {
     pub status: Option<String>,
 }
 
-/*
- extension for TodoStatus
-
- [Example]
- ```
- let status_str = TodoStatus::Doing.to_string();
- println!("Status as string: {}", status_str);
-
- let status_from_str = "done".parse::<TodoStatus>().unwrap();
- println!("Status from string: {:?}", status_from_str);
-```
-
-*/
+/// extension for TodoStatus
+///
+/// # Examples
+///
+/// ```
+/// let status_str = TodoStatus::Doing.to_string();
+/// println!("Status as string: {}", status_str);
+///
+/// let status_from_str = "done".parse::<TodoStatus>().unwrap();
+/// println!("Status from string: {:?}", status_from_str);
+/// ```
 impl std::str::FromStr for TodoStatus {
     type Err = ();
 

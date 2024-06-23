@@ -116,7 +116,9 @@ pub fn print_loaded_config(file_name: &str) {
 }
 
 // return loaded config
-// example to call
+//
+// # Examples
+//
 // ```
 // match toml::load_config("./config/settings.toml") {
 //   Ok(config) => println!("{:#?}", config),
