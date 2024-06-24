@@ -62,15 +62,15 @@ impl Hash for HashPbkdf2 {
 #[derive(Clone, Debug)]
 pub struct HashScrypt {
     salt: SaltString,
-    params: scrypt::Params,
+    //params: scrypt::Params,
 }
 
 impl Default for HashScrypt {
     fn default() -> Self {
         let salt = SaltString::generate(&mut OsRng);
-        let params = scrypt::Params::new(18, 8, 1, 32).unwrap();
+        //let params = scrypt::Params::new(18, 8, 1, 32).unwrap();
 
-        Self { salt, params }
+        Self { salt }
     }
 }
 
@@ -80,10 +80,13 @@ impl HashScrypt {
     }
 }
 
+// FIXME: extremely slow
 impl Hash for HashScrypt {
     fn hash(&self, data: &[u8]) -> anyhow::Result<String> {
-        Ok(Scrypt
-            .hash_password_customized(data, None, None, self.params, &self.salt)?
-            .to_string())
+        // [too slow]
+        // Ok(Scrypt
+        //     .hash_password_customized(data, None, None, self.params, &self.salt)?
+        //     .to_string())
+        Ok(Scrypt.hash_password(data, &self.salt)?.to_string())
     }
 }

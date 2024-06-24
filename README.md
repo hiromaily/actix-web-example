@@ -181,6 +181,7 @@ Refer to [RustCrypto/password-hashes](https://github.com/RustCrypto/password-has
   - 100k dl per day
 - [scrypt](https://crates.io/crates/scrypt)
   - 23k dl per day
+  - somehow too slow
 - [argon2](https://crates.io/crates/argon2)
   - 10k dl per day
 - [bcrypt](https://crates.io/crates/bcrypt)
