@@ -42,3 +42,8 @@ apistos = { version = ">=0.2.6, <0.3", features = [
   "redoc",
 ] }
 apistos-models = "0.2"
+
+# [features]
+# default = ["db"]
+# db = []
+# memory = []

@@ -1,4 +1,6 @@
 use argon2::Argon2;
+use scrypt::password_hash::{rand_core::OsRng, PasswordHasher, SaltString};
+use scrypt::Scrypt;
 use sha2::{Digest, Sha256};
 use std::fmt::Write;
 use std::{
@@ -49,5 +51,39 @@ impl Hash for HashPbkdf2 {
         }
 
         Ok(hashed_str)
+    }
+}
+
+/*******************************************************************************
+ scrypt
+ - https://docs.rs/argon2/latest/argon2/
+*******************************************************************************/
+
+#[derive(Debug)]
+pub struct HashScrypt {
+    salt: SaltString,
+    params: scrypt::Params,
+}
+
+impl Default for HashScrypt {
+    fn default() -> Self {
+        let salt = SaltString::generate(&mut OsRng);
+        let params = scrypt::Params::new(18, 8, 1, 32).unwrap();
+
+        Self { salt, params }
+    }
+}
+
+impl HashScrypt {
+    pub fn new() -> Self {
+        HashScrypt::default()
+    }
+}
+
+impl Hash for HashScrypt {
+    fn hash(&self, data: &[u8]) -> anyhow::Result<String> {
+        Ok(Scrypt
+            .hash_password_customized(data, None, None, self.params, &self.salt)?
+            .to_string())
     }
 }

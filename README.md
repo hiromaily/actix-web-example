@@ -152,7 +152,8 @@ open http://127.0.0.1:8080/openapi.json
 - [x] exporting OpenAPI documentation
 - [x] OpenAPI
 - [x] more implementation for jwt and configuration on toml
-- [ ] more implementation for hash and configuration on toml
+- [x] more implementation for hash and configuration on toml
+- [ ] feature flag must be integrated into DI functionality
 - [ ] Create repositories for on memory implementation using [airone](https://crates.io/crates/airone). This feature is required for CI.
 - [ ] Unittest / Benchmark
 - [ ] CI environment
