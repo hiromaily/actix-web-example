@@ -12,10 +12,10 @@ pub async fn get_conn(
     let mut opt = ConnectOptions::new(db_url);
     opt.max_connections(100)
         .min_connections(5)
-        .connect_timeout(Duration::from_secs(10))
-        .acquire_timeout(Duration::from_secs(10))
-        .idle_timeout(Duration::from_secs(10))
-        .max_lifetime(Duration::from_secs(10))
+        .connect_timeout(Duration::from_secs(5))
+        .acquire_timeout(Duration::from_secs(5))
+        .idle_timeout(Duration::from_secs(5))
+        .max_lifetime(Duration::from_secs(3))
         .sqlx_logging(true)
         .sqlx_logging_level(log::LevelFilter::Info);
     //.set_schema_search_path("my_schema"); // Setting default PostgreSQL schema

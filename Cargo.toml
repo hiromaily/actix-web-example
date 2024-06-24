@@ -42,8 +42,9 @@ apistos = { version = ">=0.2.6, <0.3", features = [
   "redoc",
 ] }
 apistos-models = "0.2"
+cfg-if = "1.0.0"
 
-# [features]
-# default = ["db"]
-# db = []
-# memory = []
+[features]
+default = ["pbkdf2"]
+pbkdf2 = []
+scrypt = []

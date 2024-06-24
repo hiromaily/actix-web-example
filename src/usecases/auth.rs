@@ -25,16 +25,16 @@ pub trait AuthUsecase: Send + Sync + 'static {
 *******************************************************************************/
 
 #[derive(Debug)]
-pub struct AuthAction {
+pub struct AuthAction<T: hash::Hash> {
     pub users_repo: Arc<dyn repo_users::UserRepository>,
-    pub hash: Arc<dyn hash::Hash>,
+    pub hash: T,
     pub jwt: Arc<dyn jwt::JWT>,
 }
 
-impl AuthAction {
+impl<T: hash::Hash> AuthAction<T> {
     pub fn new(
         users_repo: Arc<dyn repo_users::UserRepository>,
-        hash: Arc<dyn hash::Hash>,
+        hash: T,
         jwt: Arc<dyn jwt::JWT>,
     ) -> Self {
         Self {
@@ -46,7 +46,7 @@ impl AuthAction {
 }
 
 #[async_trait]
-impl AuthUsecase for AuthAction {
+impl<T: hash::Hash> AuthUsecase for AuthAction<T> {
     // return user_id if exist, but return 0 if not exist
     async fn login(&self, email: &str, password: &str) -> anyhow::Result<Option<db_users::Model>> {
         // hash

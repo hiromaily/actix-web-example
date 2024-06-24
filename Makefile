@@ -15,9 +15,15 @@ fix:
 build:
 	cargo build
 
+# hash crate is pbkdf2
 .PHONY: run
 run:
 	RUST_LOG=debug cargo run -- ./config/settings.toml -d
+
+# hash crate is scrypt
+.PHONY: run-scrypt
+run-scrypt:
+	RUST_LOG=debug cargo run --no-default-features --features "scrypt" -- ./config/settings.toml -d
 
 .PHONY: compile
 compile:

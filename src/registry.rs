@@ -4,6 +4,8 @@ use crate::state;
 use crate::toml;
 use crate::usecases::{admin, app, auth};
 use crate::{hash, jwt};
+use cfg_if::cfg_if;
+use log::debug;
 use sea_orm::{DatabaseConnection, DbErr};
 use std::sync::Arc;
 
@@ -44,9 +46,45 @@ async fn new_users_repository(
 // Must not use for production
 //const SALT: &str = "Salt should be passed in a more secure way";
 
-fn new_hash() -> Arc<dyn hash::Hash> {
-    // for now, only 1 implementation
-    Arc::new(hash::HashPbkdf2::new())
+// fn new_hash() -> Arc<dyn hash::Hash> {
+//     // for now, only 1 implementation
+//     Arc::new(hash::HashPbkdf2::new())
+// }
+
+// #[cfg(feature = "pbkdf2")]
+// fn new_hash() -> hash::HashPbkdf2 {
+//     debug!("hash crate is pbkdf2");
+
+//     // for now, only 1 implementation
+//     hash::HashPbkdf2::new()
+// }
+
+// #[cfg(feature = "scrypt")]
+// fn new_hash() -> hash::HashScrypt {
+//     debug!("hash crate is scrypt");
+
+//     // for now, only 1 implementation
+//     hash::HashScrypt::new()
+// }
+
+cfg_if! {
+    if #[cfg(feature = "pbkdf2")] {
+        fn new_hash() -> hash::HashPbkdf2 {
+            debug!("hash crate is pbkdf2");
+
+            // for now, only 1 implementation
+            hash::HashPbkdf2::new()
+        }
+    } else if #[cfg(feature = "scrypt")] {
+        fn new_hash() -> hash::HashScrypt {
+            debug!("hash crate is scrypt");
+
+            // for now, only 1 implementation
+            hash::HashScrypt::new()
+        }
+     } else {
+        compile_error!("One of the features 'pbkdf2' or 'scrypt' must be enabled");
+    }
 }
 
 fn new_jwt(cjwt: &toml::JWT) -> Arc<dyn jwt::JWT> {
@@ -57,16 +95,35 @@ fn new_jwt(cjwt: &toml::JWT) -> Arc<dyn jwt::JWT> {
     }
 }
 
-#[allow(dead_code)]
-pub struct Registry {
-    pub conf: toml::Config,
-    pub todos_repo: Arc<dyn todos::TodoRepository>,
-    pub users_repo: Arc<dyn users::UserRepository>,
-    pub hash: Arc<dyn hash::Hash>,
-    pub jwt: Arc<dyn jwt::JWT>,
+cfg_if! {
+    if #[cfg(feature = "pbkdf2")] {
+        pub struct Registry {
+            pub conf: toml::Config,
+            pub todos_repo: Arc<dyn todos::TodoRepository>,
+            pub users_repo: Arc<dyn users::UserRepository>,
+            pub jwt: Arc<dyn jwt::JWT>,
+            pub hash: hash::HashPbkdf2,
+        }
+    } else if #[cfg(feature = "scrypt")] {
+        pub struct Registry {
+            pub conf: toml::Config,
+            pub todos_repo: Arc<dyn todos::TodoRepository>,
+            pub users_repo: Arc<dyn users::UserRepository>,
+            pub jwt: Arc<dyn jwt::JWT>,
+            pub hash: hash::HashScrypt,
+        }
+    } else {
+        compile_error!("One of the features 'pbkdf2' or 'scrypt' must be enabled");
+    }
 }
+// pub struct Registry {
+//     pub conf: toml::Config,
+//     pub todos_repo: Arc<dyn todos::TodoRepository>,
+//     pub users_repo: Arc<dyn users::UserRepository>,
+//     pub jwt: Arc<dyn jwt::JWT>,
+//     pub hash: hash::HashPbkdf2,
+// }
 
-#[allow(dead_code)]
 impl Registry {
     pub async fn new(conf: toml::Config) -> Result<Self, DbErr> {
         //let db = conf.db.clone();
@@ -81,8 +138,8 @@ impl Registry {
             conf,
             todos_repo,
             users_repo,
-            hash,
             jwt,
+            hash,
         })
     }
 

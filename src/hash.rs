@@ -17,7 +17,7 @@ pub trait Hash: Debug + Send + Sync + 'static {
  - https://docs.rs/argon2/latest/argon2/
 *******************************************************************************/
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct HashPbkdf2 {
     byte_length: usize,
 }
@@ -59,7 +59,7 @@ impl Hash for HashPbkdf2 {
  - https://docs.rs/argon2/latest/argon2/
 *******************************************************************************/
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct HashScrypt {
     salt: SaltString,
     params: scrypt::Params,

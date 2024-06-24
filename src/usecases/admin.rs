@@ -20,17 +20,17 @@ pub trait AdminUsecase: Send + Sync + 'static {
 }
 
 #[derive(Debug)]
-pub struct AdminAction {
+pub struct AdminAction<T: hash::Hash> {
     pub todos_repo: Arc<dyn repo_todos::TodoRepository>, // for now, not used anywhere
     pub users_repo: Arc<dyn repo_users::UserRepository>,
-    pub hash: Arc<dyn hash::Hash>,
+    pub hash: T,
 }
 
-impl AdminAction {
+impl<T: hash::Hash> AdminAction<T> {
     pub fn new(
         todos_repo: Arc<dyn repo_todos::TodoRepository>,
         users_repo: Arc<dyn repo_users::UserRepository>,
-        hash: Arc<dyn hash::Hash>,
+        hash: T,
     ) -> Self {
         AdminAction {
             todos_repo,
@@ -41,7 +41,7 @@ impl AdminAction {
 }
 
 #[async_trait]
-impl AdminUsecase for AdminAction {
+impl<T: hash::Hash> AdminUsecase for AdminAction<T> {
     async fn get_user_list(&self) -> anyhow::Result<Vec<db_users::Model>> {
         let ret = self.users_repo.find_all().await?;
         Ok(ret)
