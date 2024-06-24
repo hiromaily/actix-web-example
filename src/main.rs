@@ -1,6 +1,5 @@
 use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
-use actix_web_lab::middleware::from_fn;
 use apistos::app::OpenApiWrapper;
 use apistos::info::Info;
 use apistos::server::Server;
@@ -16,7 +15,6 @@ use std::error::Error;
 // local
 use api_server::args;
 use api_server::handlers;
-use api_server::middlewares::auth_jwt;
 use api_server::registry;
 use api_server::routes;
 use api_server::toml;
@@ -99,16 +97,14 @@ async fn main() -> Result<(), impl Error> {
                             .app_data(admin_data.clone()) // admin state // maybe divide it into each configuration level
                             .configure(routes::api_admin_login_config_apistos)
                             .configure(routes::api_admin_users_config_apistos)
-                            .configure(routes::api_admin_users_id_config_apistos)
-                            .wrap(from_fn(auth_jwt::mw_admin_auth_jwt)),
+                            .configure(routes::api_admin_users_id_config_apistos), //.wrap(from_fn(auth_jwt::mw_admin_auth_jwt)),
                     )
                     .service(
                         web::scope("/app")
                             .app_data(app_data.clone()) // app state // maybe divide it into each configuration level
                             .configure(routes::api_app_login_config_apistos)
                             .configure(routes::api_app_users_todo_config_apistos)
-                            .configure(routes::api_app_users_todo_id_config_apistos)
-                            .wrap(from_fn(auth_jwt::mw_app_auth_jwt)),
+                            .configure(routes::api_app_users_todo_id_config_apistos), //.wrap(from_fn(auth_jwt::mw_app_auth_jwt)),
                     ),
             )
             .build("/openapi.json")

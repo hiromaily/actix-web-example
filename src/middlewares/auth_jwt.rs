@@ -24,8 +24,9 @@ pub async fn mw_admin_auth_jwt(
     info!("middleware run");
 
     // [temporary] skip `/login`, or is_disable==true
-    let is_login_page = req.path().contains("/login");
-    if !is_login_page || (!is_login_page && !auth_data.auth_usecase.is_jwt_disable()) {
+    // let is_login_page = req.path().contains("/login");
+    // if !is_login_page || (!is_login_page && !auth_data.auth_usecase.is_jwt_disable()) {
+    if !auth_data.auth_usecase.is_jwt_disable() {
         // retrieve token from request
         let headers = req.headers();
 
@@ -64,8 +65,9 @@ pub async fn mw_app_auth_jwt(
     info!("middleware run");
 
     // [temporary] skip `/login` or is_disable==true
-    let is_login_page = req.path().contains("/login");
-    if !is_login_page || (!is_login_page && !auth_data.auth_usecase.is_jwt_disable()) {
+    // let is_login_page = req.path().contains("/login");
+    // if !is_login_page || (!is_login_page && !auth_data.auth_usecase.is_jwt_disable()) {
+    if !auth_data.auth_usecase.is_jwt_disable() {
         // retrieve token from request
         let headers = req.headers();
         let token = match headers.get("authorization") {

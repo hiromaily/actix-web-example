@@ -59,7 +59,8 @@ pub fn api_admin_users_config_apistos(cfg: &mut apiweb::ServiceConfig) {
     cfg.service(
         apiweb::resource("/users")
             .route(apiweb::get().to(handlers::admin::get_user_list))
-            .route(apiweb::post().to(handlers::admin::add_user)), //.wrap(from_fn(auth_jwt::mw_admin_auth_jwt)),
+            .route(apiweb::post().to(handlers::admin::add_user))
+            .wrap(from_fn(auth_jwt::mw_admin_auth_jwt)),
     );
 }
 
@@ -69,7 +70,8 @@ pub fn api_admin_users_id_config_apistos(cfg: &mut apiweb::ServiceConfig) {
         apiweb::resource("/users/{user_id}")
             .route(apiweb::get().to(handlers::admin::get_user))
             .route(apiweb::put().to(handlers::admin::update_user))
-            .route(apiweb::delete().to(handlers::admin::delete_user)), //.wrap(from_fn(auth_jwt::mw_admin_auth_jwt)),
+            .route(apiweb::delete().to(handlers::admin::delete_user))
+            .wrap(from_fn(auth_jwt::mw_admin_auth_jwt)),
     );
 }
 
@@ -123,7 +125,8 @@ pub fn api_app_users_todo_config_apistos(cfg: &mut apiweb::ServiceConfig) {
     cfg.service(
         apiweb::resource("/users/{user_id}/todos")
             .route(apiweb::get().to(handlers::app::get_user_todo_list))
-            .route(apiweb::post().to(handlers::app::add_user_todo)), //.wrap(from_fn(auth_jwt::mw_app_auth_jwt)),
+            .route(apiweb::post().to(handlers::app::add_user_todo))
+            .wrap(from_fn(auth_jwt::mw_app_auth_jwt)),
     );
 }
 
@@ -132,6 +135,7 @@ pub fn api_app_users_todo_id_config_apistos(cfg: &mut apiweb::ServiceConfig) {
         apiweb::resource("/users/{user_id}/todos/{todo_id}")
             .route(apiweb::get().to(handlers::app::get_user_todo))
             .route(apiweb::put().to(handlers::app::update_user_todo))
-            .route(apiweb::delete().to(handlers::app::delete_user_todo)), //.wrap(from_fn(auth_jwt::mw_app_auth_jwt)),
+            .route(apiweb::delete().to(handlers::app::delete_user_todo))
+            .wrap(from_fn(auth_jwt::mw_app_auth_jwt)),
     );
 }
