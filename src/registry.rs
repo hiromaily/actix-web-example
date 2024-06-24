@@ -4,8 +4,16 @@ use crate::state;
 use crate::toml;
 use crate::usecases::{admin, app, auth};
 use crate::{hash, jwt};
-use sea_orm::DbErr;
+use sea_orm::{DatabaseConnection, DbErr};
 use std::sync::Arc;
+
+async fn new_db_conn(db: &toml::PostgreSQL) -> Result<Option<sea_orm::DatabaseConnection>, DbErr> {
+    if db.enabled {
+        let connected = conn::get_conn(&db.user, &db.password, &db.host, &db.dbname).await?;
+        return Ok(Some(connected));
+    }
+    Ok(None)
+}
 
 // error would occur if TodoRepository has clone trait as supertrait
 // fn new_todos_repository(&self) -> Box<dyn todo_repository::TodoRepository> {
@@ -16,21 +24,19 @@ use std::sync::Arc;
 //     }
 // }
 async fn new_todos_repository(
-    db: &toml::PostgreSQL,
+    db_conn: Option<DatabaseConnection>,
 ) -> Result<Arc<dyn todos::TodoRepository>, DbErr> {
-    if db.enabled {
-        let connected = conn::get_conn(&db.user, &db.password, &db.host, &db.dbname).await?;
-        return Ok(Arc::new(todos::TodoRepositoryForDB::new(connected)));
+    if let Some(conn) = db_conn {
+        return Ok(Arc::new(todos::TodoRepositoryForDB::new(conn)));
     }
     Ok(Arc::new(todos::TodoRepositoryForMemory::new()))
 }
 
 async fn new_users_repository(
-    db: &toml::PostgreSQL,
+    db_conn: Option<sea_orm::DatabaseConnection>,
 ) -> Result<Arc<dyn users::UserRepository>, DbErr> {
-    if db.enabled {
-        let connected = conn::get_conn(&db.user, &db.password, &db.host, &db.dbname).await?;
-        return Ok(Arc::new(users::UserRepositoryForDB::new(connected)));
+    if let Some(conn) = db_conn {
+        return Ok(Arc::new(users::UserRepositoryForDB::new(conn)));
     }
     Ok(Arc::new(users::UserRepositoryForMemory::new()))
 }
@@ -64,8 +70,10 @@ pub struct Registry {
 impl Registry {
     pub async fn new(conf: toml::Config) -> Result<Self, DbErr> {
         //let db = conf.db.clone();
-        let todos_repo = new_todos_repository(&conf.db).await?;
-        let users_repo = new_users_repository(&conf.db).await?;
+        let db_conn = new_db_conn(&conf.db).await?;
+
+        let todos_repo = new_todos_repository(db_conn.clone()).await?;
+        let users_repo = new_users_repository(db_conn.clone()).await?;
         let hash = new_hash();
         let jwt = new_jwt(&conf.jwt);
 
@@ -78,7 +86,6 @@ impl Registry {
         })
     }
 
-    // is_admin: true => AuthAdminAction, false => AuthAppAction
     fn create_auth_usecase(&self) -> Arc<dyn auth::AuthUsecase> {
         Arc::new(auth::AuthAction::new(
             self.users_repo.clone(),
@@ -88,7 +95,7 @@ impl Registry {
     }
 
     fn create_admin_usecase(&self) -> Arc<dyn admin::AdminUsecase> {
-        // TODO: is there any way to avoid clone?
+        // Clone of Arc<T> doesn't have cost because it just increment reference count
         Arc::new(admin::AdminAction::new(
             self.todos_repo.clone(),
             self.users_repo.clone(),
@@ -97,9 +104,10 @@ impl Registry {
     }
 
     fn create_app_usecase(&self) -> Arc<dyn app::AppUsecase> {
+        // Clone of Arc<T> doesn't have cost because it just increment reference count
         Arc::new(app::AppAction::new(
-            self.todos_repo.clone(), // TODO: is there any way to avoid clone?
-            self.users_repo.clone(), // TODO: is there any way to avoid clone?
+            self.todos_repo.clone(),
+            self.users_repo.clone(),
         ))
     }
 
