@@ -1,6 +1,6 @@
 # actix-web-sample
 
-Sample Todo management web application based on Clean architecture using [actix-web](https://actix.rs/docs/) and [sea-orm](https://www.sea-ql.org/SeaORM/). Database, Hash algorithm are defined as traits object and these are initialized by Dependency Injection(DI).
+Sample Todo management web application based on Clean architecture using [actix-web](https://actix.rs/docs/) and [sea-orm](https://www.sea-ql.org/SeaORM/). Database, Hash algorithm are defined as traits object and these are initialized by Dependency Injection(DI). However dynamic dispatch has overhead and I'm not willing to use it in production. Dependencies must be salved by compiler by feature flag. I use several patterns in this code.
 
 This API server generates OpenAPI spec using [apistos](https://crates.io/crates/apistos).
 
