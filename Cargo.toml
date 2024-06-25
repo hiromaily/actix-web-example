@@ -9,9 +9,18 @@ actix-http = "3.8.0"
 actix-web = "4"
 actix-web-lab = "0.20"
 anyhow = "1.0"
+apistos = { version = ">=0.2.6, <0.3", features = [
+  "swagger-ui",
+  "extras",
+  "qs_query",
+  "rapidoc",
+  "redoc",
+] }
+apistos-models = "0.2"
 argon2 = "0.5"
 async-trait = "0.1"
 base64 = "0.22"
+cfg-if = "1.0.0"
 chrono = "0.4"
 clap = { version = "4", features = ["derive"] }
 env_logger = "0.11"
@@ -20,6 +29,7 @@ jwt-simple = "0.11"
 log = { version = "0.4", features = ["std", "serde"] }
 pbkdf2 = { version = "0.12", features = ["simple"] }
 rand_core = { version = "0.6", features = ["std"] }
+schemars = { package = "apistos-schemars", version = "0.8" }
 scrypt = "0.11"
 sea-orm = { version = "^0.12.15", features = [
   "sqlx-postgres",
@@ -33,16 +43,6 @@ thiserror = "1.0"
 toml = "0.8.13"
 tokio = { version = "1", features = ["full"] }
 validator = { version = "0.18", features = ["derive"] }
-schemars = { package = "apistos-schemars", version = "0.8" }
-apistos = { version = ">=0.2.6, <0.3", features = [
-  "swagger-ui",
-  "extras",
-  "qs_query",
-  "rapidoc",
-  "redoc",
-] }
-apistos-models = "0.2"
-cfg-if = "1.0.0"
 
 [features]
 default = ["pbkdf2"]
