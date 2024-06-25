@@ -51,35 +51,15 @@ async fn new_users_repository(
 //     Arc::new(hash::HashPbkdf2::new())
 // }
 
-// #[cfg(feature = "pbkdf2")]
-// fn new_hash() -> hash::HashPbkdf2 {
-//     debug!("hash crate is pbkdf2");
-
-//     // for now, only 1 implementation
-//     hash::HashPbkdf2::new()
-// }
-
-// #[cfg(feature = "scrypt")]
-// fn new_hash() -> hash::HashScrypt {
-//     debug!("hash crate is scrypt");
-
-//     // for now, only 1 implementation
-//     hash::HashScrypt::new()
-// }
-
 cfg_if! {
     if #[cfg(feature = "pbkdf2")] {
         fn new_hash() -> hash::HashPbkdf2 {
             debug!("hash crate is pbkdf2");
-
-            // for now, only 1 implementation
             hash::HashPbkdf2::new()
         }
     } else if #[cfg(feature = "scrypt")] {
         fn new_hash() -> hash::HashScrypt {
             debug!("hash crate is scrypt");
-
-            // for now, only 1 implementation
             hash::HashScrypt::new()
         }
      } else {
@@ -126,7 +106,6 @@ cfg_if! {
 
 impl Registry {
     pub async fn new(conf: toml::Config) -> Result<Self, DbErr> {
-        //let db = conf.db.clone();
         let db_conn = new_db_conn(&conf.db).await?;
 
         let todos_repo = new_todos_repository(db_conn.clone()).await?;
