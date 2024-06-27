@@ -23,8 +23,8 @@ pub struct HashPbkdf2 {
 }
 
 impl HashPbkdf2 {
-    pub fn new() -> Self {
-        Self { byte_length: 32 }
+    pub fn new(size: usize) -> Self {
+        Self { byte_length: size }
     }
 }
 
@@ -75,8 +75,8 @@ impl Default for HashScrypt {
 }
 
 impl HashScrypt {
-    pub fn new() -> Self {
-        HashScrypt::default()
+    pub fn new(salt: SaltString) -> Self {
+        Self { salt }
     }
 }
 
@@ -88,5 +88,42 @@ impl Hash for HashScrypt {
         //     .hash_password_customized(data, None, None, self.params, &self.salt)?
         //     .to_string())
         Ok(Scrypt.hash_password(data, &self.salt)?.to_string())
+    }
+}
+
+/******************************************************************************
+ Test
+******************************************************************************/
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_pbkdf2_hash() {
+        let password = "foobar".as_bytes();
+        let hash = HashPbkdf2::new(32);
+        let hashed = hash.hash(password).expect("fail to hash");
+
+        assert_eq!(
+            hashed,
+            "1550b10bc2d5591908047861f0a8345b21798855407b5951aee7cf0edd39e318".to_string()
+        );
+    }
+
+    #[ignore = "ignore because function is too slow"]
+    #[test]
+    fn test_scrypt_hash() {
+        let password = "foobar".as_bytes();
+
+        let salt =
+            SaltString::from_b64("oKUiVnIPlVQtm1T19IctrA".as_ref()).expect("fail to make salt");
+        let hash = HashScrypt::new(salt);
+        let hashed = hash.hash(password).expect("fail to hash");
+
+        assert_eq!(
+            hashed,
+            "$scrypt$ln=17,r=8,p=1$oKUiVnIPlVQtm1T19IctrA$VLVIRYqGANK8i6Yc9oXsKvPe1BZhFqcq4H5APR28K7Q".to_string()
+        );
     }
 }

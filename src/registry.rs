@@ -55,12 +55,12 @@ cfg_if! {
     if #[cfg(feature = "pbkdf2")] {
         fn new_hash() -> hash::HashPbkdf2 {
             debug!("hash crate is pbkdf2");
-            hash::HashPbkdf2::new()
+            hash::HashPbkdf2::default()
         }
     } else if #[cfg(feature = "scrypt")] {
         fn new_hash() -> hash::HashScrypt {
             debug!("hash crate is scrypt");
-            hash::HashScrypt::new()
+            hash::HashScrypt::default()
         }
      } else {
         compile_error!("One of the features 'pbkdf2' or 'scrypt' must be enabled");
