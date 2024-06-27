@@ -27,6 +27,6 @@ mod tests {
 
     #[test]
     fn test_generate_secret() {
-        assert_eq!(generate_secret(32 as usize).len(), 32);
+        assert_eq!(generate_secret(32).len(), 32);
     }
 }

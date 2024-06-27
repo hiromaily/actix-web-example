@@ -156,7 +156,7 @@ open http://127.0.0.1:8080/openapi.json
 - [x] feature flag must be integrated into DI functionality
 - [ ] Create repositories for on memory implementation using [airone](https://crates.io/crates/airone). This feature is required for CI.
 - [x] Unittest / Benchmark
-- [ ] CI environment
+- [x] CI environment
 - [ ] HTTP 2 / TLS(Transport Layer Security)
 - [ ] another pluggable option of framework like [axum](https://github.com/tokio-rs/axum)
 

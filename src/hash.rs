@@ -122,8 +122,7 @@ mod tests {
     fn test_scrypt_hash() {
         let password = "foobar".as_bytes();
 
-        let salt =
-            SaltString::from_b64("oKUiVnIPlVQtm1T19IctrA".as_ref()).expect("fail to make salt");
+        let salt = SaltString::from_b64("oKUiVnIPlVQtm1T19IctrA").expect("fail to make salt");
         let hash = HashScrypt::new(salt);
         let hashed = hash.hash(password).expect("fail to hash");
 

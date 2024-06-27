@@ -5,7 +5,7 @@
 .PHONY: lint
 lint:
 	cargo fmt
-	cargo clippy
+	cargo clippy --all-targets --all-features
 
 .PHONY: fix
 fix:
