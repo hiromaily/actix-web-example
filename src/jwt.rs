@@ -11,7 +11,7 @@ use std::{
 /*
  Payload
 */
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct PayLoad {
     pub user_id: u64,
     pub email: String,
@@ -28,7 +28,7 @@ impl PayLoad {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct PayLoadExp {
     pub user_id: u64,
     pub email: String,
@@ -81,6 +81,14 @@ impl SimpleJWT {
         Self {
             is_disabled: false,
             token_key: HS256Key::generate(),
+            duration_min,
+        }
+    }
+
+    pub fn new_with_token_key(token_key: HS256Key, duration_min: u64) -> Self {
+        Self {
+            is_disabled: false,
+            token_key,
             duration_min,
         }
     }
@@ -209,5 +217,52 @@ impl JWT for DummyJWT {
     fn validate(&self, _token: &str) -> anyhow::Result<PayLoad> {
         let payload = PayLoad::new(1, "example@example.com".to_string(), true);
         Ok(payload)
+    }
+}
+
+/******************************************************************************
+ Test
+******************************************************************************/
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_simple_jwt_issue_validate() {
+        // let token_key_bytes: &[u8] = &[
+        //     210, 118, 37, 150, 106, 11, 49, 138, 66, 152, 125, 41, 44, 51, 121, 107, 138, 133, 100,
+        //     12, 240, 40, 199, 151, 115, 187, 186, 63, 3, 12, 8, 214,
+        // ];
+        // let token_key = HS256Key::from_bytes(token_key_bytes);
+        //let jwt = SimpleJWT::new_with_token_key(token_key, 30);
+        let jwt = SimpleJWT::new(30);
+        let payload = PayLoad::new(1, "foobar@example.com".to_string(), false);
+
+        // issue
+        let token = jwt.issue(payload.clone()).expect("fail to issue jwt");
+        assert_eq!(token.len(), 228);
+
+        // validate
+        let retrieved_paylaod = jwt
+            .validate(token.as_str())
+            .expect("fail to validate token");
+        assert_eq!(retrieved_paylaod, payload);
+    }
+
+    #[test]
+    fn test_jsonwebtoken_issue_validate() {
+        let jwt = JsonWebToken::new(30);
+        let payload = PayLoad::new(1, "foobar@example.com".to_string(), false);
+
+        // issue
+        let token = jwt.issue(payload.clone()).expect("fail to issue jwt");
+        assert_eq!(token.len(), 183);
+
+        // validate
+        let retrieved_paylaod = jwt
+            .validate(token.as_str())
+            .expect("fail to validate token");
+        assert_eq!(retrieved_paylaod, payload);
     }
 }
