@@ -15,15 +15,19 @@ fix:
 build:
 	cargo build
 
+.PHONY: build-release
+build-release:
+	cargo build --release
+
 # hash crate is pbkdf2
 .PHONY: run
 run:
-	RUST_LOG=debug cargo run -- ./config/settings.toml -d
+	RUST_LOG=debug cargo run -- ./config/local.toml -d
 
 # hash crate is scrypt
 .PHONY: run-scrypt
 run-scrypt:
-	RUST_LOG=debug cargo run --no-default-features --features "scrypt" -- ./config/settings.toml -d
+	RUST_LOG=debug cargo run --no-default-features --features "scrypt" -- ./config/local.toml -d
 
 .PHONY: compile
 compile:
@@ -74,11 +78,19 @@ generate-entity-from-db:
 #------------------------------------------------------------------------------
 .PHONY: build-image
 build-image:
-	docker compose build
+	docker compose build --progress=plain
+
+.PHONY: build-image-server
+build-image-server:
+	docker compose build --progress=plain server
 
 .PHONY: up-db
 up-db:
-	docker compose up
+	docker compose up postgresql
+
+.PHONY: up-web
+up-web:
+	docker compose up server
 
 .PHONY: reset-db
 reset-db:

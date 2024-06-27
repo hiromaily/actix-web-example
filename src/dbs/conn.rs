@@ -10,14 +10,15 @@ pub async fn get_conn(
 ) -> Result<sea_orm::DatabaseConnection, DbErr> {
     let db_url = format!("postgresql://{user}:{password}@{host}/{db_name}");
     let mut opt = ConnectOptions::new(db_url);
+    // TODO: define at config toml file
     opt.max_connections(100)
         .min_connections(5)
-        .connect_timeout(Duration::from_secs(5))
-        .acquire_timeout(Duration::from_secs(5))
-        .idle_timeout(Duration::from_secs(5))
-        .max_lifetime(Duration::from_secs(3))
+        .connect_timeout(Duration::from_secs(10))
+        .acquire_timeout(Duration::from_secs(10))
+        .idle_timeout(Duration::from_secs(10))
+        .max_lifetime(Duration::from_secs(5))
         .sqlx_logging(true)
-        .sqlx_logging_level(log::LevelFilter::Info);
+        .sqlx_logging_level(log::LevelFilter::Debug);
     //.set_schema_search_path("my_schema"); // Setting default PostgreSQL schema
     let conn = Database::connect(opt).await?;
 
