@@ -24,12 +24,12 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Build test
         run: cargo build --release --verbose
-      - name: Run unit tests
-        run: cargo test --verbose
-      - name: Lint with clippy
-        run: cargo clippy --all-targets --all-features
       - name: Check formatting
         run: cargo fmt --all --check
+      - name: Lint with clippy
+        run: cargo clippy --all-targets --all-features
+      - name: Run unit tests
+        run: cargo test --verbose
       - name: Install hurl for integration test
         run: |
           VERSION=4.3.0
