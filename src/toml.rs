@@ -6,7 +6,7 @@ use std::fs;
  enum
 */
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "lowercase")]
 enum LogLevel {
     Debug,
@@ -34,7 +34,7 @@ enum LogLevel {
 //     }
 // }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub enum JWTKind {
     #[serde(rename = "jwt-simple")]
     JWTSimple,
@@ -66,7 +66,7 @@ pub enum JWTKind {
  toml definition
 */
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, PartialEq)]
 pub struct Config {
     pub app_name: String,
     pub server: Server,
@@ -76,19 +76,19 @@ pub struct Config {
     pub db: PostgreSQL,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, PartialEq)]
 pub struct Server {
     pub host: String,
     pub port: u16,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, PartialEq)]
 pub struct JWT {
     pub kind: JWTKind,
     pub duration_min: u64,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, PartialEq)]
 pub struct Logger {
     #[allow(dead_code)]
     service: String,
@@ -96,7 +96,7 @@ pub struct Logger {
     level: LogLevel,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, PartialEq)]
 pub struct PostgreSQL {
     pub enabled: bool,
     pub host: String,
@@ -132,4 +132,43 @@ pub fn load_config(file_name: &str) -> Result<Config, Box<dyn Error>> {
     let toml_str = fs::read_to_string(file_name)?;
     let config: Config = toml::from_str(&toml_str)?;
     Ok(config)
+}
+
+/******************************************************************************
+ Test
+******************************************************************************/
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_load_config() {
+        let conf = load_config("./config/settings.toml").expect("fail to load config");
+
+        let expected_config = Config {
+            app_name: "api-server".to_string(),
+            server: Server {
+                host: "127.0.0.1".to_string(),
+                port: 8080,
+            },
+            jwt: JWT {
+                kind: JWTKind::JsonWebToken,
+                duration_min: 30,
+            },
+            logger: Logger {
+                service: "api-server".to_string(),
+                level: LogLevel::Debug,
+            },
+            db: PostgreSQL {
+                enabled: true,
+                host: "127.0.0.1:5432".to_string(),
+                dbname: "example".to_string(),
+                user: "admin".to_string(),
+                password: "admin".to_string(),
+            },
+        };
+
+        assert_eq!(conf, expected_config);
+    }
 }
