@@ -40,6 +40,8 @@ pub struct TodoUpdateBody {
 /// # Examples
 ///
 /// ```
+/// use api_server::schemas::sea_orm_active_enums::TodoStatus;
+///
 /// let status_str = TodoStatus::Doing.to_string();
 /// println!("Status as string: {}", status_str);
 ///

@@ -16,3 +16,13 @@ pub fn generate_secret(length: usize) -> String {
 
     secret
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_generate_secret() {
+        assert_eq!(generate_secret(32 as usize).len(), 32);
+    }
+}
