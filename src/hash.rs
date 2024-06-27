@@ -17,9 +17,15 @@ pub trait Hash: Debug + Send + Sync + 'static {
  - https://docs.rs/argon2/latest/argon2/
 *******************************************************************************/
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct HashPbkdf2 {
     byte_length: usize,
+}
+
+impl Default for HashPbkdf2 {
+    fn default() -> Self {
+        Self { byte_length: 32 }
+    }
 }
 
 impl HashPbkdf2 {
