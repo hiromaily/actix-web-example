@@ -3,7 +3,7 @@ pub mod dbs;
 pub mod entities;
 pub mod errors;
 pub mod handlers;
-pub mod hash;
+pub mod hashes;
 pub mod jwt;
 pub mod middlewares;
 pub mod rand;

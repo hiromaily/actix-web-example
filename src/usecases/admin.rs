@@ -1,5 +1,5 @@
 use crate::entities::users;
-use crate::hash;
+use crate::hashes::hash;
 use crate::repositories::{todos as repo_todos, users as repo_users};
 use crate::schemas::users as db_users;
 use anyhow;

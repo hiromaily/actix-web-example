@@ -1,9 +1,21 @@
 use crate::dbs::conn;
+cfg_if! {
+  if #[cfg(feature = "pbkdf2")] {
+    use crate::hashes::pbkdf2;
+  } else if #[cfg(feature = "argon2")] {
+    use crate::hashes::argon2;
+  } else if #[cfg(feature = "scrypt")] {
+    use crate::hashes::scrypt;
+  } else {
+    compile_error!("One of the features 'pbkdf2' or 'argon2' or 'scrypt' must be enabled");
+  }
+}
+use crate::jwt;
 use crate::repositories::{todos, users};
 use crate::state;
 use crate::toml;
 use crate::usecases::{admin, app, auth};
-use crate::{hash, jwt};
+
 use cfg_if::cfg_if;
 use log::debug;
 use sea_orm::{DatabaseConnection, DbErr};
@@ -53,17 +65,22 @@ async fn new_users_repository(
 
 cfg_if! {
     if #[cfg(feature = "pbkdf2")] {
-        fn new_hash() -> hash::HashPbkdf2 {
+        fn new_hash() -> pbkdf2::HashPbkdf2 {
             debug!("hash crate is pbkdf2");
-            hash::HashPbkdf2::default()
+            pbkdf2::HashPbkdf2::default()
+        }
+    } else if #[cfg(feature = "argon2")] {
+        fn new_hash() -> argon2::HashArgon2 {
+            debug!("hash crate is argon2");
+            argon2::HashScrypt::default()
         }
     } else if #[cfg(feature = "scrypt")] {
-        fn new_hash() -> hash::HashScrypt {
+        fn new_hash() -> scrypt::HashScrypt {
             debug!("hash crate is scrypt");
-            hash::HashScrypt::default()
+            scrypt::HashScrypt::default()
         }
      } else {
-        compile_error!("One of the features 'pbkdf2' or 'scrypt' must be enabled");
+        compile_error!("One of the features 'pbkdf2' or 'argon2' or 'scrypt' must be enabled");
     }
 }
 
@@ -82,7 +99,15 @@ cfg_if! {
             pub todos_repo: Arc<dyn todos::TodoRepository>,
             pub users_repo: Arc<dyn users::UserRepository>,
             pub jwt: Arc<dyn jwt::JWT>,
-            pub hash: hash::HashPbkdf2,
+            pub hash: pbkdf2::HashPbkdf2,
+        }
+    } else if #[cfg(feature = "argon2")] {
+        pub struct Registry {
+            pub conf: toml::Config,
+            pub todos_repo: Arc<dyn todos::TodoRepository>,
+            pub users_repo: Arc<dyn users::UserRepository>,
+            pub jwt: Arc<dyn jwt::JWT>,
+            pub hash: argon2::HashArgon2,
         }
     } else if #[cfg(feature = "scrypt")] {
         pub struct Registry {
@@ -90,10 +115,10 @@ cfg_if! {
             pub todos_repo: Arc<dyn todos::TodoRepository>,
             pub users_repo: Arc<dyn users::UserRepository>,
             pub jwt: Arc<dyn jwt::JWT>,
-            pub hash: hash::HashScrypt,
+            pub hash: scrypt::HashScrypt,
         }
     } else {
-        compile_error!("One of the features 'pbkdf2' or 'scrypt' must be enabled");
+        compile_error!("One of the features 'pbkdf2' or 'argon2' or 'scrypt' must be enabled");
     }
 }
 // pub struct Registry {

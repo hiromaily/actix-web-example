@@ -4,8 +4,12 @@
 
 .PHONY: lint
 lint:
-	cargo fmt
+	cargo fmt --all --check
 	cargo clippy --all-targets --all-features
+
+.PHONY: check-deps
+check-deps:
+	cargo machete
 
 .PHONY: fix
 fix:
@@ -23,6 +27,11 @@ build-release:
 .PHONY: run
 run:
 	RUST_LOG=debug cargo run -- ./config/local.toml -d
+
+# hash crate is argon2
+.PHONY: run-argon2
+run-argon2:
+	RUST_LOG=debug cargo run --no-default-features --features "argon2" -- ./config/local.toml -d
 
 # hash crate is scrypt
 .PHONY: run-scrypt
@@ -63,6 +72,9 @@ setup-sea-orm:
 # FIXME: by shell script
 # For now, generated code is modified for apistos, adding ApiComponent, JsonSchema
 # ```
+# use apistos::ApiComponent;
+# use schemars::JsonSchema;
+#
 # #[derive(
 #    Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize, ApiComponent, JsonSchema,
 #)]
@@ -95,7 +107,7 @@ up-web:
 .PHONY: reset-db
 reset-db:
 	docker compose down -v
-	docker compose up
+	docker compose up postgresql
 
 
 # docker container exec -it {container_id} bash

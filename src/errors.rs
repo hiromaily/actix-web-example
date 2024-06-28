@@ -11,6 +11,8 @@ e.g
 pub enum CustomError {
     #[error("Unauthorized access")]
     UnauthorizedAccess,
+    #[error("invalid data")]
+    InvalidData,
     #[error(transparent)]
     Other(#[from] anyhow::Error),
 }

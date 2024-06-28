@@ -1,4 +1,4 @@
-use crate::hash;
+use crate::hashes::hash;
 use crate::jwt::{self, PayLoad};
 use crate::repositories::users as repo_users;
 use crate::schemas::users as db_users;

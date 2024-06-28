@@ -14,7 +14,7 @@ services:
     environment:
       RUST_LOG: debug
       RUST_BACKTRACE: full
-    restart: always
+    #restart: always
     depends_on:
       - postgresql
     #command: bash -c "cd /usr/local/bin && ls"
@@ -36,7 +36,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_DB: example
       TZ: Asia/Tokyo
-    restart: always
+    #restart: always
     networks:
       - app-network
 
