@@ -15,7 +15,6 @@ use crate::repositories::{todos, users};
 use crate::state;
 use crate::toml;
 use crate::usecases::{admin, app, auth};
-
 use cfg_if::cfg_if;
 use log::debug;
 use sea_orm::{DatabaseConnection, DbErr};
@@ -72,7 +71,7 @@ cfg_if! {
     } else if #[cfg(feature = "argon2")] {
         fn new_hash() -> argon2::HashArgon2 {
             debug!("hash crate is argon2");
-            argon2::HashScrypt::default()
+            argon2::HashArgon2::default()
         }
     } else if #[cfg(feature = "scrypt")] {
         fn new_hash() -> scrypt::HashScrypt {

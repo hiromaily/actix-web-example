@@ -19,6 +19,12 @@ fix:
 build:
 	cargo build
 
+.PHONY: build-all
+build-all:
+	cargo build --no-default-features --features "argon2"
+	cargo build --no-default-features --features "scrypt"
+	cargo build
+
 .PHONY: build-release
 build-release:
 	cargo build --release
@@ -45,10 +51,6 @@ compile:
 .PHONY: test
 test:
 	cargo test
-
-.PHONY: update-deps
-update-deps:
-	cargo machete
 
 #------------------------------------------------------------------------------
 # sea-orm
