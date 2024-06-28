@@ -48,7 +48,7 @@ test:
 
 .PHONY: update-deps
 update-deps:
-	cargo update
+	cargo machete
 
 #------------------------------------------------------------------------------
 # sea-orm
