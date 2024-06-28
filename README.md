@@ -154,11 +154,11 @@ open http://127.0.0.1:8080/openapi.json
 - [x] more implementation for jwt and configuration on toml
 - [x] more implementation for hash and configuration on toml
 - [x] feature flag must be integrated into DI functionality
-- [ ] Create repositories for on memory implementation using [airone](https://crates.io/crates/airone). This feature is required for CI.
 - [x] Unittest / Benchmark
 - [x] CI environment
+- [ ] Create repositories for on memory implementation using [airone](https://crates.io/crates/airone). This feature is required for CI.
 - [ ] HTTP 2 / TLS(Transport Layer Security)
-- [ ] another pluggable option of framework like [axum](https://github.com/tokio-rs/axum)
+- [x] ~~another pluggable option of framework like [axum](https://github.com/tokio-rs/axum)~~
 
 ## Tech Stacks
 
