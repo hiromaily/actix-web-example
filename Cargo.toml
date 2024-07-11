@@ -3,20 +3,24 @@ name = "api-server"
 version = "0.5.0"
 edition = "2021"
 
+[package.metadata.cargo-machete]
+ignored = ["tokio", "apistos-models"]
+
 [dependencies]
 actix-cors = "0.7.0"
 actix-http = "3.8.0"
 actix-web = "4"
 actix-web-lab = "0.20"
 anyhow = "1.0"
-apistos = { version = ">=0.2.6, <0.3", features = [
+#apistos = { version = ">=0.2.6, <0.3", features = [
+apistos = { version = "0.3", features = [
   "swagger-ui",
   "extras",
   "qs_query",
   "rapidoc",
   "redoc",
 ] }
-apistos-models = "0.2"
+apistos-models = "0.3"
 argon2 = "0.5"
 async-trait = "0.1"
 base64 = "0.22"

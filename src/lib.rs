@@ -11,6 +11,7 @@ pub mod registry;
 pub mod repositories;
 pub mod routes;
 pub mod schemas;
+pub mod servers;
 pub mod state;
 pub mod toml;
 pub mod usecases;

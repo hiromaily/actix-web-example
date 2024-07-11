@@ -6,7 +6,7 @@ This API server generates OpenAPI spec using [apistos](https://crates.io/crates/
 
 ## Status
 
-WIP
+This repository is not maintained anymore due to that [various-web-frameworks-rust](https://github.com/hiromaily/various-web-frameworks-rust) is maintained for various web server including actix.
 
 ## Requirements
 
