@@ -18,6 +18,22 @@ fn create_cors() -> Cors {
         .supports_credentials()
 }
 
+fn create_api_spec() -> Spec {
+    Spec {
+        info: Info {
+            title: "todo management API".to_string(),
+            version: "1.0.0".to_string(),
+            description: Some("todo management API using actix".to_string()),
+            ..Default::default()
+        },
+        servers: vec![ApistosServer {
+            url: "/api/v3".to_string(),
+            ..Default::default()
+        }],
+        ..Default::default()
+    }
+}
+
 pub async fn run_server(
     auth_state: state::AuthState,
     admin_state: state::AdminState,
@@ -26,22 +42,8 @@ pub async fn run_server(
     port: u16,
 ) -> std::io::Result<Server> {
     let server = HttpServer::new(move || {
-        let api_spec = Spec {
-            info: Info {
-                title: "todo management API".to_string(),
-                version: "1.0.0".to_string(),
-                description: Some("todo management API using actix".to_string()),
-                ..Default::default()
-            },
-            servers: vec![ApistosServer {
-                url: "/api/v3".to_string(),
-                ..Default::default()
-            }],
-            ..Default::default()
-        };
-
         App::new()
-            .document(api_spec) // requires build() as well
+            .document(create_api_spec()) // requires build() as well
             .wrap(create_cors())
             .wrap(Logger::default())
             .app_data(Data::new(auth_state.clone())) // global state
