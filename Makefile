@@ -21,6 +21,7 @@ build:
 
 .PHONY: build-all
 build-all:
+	cargo build --features "openapi"
 	cargo build --no-default-features --features "argon2"
 	cargo build --no-default-features --features "scrypt"
 	cargo build
@@ -28,6 +29,14 @@ build-all:
 .PHONY: build-release
 build-release:
 	cargo build --release
+
+.PHONY: compile
+compile:
+	rustc ./src/main.rs
+
+#------------------------------------------------------------------------------
+# run
+#------------------------------------------------------------------------------
 
 # hash crate is pbkdf2
 .PHONY: run
@@ -44,9 +53,9 @@ run-argon2:
 run-scrypt:
 	RUST_LOG=debug cargo run --no-default-features --features "scrypt" -- ./config/local.toml -d
 
-.PHONY: compile
-compile:
-	rustc ./src/main.rs
+.PHONY: run-openapi
+run-openapi:
+	RUST_LOG=debug cargo run --features "openapi" -- ./config/local.toml -d
 
 .PHONY: test
 test:
