@@ -14,7 +14,8 @@ services:
       RUST_BACKTRACE: full
     #restart: always
     depends_on:
-      - postgresql
+      postgresql:
+        condition: service_healthy
     #command: bash -c "cd /usr/local/bin && ls"
     networks:
       - app-network
@@ -35,6 +36,11 @@ services:
       POSTGRES_DB: example
       TZ: Asia/Tokyo
     #restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d example -U admin"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
     networks:
       - app-network
 

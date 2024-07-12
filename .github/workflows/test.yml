@@ -41,13 +41,9 @@ jobs:
       - name: Build Docker for API server and Postgresql
         run: |
           make build-image
-      - name: Run Docker Postgresql first
+      - name: Run Postgresql and Actix API Servers container
         run: |
-          docker compose up -d postgresql
-          sleep 20
-      - name: Run Docker Rust API Servers second
-        run: |
-          docker compose up -d server
+          docker compose up -d postgresql server
           sleep 5
           docker logs actix-web-server
       - name: API Test
